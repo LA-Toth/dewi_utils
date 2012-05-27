@@ -43,12 +43,8 @@ class Command(object):
 
     def perform(self, args):
         self.opts = self.parser.parse_args(args)
-        if self.opts.help:
-            print("Here will be handled the man pages. Try '-h' option instead")
-            sys.exit(0)
-        else:
-            sys.exit(self._perform_command())
+        return self._perform_command()
 
 
     def _perform_command(self):
-        return 0
+        raise NotImplementedError()
