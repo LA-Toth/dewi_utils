@@ -1,6 +1,9 @@
 # vim: sts=4 ts=8 et ai
 
-from DWA.Utils.Screen import add_frame
+import sys
+import traceback
+
+from DWA.Utils.Format import add_frame
 
 def format_exception(with_traceback=False):
     einfo = sys.exc_info()

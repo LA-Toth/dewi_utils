@@ -4,6 +4,8 @@ import os
 import sys
 import time
 
+import DWA.Core.State as State
+import DWA.Utils.Exceptions
 import DWA.Utils.Format
 
 
@@ -24,6 +26,17 @@ def print_run_time():
 def print_run_time_and_exit(status=0):
     print_run_time()
     sys.exit(status)
+
+
+def print_error(e):
+    filename = State.get_dir('/var/exception.txt')
+    f = open(filename, 'wt')
+    print(DWA.Utils.Exceptions.format_exception(), file=f)
+    f.close()
+    print(DWA.Utils.Format.add_frame(
+            ("An error occured, consult file '%s'.\n\n" +
+             "Error type: %s\nMessage: %s\n") % (
+                filename, e.__class__.__name__, e)))
 
 
 def __get_usage():
@@ -70,14 +83,13 @@ def __handle_command(args):
     except KeyboardInterrupt:
         print("Interrupted!")
         print_run_time_and_exit(1)
-    #except ZWAError as e:
+    #except DWAError as e:
     #    print(Utils.add_frame("General failure: \n%s" % e))
     #    print_run_time_and_exit(2)
     except SystemExit:
         raise
     except Exception as e:
-        #print_error(e)
-        print(e)
+        print_error(e)
         print_run_time_and_exit(3)
 
 def __handle_alias(args):
@@ -129,6 +141,7 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     global root_dir, prog_name, start_time, __command
     (root_dir, prog_name, start_time) = (dwa_root_dir, dwa_prog_name, dwa_start_time)
 
+    State.root_dir = root_dir
     try:
         ret = __main(sys.argv[1:])
         print("{0}: '{1}' is not a {0} command or alias".format(prog_name, __command))
@@ -138,6 +151,5 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     except SystemExit:
         raise
     except Exception as e:
-        print(e)
-        #print(Utils.format_exception())
+        print_error(e)
         print_run_time()
