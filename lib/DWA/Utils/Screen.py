@@ -458,16 +458,6 @@ if _disable_xtermTitle:
 # Output object exists always...
 out = EOutput()
 
-def add_frame(str):
-        lines = str.split('\n')
-        res = '#' * 70
-        res += '\n'
-        for line in lines:
-                res += '# %s\n' % (line,)
-
-        res += '#' *  70
-        res += '\n'
-        return res
 
 def set_screen_title(str):
     xtermTitle(str);

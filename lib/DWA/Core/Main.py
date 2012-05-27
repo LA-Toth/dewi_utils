@@ -4,6 +4,8 @@ import os
 import sys
 import time
 
+import DWA.Utils.Format
+
 
 root_dir = '/tmp'
 prog_name = 'dwa'
@@ -13,7 +15,8 @@ start_time = 0
 def print_run_time():
     runtime = time.time() - start_time
     print("\nRuntime: %s (%s seconds)" % (
-                            Utils.humanize_time(runtime, True), runtime))
+                        DWA.Utils.Format.humanize_time(runtime, True),
+                        runtime))
 
 
 def print_run_time_and_exit(status=0):
