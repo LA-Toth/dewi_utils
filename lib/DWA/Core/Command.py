@@ -20,7 +20,9 @@ class Command(object):
             import DWA.Core.Main
             prog = DWA.Core.Main.prog_name
         self.usage_name = self.get_name()
-        self.parser = argparse.ArgumentParser(description=self.description, prog=prog, usage='%(prog)s {0} [options] {1}'.format(self.usage_name, self.parser_args), add_help=False)
+        self.parser = argparse.ArgumentParser(description=self.description, prog=prog,
+                                              usage='%(prog)s {0} [options] {1}'.format(self.usage_name, self.parser_args),
+                                              add_help=False)
         self.parser.add_argument("-h", action="help", help="Show this help message and exit")
         self.parser.add_argument("--help", action=ShowManPageAction, nargs=0, dest='help', help='Show manual page');
         self.parser.current_command = self
