@@ -11,5 +11,6 @@ __pycache__
 *.orig
 *.rej
 
-# other
+# Some concrate directory or file of DWA
+/etc/product_list.py
 /var

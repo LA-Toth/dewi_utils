@@ -1,0 +1,10 @@
+# vim: ts=8 sts=4 sw=4 et ai si
+
+from DWA.WorkArea import Product, Module
+
+Product('sample', ['1.0', '*'], [
+        Module(None, 'examples', 'sample')
+        ],
+        profile='sample-{version}',
+        depends='gcc',
+       )
