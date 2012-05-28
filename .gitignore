@@ -10,3 +10,6 @@ __pycache__
 # Patch-related files
 *.orig
 *.rej
+
+# other
+/var
