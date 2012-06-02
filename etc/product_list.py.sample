@@ -8,3 +8,14 @@ Product('sample', ['1.0', '*'], [
         profile='sample-{version}',
         depends='gcc',
        )
+
+Product('name-only-sample', ['*'], [
+        Module(None, 'examples', 'sample'),
+        Module(None, 'examples', 'sample-tests'),
+        ],
+        aliases='name-only-s',
+        profile='name-only-sample-{version}',
+        depends='gcc',
+        name_only=True,
+       )
+

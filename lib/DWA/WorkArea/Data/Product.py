@@ -3,6 +3,8 @@
 #from DWA.Exceptions import WorkAreaException
 
 
+NAME_ONLY_VERSION = '(name-only)'
+
 products = {}
 
 
@@ -12,7 +14,12 @@ class Product(object):
         self.aliases=kw.pop('aliases', list())
         if type(self.aliases) != list:
             self.aliases = [ self.aliases ]
-        for v in versions:
+
+        self.name_only = kw.pop('name_only', False)
+        if self.name_only:
+            products[(name, NAME_ONLY_VERSION)] = self
+        else:
+            for v in versions:
                 products[(name, v)] = self
                 for s in self.aliases:
                     products[(s, v)] = self
@@ -23,11 +30,9 @@ class Product(object):
         self.profile = kw.pop('profile', None)
         self.depends = kw.pop('depends', None)
         self.depends_exclude = kw.pop('depends_exclude', None)
-        self.name_only = kw.pop('name_only', False)
         for k in kw:
             if k[:8] == 'modules_':
                 key = k[8:]
-                print(key, self.name, self.versions, self.modules, len(self.modules))
                 for m in self.modules:
                     setattr(m, key, kw[k])
 
@@ -57,7 +62,11 @@ class Product(object):
 
 
     def __str__(self):
-        return 'Product: name=' + self.name + ' versions=' + str(self.versions) + ' modules=' + str(self.get_module_list())
+        if self.name_only:
+            version_str = ' name-only=True'
+        else:
+            version_str = ' versions=' + str(self.versions)
+        return 'Product: name=' + self.name + version_str + ' modules=' + str(self.get_module_list())
 
 
 
