@@ -9,6 +9,7 @@ import DWA.Core.State as State
 import DWA.Utils.Exceptions
 import DWA.Utils.Format
 import DWA.Utils.Algorithm
+from DWA.Core.FrontController import FrontController
 
 
 root_dir = '/tmp'
@@ -201,6 +202,13 @@ def __main(args):
         print("help cmd - man page")
         sys.exit(0)
 
+    import DWA.Commands as cmds
+    # Avoid warning icon in eclipse
+    cmds.loaded = True
+    controller = FrontController()
+    sys.exit(controller.process_args(parsed_args.command_and_args))
+
+def __old_handler(args):
     done = False
     while True:
         __handle_command(args)
@@ -222,8 +230,8 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     try:
         ret = __main(sys.argv[1:])
         print("{0}: '{1}' is not a {0} command or alias".format(prog_name, __command))
-        __check_for_similar_name()
-        __print_similar_names()
+        #__check_for_similar_name()
+        #__print_similar_names()
         sys.exit(ret)
     except SystemExit:
         raise
