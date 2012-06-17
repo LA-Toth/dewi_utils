@@ -1,11 +1,11 @@
 import unittest
 
-from DWA.Utils.Screen import add_frame
+from DWA.Utils.Format import add_frame
 
 
-class TestScreen(unittest.TestCase):
-    def __generate_str(self, str):
-        return '#' * 70 + '\n' + str + '#' * 70 + "\n"
+class TestFormat(unittest.TestCase):
+    def __generate_str(self, s):
+        return '#' * 70 + '\n' + s + '#' * 70 + "\n"
 
     def test_add_frame(self):
         pairs = [
