@@ -1,6 +1,5 @@
 # vim: sts=4 ts=8 et ai
 
-import os
 import sys
 import unittest
 

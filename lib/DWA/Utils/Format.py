@@ -16,7 +16,7 @@ def humanize_time(seconds, format=False):
     if hours > 24:
         (days, hours) = divmod(hours, 24)
     if format:
-        str=''
+        str =''
         if days > 0:
             str = '%d days ' % days
         str = '%s%02d:%02d:%05.2f' % (str, hours, mins, secs)

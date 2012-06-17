@@ -1,7 +1,5 @@
 # vim: sts=4 ts=8 et ai
 
-import string
-
 def qsort(lst, func=None):
     if len(lst) <= 1:
         return lst
@@ -84,7 +82,7 @@ def levenhstein(str1, str2, w, a, s, d):
         l = len2
 
     for i in range(0,len2 + 1):
-          row1[i] = i * a
+        row1[i] = i * a
 
     for i in range(0, len1):
         row2[0] = (i + 1) * d
@@ -92,20 +90,20 @@ def levenhstein(str1, str2, w, a, s, d):
         for j in range(0, len2):
             # subst
             if (str1[i] != str2[j]):
-                    row2[j + 1] = row1[j] + s
+                row2[j + 1] = row1[j] + s
             else:
-                    row2[j + 1] = row1[j]
+                row2[j + 1] = row1[j]
             # swap
             if (i > 0 and j > 0 and str1[i - 1] == str2[j] and  \
                         str1[i] == str2[j - 1] and \
                         row2[j + 1] > row0[j - 1] + w):
-                  row2[j + 1] = row0[j -1] + w
+                row2[j + 1] = row0[j -1] + w
             # deletion
             if row2[j + 1] > row1[j + 1 ] + d:
-                    row2[j+1] = row1[j + 1] + d
+                row2[j+1] = row1[j + 1] + d
             # insertion
             if row2[j + 1] > row2[j] + a:
-                    row2[j+1] = row2[j] + a
+                row2[j+1] = row2[j] + a
 
         dummy = list(row0)
         row0 = row1
