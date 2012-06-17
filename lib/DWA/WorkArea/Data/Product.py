@@ -1,6 +1,6 @@
 # vim: ts=8 sts=4 sw=4 et ai si
 
-#from DWA.Exceptions import WorkAreaException
+from DWA.WorkArea.Exceptions import WorkAreaError
 
 
 NAME_ONLY_VERSION = '(name-only)'
