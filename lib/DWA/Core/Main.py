@@ -24,7 +24,7 @@ __possible_commands = []
 
 def __print_run_time():
     runtime = time.time() - start_time
-    print("\nRuntime: %s (%s seconds)" % (
+    print("\nRuntime: {} ({} seconds)".format(
                         DWA.Utils.Format.humanize_time(runtime, True),
                         runtime))
 
@@ -238,3 +238,4 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     except Exception as e:
         __print_error(e)
         __print_run_time()
+        sys.exit(1)
