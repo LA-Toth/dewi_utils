@@ -1,37 +1,78 @@
 # vim: sts=4 ts=8 et ai
 
 import yaml
+import os
 
 class YamlConfig(object):
     def __init__(self):
-        self.config_file = None
-        self.config = None
+        self.__config_file = None
+        self.clear()
+        self.root_node = 'dwa'
 
     def open(self, cfgfile):
-        self.config_file = cfgfile
-        self.config = yaml.load(file(self.config_file, 'r'))
+        self.__config_file = cfgfile
+        if os.path.exists(self.__config_file):
+            with open(self.__config_file, 'r') as file:
+                self.config = yaml.load(file)
+        else:
+            self.clear()
 
     def write(self):
-        yaml.dump(self.config, file(self.config_file, 'w'))
+        with open(self.__config_file, 'w') as file:
+            yaml.dump(self.config, file)
 
     def close(self):
-        self.write()
-        self.config_file = None
+        self.__config_file = None
         self.config = None
 
-    def get(self, path):
-        path = path.split('/')
-        i = 0;
-        while i < len(path):
-            if not path[i]:
-                del path[i]
-                i -= 1
-            i += 1
+    def set_config(self, config):
+        self.config = config
 
-        if not path:
-            return None
+    def get_config(self):
+        return self.config
+
+    def clear(self):
+        self.config = dict()
+
+
+    def get_program_config(self, path):
+        return self.get(self.root_node + '.' + path)
+
+    def set_program_config(self, path, value):
+        return self.set(self.root_node + path, value)
+
+    def get(self, path):
+        parts = path.split('.')
+        for x in parts:
+            if not x: del x
+
+        current = self.config
+        for part in parts:
+            try:
+                current = current[part]
+            except KeyError:
+                return None
+
+        return current
+
+    def set(self, path, value):
+        parts = path.split('.')
+        for x in parts:
+            if not x: del x
+
+        current = self.config
+        last_part = None
+        last_current = None
+        for part in parts:
+            last_part = part
+            last_current = current
+            try:
+                current = current[part]
+            except KeyError:
+                current[part] = dict()
+                current = current[part]
+
+        if last_part:
+            last_current[last_part] = value
         else:
-            res = self.config
-            for item in path:
-                res = res[item]
-            return res
+            self.config = value
