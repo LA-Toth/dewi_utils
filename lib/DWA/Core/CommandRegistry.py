@@ -17,7 +17,6 @@ class CommandRegistry(object):
         self.__registry[name] = cls
 
     def get_command_class(self, name):
-        print(self.__registry)
         if name not in self.__registry:
             raise CommandRegistryException("Specified command class name is not found")
         return self.__registry[name]
