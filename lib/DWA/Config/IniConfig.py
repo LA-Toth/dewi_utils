@@ -6,8 +6,8 @@ import configparser
 class IniConfig(object):
 
     def __init__(self):
-        self.config_file = None
-        self.parser = configparser.RawConfigParser()
+        self.__config_file = None
+        self.__parser = configparser.RawConfigParser()
 
     def __section_from_dotted(self, section):
         s = section.split('.', 1)
@@ -24,12 +24,12 @@ class IniConfig(object):
             return section
 
     def open(self, cfgfile):
-        self.config_file = cfgfile
-        self.parser.read(self.config_file)
+        self.__config_file = cfgfile
+        self.__parser.read(self.__config_file)
 
     def write(self):
-        file_ = open(self.config_file, 'wb')
-        self.parser.write(file_)
+        file_ = open(self.__config_file, 'wb')
+        self.__parser.write(file_)
         file_.close()
 
     def close(self):
@@ -37,20 +37,20 @@ class IniConfig(object):
 
     def has(self, section, option):
         section = self.__section_from_dotted(section)
-        return self.parser.has_option(section, option);
+        return self.__parser.has_option(section, option);
 
     def set(self, section, option, value):
         section = self.__section_from_dotted(section)
-        if not self.parser.has_section(section):
-            self.parser.add_section(section)
-        self.parser.set(section, option, value)
+        if not self.__parser.has_section(section):
+            self.__parser.add_section(section)
+        self.__parser.set(section, option, value)
 
     def get(self, section, option):
         section = self.__section_from_dotted(section)
-        if not self.parser.has_section(section):
+        if not self.__parser.has_section(section):
             return None
         try:
-            return self.parser.get(section, option)
+            return self.__parser.get(section, option)
         except configparser.NoOptionError:
             return None
 
@@ -60,16 +60,16 @@ class IniConfig(object):
 
     def remove(self, section, option):
         section = self.__section_from_dotted(section)
-        if not self.parser.has_section(section): return
-        if not self.parser.has_option(section, option): return
-        self.parser.remove_option(section, option)
+        if not self.__parser.has_section(section): return
+        if not self.__parser.has_option(section, option): return
+        self.__parser.remove_option(section, option)
 
     def get_options(self, section):
         section = self.__section_from_dotted(section)
-        if not self.parser.has_section(section):
+        if not self.__parser.has_section(section):
             return []
         else:
-            return self.parser.options(section)
+            return self.__parser.options(section)
 
     def get_sections(self):
-        return [self.__section_to_dotted(s) for s in self.parser.sections()]
+        return [self.__section_to_dotted(s) for s in self.__parser.sections()]
