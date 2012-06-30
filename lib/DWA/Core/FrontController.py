@@ -1,12 +1,15 @@
 import DWA.Core.Exceptions as Exceptions
 from DWA.Core.State import main_command_registry
+from DWA.Core.Aliases import Aliases
 
 class FrontController(object):
-    def __init__(self, command_registry=None):
+    def __init__(self, command_registry=None, aliases=None):
         if not command_registry:
             command_registry = main_command_registry
+        if not aliases:
+            aliases = Aliases()
         self.__command_registry = command_registry
-
+        self.__aliases = aliases
 
     def _get_command_name(self, args):
         if len(args) == 0:
@@ -22,6 +25,22 @@ class FrontController(object):
         command = self._create_command(args)
         return command.perform(args[1:])
 
+    def _process_aliases(self, args):
+        alias = self.__aliases.get_alias(args[0])
+        if alias:
+            if alias[0] == '!':
+                # shell command
+                #cmd = args[1:]
+                #cmd[0:0] = [ newcmd[1:] ]
+                #Utils.run_command(string.join(cmd))
+                return (True, 1)
+            args[0:1] = alias.split(' ')
+        return (False, args)
 
-    process_args = _create_and_perform
+    def process_args(self, args):
+        finished, args = self._process_aliases(args)
+        if finished:
+            return args
+
+        return self._create_and_perform(args)
 
