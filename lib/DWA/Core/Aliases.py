@@ -3,7 +3,7 @@ class Aliases(object):
     def __init__(self, config=None):
         if not config:
             config = main_config
-        self.aliases = config.get_program_config('aliases')
+        self.aliases = config.get_program_config('alias')
         if not self.aliases:
             self.aliases = dict()
 
