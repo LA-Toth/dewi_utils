@@ -1,6 +1,8 @@
 import DWA.Core.Exceptions as Exceptions
 from DWA.Core.State import main_command_registry
 from DWA.Core.Aliases import Aliases
+from DWA.Core.CommandRegistry import CommandRegistryException
+from DWA.Utils.Algorithm import get_similar_names_to
 
 class FrontController(object):
     def __init__(self, command_registry=None, aliases=None):
@@ -38,9 +40,14 @@ class FrontController(object):
         return (False, args)
 
     def process_args(self, args):
+        cmd = args[0]
         finished, args = self._process_aliases(args)
         if finished:
             return args
 
-        return self._create_and_perform(args)
-
+        try:
+            return (True, self._create_and_perform(args))
+        except CommandRegistryException:
+            command_list = self.__command_registry.get_command_names()
+            command_list.extend(self.__aliases.get_alias_names())
+            return (False, get_similar_names_to(cmd, command_list))

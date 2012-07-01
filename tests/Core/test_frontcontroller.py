@@ -49,12 +49,16 @@ class TestFrontCollerWithoutAliases(unittest.TestCase):
         self.command_registry.register_command_class("cmd2", Command2)
         self.command_registry.register_command_class("alias1", Command1)
         self.command_registry.register_command_class("basic", BasicCommand)
+        self.command_registry.register_command_class("testcl", BasicCommand)
 
     def testCreatedObjectsAreFromExpectedClass(self):
         self.assertIsInstance(self.tested._create_command(['cmd1']), Command1, "Created command object's class differs from expected")
         self.assertIsInstance(self.tested._create_command(['alias1']), Command1, "Created command object's class differs from expected")
         self.assertIsInstance(self.tested._create_command(['cmd2']), Command2, "Created command object's class differs from expected")
         self.assertIsInstance(self.tested._create_command(['basic']), BasicCommand, "Created command object's class differs from expected")
+
+    def testSimilarNamesAreTheExpected(self):
+        self.assertSequenceEqual((False, ['testcl']), self.tested.process_args(['testclt']))
 
     def testCreateAndPerformPassesArgsProperly(self):
         done = False
@@ -73,7 +77,7 @@ class TestFrontCollerWithoutAliases(unittest.TestCase):
         self.assertSequenceEqual(self.tested._create_and_perform(["testcls", "p1", "p2", "foo"]), [True, 'p1'], "Bad return value", list)
         self.assertEqual(done, True, "TestCommand's perform method is not called")
         done = False
-        self.assertSequenceEqual(self.tested.process_args(["testcls", "p1", "p2", "foo"]), [True, 'p1'], "Bad return value", list)
+        self.assertSequenceEqual(self.tested.process_args(["testcls", "p1", "p2", "foo"]), [True, [True, 'p1']], "Bad return value")
         self.assertEqual(done, True, "TestCommand's perform method is not called")
 
 
@@ -89,7 +93,15 @@ class TestFrontCollerWithAliases(unittest.TestCase):
         self.command_registry.register_command_class("cmd2", Command2)
         self.command_registry.register_command_class("alias1", Command1)
         self.command_registry.register_command_class("basic", BasicCommand)
-        
+
+    def testSimilarNamesAreExpected(self):
+        self.assertSequenceEqual((False, ['alias1', 'shellfunc']), self.tested.process_args(['testclt']))
+
+    def testSimilarNamesWithLocalRegistrationAreTheExpected(self):
+        self.command_registry.register_command_class("testcl", BasicCommand)
+        self.command_registry.register_command_class("testcls", BasicCommand)
+        self.assertSequenceEqual((False, ['testcls']), self.tested.process_args(['testclt']))
+
     def testAliasOfCommand(self):
         done = False
         class TestCommand(BasicCommand):
@@ -104,8 +116,8 @@ class TestFrontCollerWithAliases(unittest.TestCase):
                 return [done, args[0]]
 
         self.command_registry.register_command_class("testcls", TestCommand)
-        self.assertSequenceEqual(self.tested.process_args(['apple', 'p2', 'foo']), [True, 'p1'], 'Bad return value')
+        self.assertSequenceEqual(self.tested.process_args(['apple', 'p2', 'foo']), [True, [True, 'p1']], 'Bad return value')
         self.assertEqual(done, True, "TestCommand's perform method is not called")
-        
+
     def testShellAlias(self):
         self.assertEqual(self.tested.process_args(['shellfunc']), 1, 'Bad return value of shell alias')
