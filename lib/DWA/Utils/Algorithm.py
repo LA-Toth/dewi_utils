@@ -10,6 +10,7 @@ def qsort(lst, func=None):
     lesser = qsort([i for i in lst if func(i, pivot)], func)
     return lesser + [pivot] + greater_eq
 
+
 def _unique(seq):
     seen = set()
     for x in seq:
@@ -18,8 +19,10 @@ def _unique(seq):
         seen.add(x)
         yield x
 
+
 def unique(seq):
     return list(_unique(seq))
+
 
 def list_clear(seq):
     """Removes empty elements from list"""
@@ -31,6 +34,7 @@ def list_clear(seq):
             i -= 1
         i += 1
     return res
+
 
 # from git's levenhstein.c:
 #
