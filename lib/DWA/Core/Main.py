@@ -8,18 +8,12 @@ import time
 import DWA.Core.State as State
 import DWA.Utils.Exceptions
 import DWA.Utils.Format
-import DWA.Utils.Algorithm
 from DWA.Core.FrontController import FrontController
 
 
 root_dir = '/tmp'
 prog_name = 'dwa'
 start_time = 0
-
-__command = None
-__command_list = []
-__cmd_list_w = {}
-__possible_commands = []
 
 
 def __print_run_time():
@@ -75,110 +69,16 @@ def __get_parsed_args(args):
     return parser.parse_args(args)
 
 
-#
-# Run command or alias
-#
 
-def __handle_command(args):
-    import DWA.Commands as Commands
-    import DWA.Core.Command as Command
-
-    global __command
-    cmd = args[0]
-    __command = cmd
-
-    found = False
-    for cmdname in dir(Commands):
-        cmdclass = getattr(Commands, cmdname)
-        if type(cmdclass) == type and issubclass(cmdclass, Command.Command):
-            if (cmd == cmdclass.get_name() or cmd in cmdclass.aliases):
-                found = True
-                break
-            else:
-                __command_list.append(cmdclass.get_name())
-                if cmdclass.aliases:
-                    __command_list.append(cmdclass.aliases)
-
-    if not found:
-        return False
-
-    try:
-        Command.running_command = cmd
-        cmdobj = cmdclass()
-        __print_run_time_and_exit(cmdobj.perform(args[1:]))
-    except KeyboardInterrupt:
-        print("Interrupted!")
-        __print_run_time_and_exit(1)
-    #except DWAError as e:
-    #    print(Utils.add_frame("General failure: \n%s" % e))
-    #    __print_run_time_and_exit(2)
-    except SystemExit:
-        raise
-    except Exception as e:
-        __print_error(e)
-        __print_run_time_and_exit(3)
-
-
-def __handle_alias(args):
-    return None
-    #aliases = ...
-    newcmd = aliases.get_alias(args[0])
-
-    if newcmd:
-        shell = '/bin/sh'
-        if newcmd[0] == '!' or newcmd[0] =='?':
-            if newcmd[0] == '?':
-                shell = '/bin/bash'
-            cmd = args[1:]
-            cmd[0:0] = [ newcmd[1:] ]
-            Utils.run_command(string.join(cmd), silent=1, shell=shell)
-            sys.exit(0)
-        else:
-            args[0:1] = newcmd.split(' ')
-            return args
-
-
-def __levenshtein_compare(s1, s2):
-    l1 = __cmd_list_w[s1]
-    l2 = __cmd_list_w[s2]
-    if l1 != l2:
-        return l1 - l2
-    else:
-        return s1 <= s2
-
-
-def __check_for_similar_name():
-    if not __command:
-        return
-    global __command_list
-    global __cmd_list_w
-    __command_list = DWA.Utils.Algorithm.qsort(__command_list)
-
-    for cmd in __command_list:
-        __cmd_list_w[cmd] = DWA.Utils.Algorithm.levenhstein(__command, cmd, 0, 2, 1, 4)
-
-    command_list = DWA.Utils.Algorithm.qsort(__command_list, __levenshtein_compare)
-
-    best_similarity = __cmd_list_w[__command_list[0]]
-    n = 1
-    l = len(command_list)
-    while (n < l and best_similarity == __cmd_list_w[__command_list[n]]):
-        n=n+1
-
-    if n < 6:
-        for i in range(0, n):
-            __possible_commands.append(__command_list[i])
-
-
-def __print_similar_names():
-    if len(__possible_commands) == 0:
+def __print_similar_names(values):
+    if len(values) == 0:
         return
 
-    if len(__possible_commands) == 1:
+    if len(values) == 1:
         print("\nDid you mean this?")
     else:
         print("\nDid you mean one of these?")
-    for cmd in __possible_commands:
+    for cmd in values:
         print("\t%s" % (cmd,))
 
 
@@ -206,20 +106,12 @@ def __main(args):
     # Avoid warning icon in eclipse
     cmds.loaded = True
     controller = FrontController()
-    sys.exit(controller.process_args(parsed_args.command_and_args))
-
-def __old_handler(args):
-    done = False
-    while True:
-        __handle_command(args)
-
-        if done:
-            return 2
-
-        args = __handle_alias(args)
-        if not args:
-            return 2
-        done = True
+    command_found, value = controller.process_args(parsed_args.command_and_args)
+    if command_found:
+        sys.exit(value)
+    else:
+        __print_similar_names(value)
+        sys.exit(120)
 
 
 def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
