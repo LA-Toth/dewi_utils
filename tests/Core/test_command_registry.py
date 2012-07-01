@@ -26,6 +26,11 @@ class Test(unittest.TestCase):
         self.assertEqual(self.tested.get_command_class("foo"), Cls, "Registered class cannot be retrieved")
         self.assertEqual(self.tested.get_command_class("bar"), Cls, "Second Registered class cannot be retrieved")
 
+    def testRegisteredClassNamesCanBeFetched(self):
+        self.tested.register_command_class("foo", object)
+        self.tested.register_command_class("bar", object)
+        self.assertEqual(sorted(self.tested.get_command_names()), sorted(['foo', 'bar']), "Command names differ")
+
     def testOneNameCannotBeReRegistered(self):
         class Cls(object):
             pass
