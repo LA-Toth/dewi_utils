@@ -111,3 +111,33 @@ def levenhstein(str1, str2, w, a, s, d):
         row2 = dummy
 
     return row1[len2]
+
+
+def get_similar_names_to(name, possible_names, max_result_count=6, w=0, a=2, s=1, d=4):
+    distances = dict()
+    for current_name in possible_names:
+        distances[current_name] = levenhstein(name, current_name, w, a, s, d)
+
+
+    def levenshtein_compare(s1, s2):
+        nonlocal distances
+        l1 = distances[s1]
+        l2 = distances[s2]
+        if l1 != l2:
+            return l1 <= l2
+        else:
+            return s1 <= s2
+
+    sorted_names = qsort(possible_names, levenshtein_compare)
+
+    best_similarity = distances[sorted_names[0]]
+    n = 1
+    l = len(sorted_names)
+    while (n < l and best_similarity == distances[sorted_names[n]]):
+        n=n+1
+
+    similar_names = list()
+    if n < max_result_count:
+        for i in range(0, n):
+            similar_names.append(sorted_names[i])
+    return similar_names
