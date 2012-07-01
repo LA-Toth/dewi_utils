@@ -23,3 +23,6 @@ class CommandRegistry(object):
 
     def get_command_count(self):
         return len(self.__registry)
+
+    def get_command_names(self):
+        return list(self.__registry.keys())
