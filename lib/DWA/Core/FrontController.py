@@ -20,7 +20,7 @@ class FrontController(object):
 
     def _create_command(self, args):
         name = self._get_command_name(args)
-        command_class = self.__command_registry.get_command_class(name)
+        command_class = self.__command_registry.get_command_class_descriptor(name).get_class()
         return command_class()
 
     def _create_and_perform(self, args):
