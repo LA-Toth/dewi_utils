@@ -57,3 +57,9 @@ class TestYamlConfig(unittest.TestCase):
         self.assertSequenceEqual(self.config, self.tested.get('foo.bar.baz'), "Setting failed")
         self.assertSequenceEqual({ 'bar' : { 'baz' : self.config }}, self.tested.get('foo'))
         self.assertEqual(1, len(self.tested.config))
+
+    def testEmptyFileLoadedAsDict(self):
+        (handle, filename) = tempfile.mkstemp(prefix="dwa_test_yml_", text=True)
+        self.tested.open(filename)
+        self.assertDictEqual(dict(), self.tested.get_config())
+        os.close(handle)

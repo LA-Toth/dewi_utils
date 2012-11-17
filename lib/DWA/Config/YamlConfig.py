@@ -6,15 +6,17 @@ import os
 from .Base import Base
 
 class YamlConfig(Base):
-    def __init__(self):
+    def __init__(self, root_node=None):
         super().__init__()
         self.clear()
-        self.root_node = 'dwa'
+        self.root_node = root_node if root_node else 'dwa'
 
     def _open(self):
         if os.path.exists(self._config_file):
             with open(self._config_file, 'r') as file:
                 self.config = yaml.load(file)
+                if self.config is None:
+                    self.config = dict()
         else:
             self.clear()
 
