@@ -131,3 +131,13 @@ class TestFrontCollerWithAliases(unittest.TestCase, CustomRegistration):
 
     def testShellAlias(self):
         self.assertEqual(self.tested.process_args(['shellfunc']), 1, 'Bad return value of shell alias')
+
+class TestEmptyFrontController(unittest.TestCase):
+    def setUp(self):
+        self.command_registry = CommandRegistry()
+        self.main_config = YamlConfig()
+        self.aliases = Aliases(self.main_config)
+        self.tested = FrontController(self.command_registry, self.aliases)
+
+    def testSimilarNamesAreExpected(self):
+        self.assertSequenceEqual((False, []), self.tested.process_args(['dummyclassname']))
