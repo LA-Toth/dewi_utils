@@ -45,6 +45,7 @@ class Command(object):
 
     def perform(self, args):
         self.opts = self.parser.parse_args(args)
+        self.args = self.opts
         return self._perform_command()
 
 
