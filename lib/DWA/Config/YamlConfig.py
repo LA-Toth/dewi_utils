@@ -3,26 +3,27 @@
 import yaml
 import os
 
-class YamlConfig(object):
+from .Base import Base
+
+class YamlConfig(Base):
     def __init__(self):
-        self.__config_file = None
+        super().__init__()
         self.clear()
         self.root_node = 'dwa'
 
-    def open(self, cfgfile):
-        self.__config_file = cfgfile
-        if os.path.exists(self.__config_file):
-            with open(self.__config_file, 'r') as file:
+    def _open(self):
+        if os.path.exists(self._config_file):
+            with open(self._config_file, 'r') as file:
                 self.config = yaml.load(file)
         else:
             self.clear()
 
     def write(self):
-        with open(self.__config_file, 'w') as file:
+        with open(self._config_file, 'w') as file:
             yaml.dump(self.config, file)
 
     def close(self):
-        self.__config_file = None
+        self._config_file = None
         self.config = None
 
     def set_config(self, config):
@@ -33,7 +34,6 @@ class YamlConfig(object):
 
     def clear(self):
         self.config = dict()
-
 
     def get_program_config(self, path):
         return self.get(self.root_node + '.' + path)
