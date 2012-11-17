@@ -5,11 +5,11 @@ import os
 import sys
 import time
 
-import DWA.Core.State as State
+
 import DWA.Utils.Exceptions
 import DWA.Utils.Format
 from DWA.Core.FrontController import FrontController
-
+from DWA.Core import Dirs
 
 root_dir = '/tmp'
 prog_name = 'dwa'
@@ -29,7 +29,7 @@ def __print_run_time_and_exit(status=0):
 
 
 def __print_error(e):
-    filename = State.get_dir('/var/exception.txt')
+    filename = Dirs.get_dir('/var/exception.txt')
     f = open(filename, 'wt')
     print(DWA.Utils.Exceptions.format_exception(), file=f)
     f.close()
@@ -118,7 +118,7 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     global root_dir, prog_name, start_time, __command
     (root_dir, prog_name, start_time) = (dwa_root_dir, dwa_prog_name, dwa_start_time)
 
-    State.root_dir = root_dir
+    Dirs.set_root_dir(root_dir)
     try:
         ret = __main(sys.argv[1:])
         print("{0}: '{1}' is not a {0} command or alias".format(prog_name, __command))

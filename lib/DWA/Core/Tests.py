@@ -2,6 +2,7 @@
 
 import sys
 import unittest
+from DWA.Core import Dirs
 
 root_dir = '/tmp'
 prog_name = 'dwa'
@@ -24,6 +25,7 @@ def main(dwa_root_dir, dwa_prog_name, dwa_start_time):
     (root_dir, prog_name, start_time) = \
         (dwa_root_dir, dwa_prog_name, dwa_start_time)
 
+    Dirs.set_root_dir(root_dir)
     try:
         ret = __main(sys.argv)
         sys.exit(ret)
