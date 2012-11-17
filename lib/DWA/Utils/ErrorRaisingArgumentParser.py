@@ -11,7 +11,6 @@ class StdIOBuffer(StringIO):
     pass
 
 
-
 class ArgumentParserError(Exception):
 
     def __init__(self, message, stdout=None, stderr=None, error_code=None):

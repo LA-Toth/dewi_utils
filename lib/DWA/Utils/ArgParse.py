@@ -109,6 +109,7 @@ _UNRECOGNIZED_ARGS_ATTR = '_unrecognized_args'
 # Utility functions and classes
 # =============================
 
+
 class _AttributeHolder(object):
     """Abstract base class that provides __repr__.
 
@@ -1153,6 +1154,7 @@ class FileType(object):
 # Optional and Positional Parsing
 # ===========================
 
+
 class Namespace(_AttributeHolder):
     """Simple object for storing attributes.
 
@@ -1252,7 +1254,6 @@ class _ActionsContainer(object):
             if action.dest == dest and action.default is not None:
                 return action.default
         return self._defaults.get(dest, None)
-
 
     # =======================
     # Adding argument actions
@@ -1609,12 +1610,12 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         default_prefix = '-' if '-' in prefix_chars else prefix_chars[0]
         if self.add_help:
             self.add_argument(
-                default_prefix+'h', default_prefix*2+'help',
+                default_prefix + 'h', default_prefix * 2 + 'help',
                 action='help', default=SUPPRESS,
                 help=_('show this help message and exit'))
         if self.version:
             self.add_argument(
-                default_prefix+'v', default_prefix*2+'version',
+                default_prefix + 'v', default_prefix * 2 + 'version',
                 action='version', default=SUPPRESS,
                 version=self.version,
                 help=_("show program's version number and exit"))

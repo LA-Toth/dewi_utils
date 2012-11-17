@@ -37,7 +37,7 @@ class IniConfig(object):
 
     def has(self, section, option):
         section = self.__section_from_dotted(section)
-        return self.__parser.has_option(section, option);
+        return self.__parser.has_option(section, option)
 
     def set(self, section, option, value):
         section = self.__section_from_dotted(section)
@@ -60,8 +60,10 @@ class IniConfig(object):
 
     def remove(self, section, option):
         section = self.__section_from_dotted(section)
-        if not self.__parser.has_section(section): return
-        if not self.__parser.has_option(section, option): return
+        if not self.__parser.has_section(section):
+            return
+        if not self.__parser.has_option(section, option):
+            return
         self.__parser.remove_option(section, option)
 
     def get_options(self, section):

@@ -4,6 +4,7 @@ from DWA.Core.Aliases import Aliases
 from DWA.Core.CommandRegistry import CommandRegistryException
 from DWA.Utils.Algorithm import get_similar_names_to
 
+
 class FrontController(object):
     def __init__(self, command_registry=None, aliases=None):
         if not command_registry:

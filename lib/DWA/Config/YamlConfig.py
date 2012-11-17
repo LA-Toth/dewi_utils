@@ -5,6 +5,7 @@ import os
 
 from .Base import Base
 
+
 class YamlConfig(Base):
     def __init__(self, root_node=None):
         super().__init__()
@@ -46,7 +47,8 @@ class YamlConfig(Base):
     def get(self, path):
         parts = path.split('.')
         for x in parts:
-            if not x: del x
+            if not x:
+                del x
 
         current = self.config
         for part in parts:
@@ -60,7 +62,8 @@ class YamlConfig(Base):
     def set(self, path, value):
         parts = path.split('.')
         for x in parts:
-            if not x: del x
+            if not x:
+                del x
 
         current = self.config
         last_part = None

@@ -11,9 +11,9 @@ products = {}
 class Product(object):
     def __init__(self, name, versions, modules, **kw):
         global products
-        self.aliases=kw.pop('aliases', list())
+        self.aliases = kw.pop('aliases', list())
         if type(self.aliases) != list:
-            self.aliases = [ self.aliases ]
+            self.aliases = [self.aliases]
 
         self.name_only = kw.pop('name_only', False)
         if self.name_only:
@@ -36,30 +36,26 @@ class Product(object):
                 for m in self.modules:
                     setattr(m, key, kw[k])
 
-
     def get_module_list(self):
         names = []
         for m in self.modules:
             names.append(m.name)
         return names
 
-
     def get_module(self, name):
         for module in self.modules:
             if module.name == name:
                 return module
-        raise WorkAreaError('No such module {}/{}',format(self.name, name))
-
+        raise WorkAreaError('No such module {}/{}'.format(self.name, name))
 
     def get_profile(self, branch, version):
         if self.profile:
             if '%' in self.profile:
-                return self.profile % { 'branch': branch, 'version' : version }
+                return self.profile % {'branch': branch, 'version': version}
             else:
                 return self.profile.format(branch=branch, version=version)
         else:
             return None
-
 
     def __str__(self):
         if self.name_only:
@@ -67,7 +63,6 @@ class Product(object):
         else:
             version_str = ' versions=' + str(self.versions)
         return 'Product: name=' + self.name + version_str + ' modules=' + str(self.get_module_list())
-
 
 
 def get_product(name, version):
@@ -80,7 +75,7 @@ def get_product(name, version):
             if dot_pos > 0:
                 version = version[:dot_pos]
             else:
-                break;
+                break
             if (name, version) in products:
                 return products[(name, version)]
         try:

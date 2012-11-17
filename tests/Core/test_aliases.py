@@ -5,9 +5,9 @@ from DWA.Config.YamlConfig import YamlConfig
 
 class TestAliases(unittest.TestCase):
     def setUp(self):
-        self.alias_config = { 'apple' : 'pine', 'shellfunc' : '!command with args'}
+        self.alias_config = {'apple': 'pine', 'shellfunc': '!command with args'}
         self.config = YamlConfig()
-        self.config.set_config({'dwa' : {'alias' : self.alias_config }})
+        self.config.set_config({'dwa': {'alias': self.alias_config}})
         self.tested = Aliases(self.config)
 
     def testGetAvailableAliasesSameAsExpected(self):

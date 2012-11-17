@@ -6,6 +6,7 @@ from DWA.Core.CommandRegistry import CommandRegistry, CommandRegistryException, 
     ClassDescriptorWithModuleAndClassName, ClassDescriptorWithConcreteClass,\
     ClassNotFoundException
 
+
 class Command1:
     pass
 

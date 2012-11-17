@@ -2,6 +2,7 @@
 
 #from Revision import Revision
 
+
 class Module(object):
     def __init__(self, scm, directory, name, **kw):
         self.scm = scm
@@ -13,7 +14,6 @@ class Module(object):
         self.skip_tags = ''
 
         self.__dict__.update(kw)
-
 
     def get_definition(self):
         res = self.__class__.__name__ + "('%s', '%s'" % (self.directory, self.name)
@@ -27,10 +27,8 @@ class Module(object):
         res += ')'
         return res
 
-
     def __str__(self):
         return "{}/{}".format(self.directory, self.name)
-
 
     def get_module_instance(self, branch, version, work_area):
         raise NotImplementedError

@@ -36,8 +36,8 @@ class TestFrontControllerBasics(unittest.TestCase):
         self.tested = FrontController(self.command_registry)
 
     def testGetCommandNameReturnsFirstMemberOList(self):
-        self.assertEquals(self.tested._get_command_name(['foo']), 'foo' )
-        self.assertEquals(self.tested._get_command_name(['foo', 'bar']), 'foo' )
+        self.assertEquals(self.tested._get_command_name(['foo']), 'foo')
+        self.assertEquals(self.tested._get_command_name(['foo', 'bar']), 'foo')
 
     def testGetCommandNameFailsOnNonEmptyArray(self):
         self.assertRaises(DWAException, self.tested._get_command_name, [])
@@ -72,6 +72,7 @@ class TestFrontCollerWithoutAliases(unittest.TestCase, CustomRegistration):
 
     def testCreateAndPerformPassesArgsProperly(self):
         done = False
+
         class TestCommand(BasicCommand):
             tester = self
 
@@ -95,8 +96,8 @@ class TestFrontCollerWithAliases(unittest.TestCase, CustomRegistration):
     def setUp(self):
         self.command_registry = CommandRegistry()
         self.main_config = YamlConfig()
-        self.alias_config = { 'apple' : 'testcls p1', 'shellfunc' : '!command with args'}
-        self.main_config.set_config({ 'dwa' :  { 'alias' :  self.alias_config }})
+        self.alias_config = {'apple': 'testcls p1', 'shellfunc': '!command with args'}
+        self.main_config.set_config({'dwa': {'alias': self.alias_config}})
         self.aliases = Aliases(self.main_config)
         self.tested = FrontController(self.command_registry, self.aliases)
         self.register_command_class("cmd1", Command1)
@@ -114,6 +115,7 @@ class TestFrontCollerWithAliases(unittest.TestCase, CustomRegistration):
 
     def testAliasOfCommand(self):
         done = False
+
         class TestCommand(BasicCommand):
             tester = self
 
@@ -131,6 +133,7 @@ class TestFrontCollerWithAliases(unittest.TestCase, CustomRegistration):
 
     def testShellAlias(self):
         self.assertEqual(self.tested.process_args(['shellfunc']), 1, 'Bad return value of shell alias')
+
 
 class TestEmptyFrontController(unittest.TestCase):
     def setUp(self):

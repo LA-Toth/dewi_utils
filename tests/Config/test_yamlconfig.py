@@ -9,7 +9,7 @@ from DWA.Core.State import get_dir
 class TestYamlConfig(unittest.TestCase):
     def setUp(self):
         self.tested = YamlConfig()
-        self.config = { 'a' : 3 , 'b' : 43, 'd' : { 'foo' : 1, 'bar': [4, 5]}}
+        self.config = {'a': 3, 'b': 43, 'd': {'foo': 1, 'bar': [4, 5]}}
 
     def testSaveAndOpenWorks(self):
         (handle, filename) = tempfile.mkstemp(prefix="dwa_test_yml_", text=True)
@@ -55,7 +55,7 @@ class TestYamlConfig(unittest.TestCase):
     def testSetter(self):
         self.tested.set('foo.bar.baz', self.config)
         self.assertSequenceEqual(self.config, self.tested.get('foo.bar.baz'), "Setting failed")
-        self.assertSequenceEqual({ 'bar' : { 'baz' : self.config }}, self.tested.get('foo'))
+        self.assertSequenceEqual({'bar': {'baz': self.config}}, self.tested.get('foo'))
         self.assertEqual(1, len(self.tested.config))
 
     def testEmptyFileLoadedAsDict(self):

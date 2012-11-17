@@ -18,4 +18,3 @@ Product('name-only-sample', ['*'], [
         depends='gcc',
         name_only=True,
        )
-

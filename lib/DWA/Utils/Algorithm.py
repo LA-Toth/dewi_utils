@@ -1,5 +1,6 @@
 # vim: sts=4 ts=8 et ai
 
+
 def qsort(lst, func=None):
     if len(lst) <= 1:
         return lst
@@ -78,14 +79,14 @@ def levenhstein(str1, str2, w, a, s, d):
     len1 = len(str1)
     len2 = len(str2)
     l = len1
-    row0=[0] * (len2 + 1)
-    row1=[0] * (len2 + 1)
-    row2=[0] * (len2 + 1)
+    row0 = [0] * (len2 + 1)
+    row1 = [0] * (len2 + 1)
+    row2 = [0] * (len2 + 1)
 
     if len2 > l:
         l = len2
 
-    for i in range(0,len2 + 1):
+    for i in range(0, len2 + 1):
         row1[i] = i * a
 
     for i in range(0, len1):
@@ -101,13 +102,13 @@ def levenhstein(str1, str2, w, a, s, d):
             if (i > 0 and j > 0 and str1[i - 1] == str2[j] and  \
                         str1[i] == str2[j - 1] and \
                         row2[j + 1] > row0[j - 1] + w):
-                row2[j + 1] = row0[j -1] + w
+                row2[j + 1] = row0[j - 1] + w
             # deletion
-            if row2[j + 1] > row1[j + 1 ] + d:
-                row2[j+1] = row1[j + 1] + d
+            if row2[j + 1] > row1[j + 1] + d:
+                row2[j + 1] = row1[j + 1] + d
             # insertion
             if row2[j + 1] > row2[j] + a:
-                row2[j+1] = row2[j] + a
+                row2[j + 1] = row2[j] + a
 
         dummy = list(row0)
         row0 = row1
@@ -125,7 +126,6 @@ def get_similar_names_to(name, possible_names, max_result_count=6, w=0, a=2, s=1
     for current_name in possible_names:
         distances[current_name] = levenhstein(name, current_name, w, a, s, d)
 
-
     def levenshtein_compare(s1, s2):
         nonlocal distances
         l1 = distances[s1]
@@ -141,7 +141,7 @@ def get_similar_names_to(name, possible_names, max_result_count=6, w=0, a=2, s=1
     n = 1
     l = len(sorted_names)
     while (n < l and best_similarity == distances[sorted_names[n]]):
-        n=n+1
+        n = n + 1
 
     similar_names = list()
     if n < max_result_count:

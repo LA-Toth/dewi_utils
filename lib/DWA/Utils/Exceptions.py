@@ -5,11 +5,11 @@ import traceback
 
 from DWA.Utils.Format import add_frame
 
+
 def format_exception(with_traceback=False):
     einfo = sys.exc_info()
     tb_str = 'An exception occured:\n  Type: %s\n  Message: %s\n\n' % \
              (einfo[0].__name__, einfo[1])
-
 
     tb = traceback.extract_tb(einfo[2])
     for t in tb:

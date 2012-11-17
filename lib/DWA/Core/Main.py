@@ -50,7 +50,7 @@ For details see the manual page of the commands and the %(progname)s itself:
   %(progname)s -h
   %(progname)s <command> --help
   %(progname)s help <command>
-""" % { 'progname' : prog_name }
+""" % {'progname': prog_name}
 
 
 def __get_parsed_args(args):
@@ -58,16 +58,15 @@ def __get_parsed_args(args):
                                      usage='%(prog)s [options] [command [command-args]]',
                                      add_help=False)
     parser.add_argument("-h", action="help", help="Show this help message and exit")
-    parser.add_argument("--help", action="store_true", dest='help', help='Show manual page');
-    #parser.add_argument('-l', '--list', action='store_true', dest='list_commands', help='List available commands');
+    parser.add_argument("--help", action="store_true", dest='help', help='Show manual page')
+    #parser.add_argument('-l', '--list', action='store_true', dest='list_commands', help='List available commands')
     #parser.add_argument('-L', '--list-all', action='store_true', dest='list_all_commands',
-    #                    help='List available commands, including commands within zwa tools');
+    #                    help='List available commands, including commands within zwa tools')
     #parser.add_argument('-N', '--notify-script', dest='notify_script', help='Run notification script before exit')
     #parser.add_argument('-n', '--notify', action='store_true', dest='notify', help='Run built-in notification before exit (if -N is not used)')
     parser.add_argument('command_and_args', nargs=argparse.REMAINDER,
                         help='Command to be run with its options and arguments')
     return parser.parse_args(args)
-
 
 
 def __print_similar_names(values):
