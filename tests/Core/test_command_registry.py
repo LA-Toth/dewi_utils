@@ -65,7 +65,7 @@ class CommandRegistryTest(unittest.TestCase):
     def test_class_descriptors_get_class_is_not_implemented(self):
         descriptor = ClassDescriptor()
         self.assertRaises(NotImplementedError, descriptor.get_class)
-      
+
     def test_class_descriptor_with_module_name_only_returns_class_with_same_name(self):
         descriptor = ClassDescriptorWithModuleName(__name__)
         self.assertEqual(test_command_registry, descriptor.get_class())
@@ -85,10 +85,10 @@ class CommandRegistryTest(unittest.TestCase):
     def test_class_descriptor_with_module_name_and_cmd_class_throws_exception_when_class_not_found(self):
         descriptor = ClassDescriptorWithModuleNameAndCmdclassMember('os')
         self.assertClassNotFound(descriptor.get_class)
-        
+
     def test_class_descriptor_with_concrete_class_returns_expected_class(self):
         class LocalCommand(object):
             pass
-        
+
         descriptor = ClassDescriptorWithConcreteClass(LocalCommand)
         self.assertEqual(LocalCommand, descriptor.get_class())
