@@ -1,0 +1,80 @@
+HOW TO USE PLUGINS
+==================
+
+1. What is a plugin?
+
+A plugin is an extension to DWA, which has a descriptor file containing
+information how to integrate into DWA. It is represented as a directory
+and its contents.
+
+The content next to the configuration file is one or more commands which
+are treated as they would be in the core DWA code. Next to these commands
+further modules may be, for the purpose to split what the command does
+and how it does. As a trivial example, the command prints the current
+formatted local time, but another module has the function to format it.
+
+Next to the commands additional extensions may be, such as another build
+system, which functionality is basically the same as the autotools
+'./configure && make && make install' command, with helper functions
+for releasing a product (module, code).
+
+2. Recommended plugin directory layout
+
+It's really just recommended because for the more flexibility almost
+nothing is restricted.
+
+A typical plugin directory have to subdirectories, etc/ and lib/. The first
+directory contains the configuration file and the second contains the whole
+python source code. This directory will be added to the python's path.
+Everything else is not in the scope of this text.
+
+The etc/ directory is mandatory, the source directory is configurable.
+The configuration file must be named as plugin.yml.
+
+Thus, the layout is:
+<root-directory-of-plugin>/
+  |- etc/
+  |   |- plugin.yml
+  |   \- <optionally other files and directories>
+  |
+  |- <python source directory>/
+  \- <optionally other files and directories>
+
+3. The configuration file
+
+The location is: <root-directory-of-plugin>/etc/plugin.yml
+The format is YaML, see http://yaml.org/ for details.
+
+3.1. An example configuration file
+
+There is an example file, which will be discussed later.
+
+name: 'my plugin'
+author: 'John Smith'
+email: 'john.smith@example.com'
+source:
+    basedirectory: 'lib/'
+    commandmodule:
+        name: 'MyPlugin.Commands'
+        type: MODULE_AND_CLASS_HAS_SAME_NAME
+        mandirectory: 'doc/man/source/'
+
+3.2. Description of the fields used in configuration file
+
+- name: the name of the plugin
+- author: the author of the plugin
+- email: the email address of the author
+- source: this field describes how to integrat the plugin into DWA.
+- source/basedierectory: the directory that contains the python code
+- source/commandmodule: describes the location of the commands
+- source/commandmodule/name: the name of the command module.
+    It's a valid Python module name. In the previous example the location is
+    in directory <root-directory-of-plugin>/lib/MyPlugin/Commands
+- source/commandmodule/type: the type of the module, which indicates
+    how to figure out the actual commands. It has two values:
+    - MODULE_AND_CLASS_HAS_SAME_NAME: for instance,
+        the command class is LocaltimeCommand. Thus, the module that
+        contains it is LocaltimeCommand, or, as an absolute name
+        the module is MyPlugin.Commands.LocaltimeCommand.
+    - SEPARATED_MODULES: each command is in a separate module,
+        which contains all information, including man pages.

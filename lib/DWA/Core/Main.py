@@ -83,6 +83,9 @@ def __print_similar_names(values):
 
 
 def __main(args):
+    import DWA.Core.State as State
+    State.initialize()
+
     if not os.isatty(1):
         sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
         sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
@@ -105,6 +108,7 @@ def __main(args):
     import DWA.Commands as cmds
     # Avoid warning icon in eclipse
     cmds.loaded = True
+    State.plugin_registry.load_plugins()
     controller = FrontController()
     command_found, value = controller.process_args(parsed_args.command_and_args)
     if command_found:

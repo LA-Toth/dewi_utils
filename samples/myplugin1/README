@@ -1,0 +1,3 @@
+This example contains a plugin that have two modules, one is a command
+that prints a string, and one is that has a function to get that string.
+The string is simply the "Hello World".
