@@ -44,7 +44,7 @@ class YamlConfig(Base):
     def set_program_config(self, path, value):
         return self.set(self.root_node + path, value)
 
-    def get(self, path):
+    def get(self, path, default_value=None):
         parts = path.split('.')
         for x in parts:
             if not x:
@@ -55,7 +55,7 @@ class YamlConfig(Base):
             try:
                 current = current[part]
             except KeyError:
-                return None
+                return default_value
 
         return current
 

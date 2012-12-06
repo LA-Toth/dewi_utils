@@ -63,3 +63,10 @@ class TestYamlConfig(unittest.TestCase):
         self.tested.open(filename)
         self.assertDictEqual(dict(), self.tested.get_config())
         os.close(handle)
+
+    def testGetWithDefaultParameter(self):
+        self.assertEquals(42, self.tested.get('foobar', 42))
+        self.assertIsNone(self.tested.get('foobar'))
+        self.tested.set('foobar', 3)
+        self.assertNotEqual(42, self.tested.get('foobar', 42))
+        self.assertEqual(3, self.tested.get('foobar'))
