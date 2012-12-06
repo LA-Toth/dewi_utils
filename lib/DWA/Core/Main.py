@@ -105,9 +105,11 @@ def __main(args):
         sys.exit(0)
 
     import DWA.Commands as cmds
-    # Avoid warning icon in eclipse
-    cmds.loaded = True
-    State.plugin_registry.load_plugins()
+    if not os.path.exists(Dirs.get_dir('/lib/DWA/Var/commandlist.py')):
+        cmds.register_selfupdate_command()
+    else:
+        from DWA.Var.commandlist import load_commands
+        load_commands()
     controller = FrontController()
     command_found, value = controller.process_args(parsed_args.command_and_args)
     if command_found:

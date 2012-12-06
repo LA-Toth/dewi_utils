@@ -28,7 +28,7 @@ class PluginTest(unittest.TestCase):
         self.__plugin_name = "plugname"
         self.__plugin_location = "/tmp"
         self.__plugin_basepath = 'lib/'
-        self.tested = Plugin(self.__registry, self.__plugin_name, self.__plugin_location,  self.__plugin_basepath)
+        self.tested = Plugin(self.__registry, self.__plugin_name, self.__plugin_location, self.__plugin_basepath)
 
     def test_name_config_and_location(self):
         self.assertEqual(self.__plugin_name, self.tested.get_name())
