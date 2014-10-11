@@ -11,9 +11,5 @@ __pycache__
 *.orig
 *.rej
 
-# Some concrate directory or file of DWA
-/etc/product_list.py
-/var
-/lib/DWA/Var/*.py
-/etc/plugins/activated/*.yml
-/etc/plugins/available/*.yml
+# Default directory for './setup.py build'
+/build
