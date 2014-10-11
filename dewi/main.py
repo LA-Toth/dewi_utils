@@ -1,2 +1,5 @@
+def myprint(*args, **kwargs):
+    print(args, kwargs)
+
 def main():
-    print("DEWI is started")
+    myprint("DEWI is started")
