@@ -1,5 +1,12 @@
 include Makefile.vars
 
+.PHONY: help
+help:
+	@echo "Help"
+
+.PHONY: check
+check: tests cs
+
 .PHONY: tests
 tests:
 	$(NOSE) -s $(NOSE_TEST_PATHS)
