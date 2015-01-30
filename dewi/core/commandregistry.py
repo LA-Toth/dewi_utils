@@ -30,7 +30,7 @@ class ClassDescriptorWithModuleAndClassName(ClassDescriptor):
     Both the module name and the command class name are specified
     """
     def __init__(self, module_name: str, class_name: str):
-        super(ClassDescriptorWithModuleAndClassName, self).__init__()
+        super().__init__()
         self._module_name = module_name
         self._class_name = class_name
 
@@ -53,7 +53,7 @@ class ClassDescriptorWithModuleName(ClassDescriptorWithModuleAndClassName):
     """The module and the class has the same name (the module's last part at least)"""
 
     def __init__(self, module_name: str):
-        super(ClassDescriptorWithModuleName, self).__init__(module_name, module_name.split('.')[-1])
+        super().__init__(module_name, module_name.split('.')[-1])
 
     def get_name(self) -> str:
         return self.get_class().name
@@ -65,7 +65,7 @@ class ClassDescriptorWithModuleNameAndCmdclassMember(ClassDescriptorWithModuleAn
     stores the command class.
     """
     def __init__(self, module_name: str):
-        super(ClassDescriptorWithModuleNameAndCmdclassMember, self).__init__(module_name, 'commandclass')
+        super().__init__(module_name, 'command_class')
 
     def get_name(self) -> str:
         return self._get_module_object().name
@@ -76,7 +76,7 @@ class ClassDescriptorWithConcreteClass(ClassDescriptor):
     This descriptor stores the class itself, mainly used for testing.
     """
     def __init__(self, class_object: Command):
-        super(ClassDescriptorWithConcreteClass, self).__init__()
+        super().__init__()
         self.class_object = class_object
 
     def get_class(self) -> Command:
