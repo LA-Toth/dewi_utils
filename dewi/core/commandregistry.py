@@ -7,7 +7,11 @@ class CommandRegistryException(Exception):
     pass
 
 
-class ClassNotFoundException(CommandRegistryException):
+class ClassNotFound(CommandRegistryException):
+    pass
+
+
+class ClassIsNotSubclassOfCommand(Exception):
     pass
 
 
@@ -39,7 +43,7 @@ class ClassDescriptorWithModuleAndClassName(ClassDescriptor):
         try:
             return getattr(module, self._class_name)
         except AttributeError:
-            raise ClassNotFoundException("Invalid class or attribute: {0}".format(self._class_name))
+            raise ClassNotFound("Invalid class or attribute: {0}".format(self._class_name))
 
     def _get_module_object(self):
         __import__(self._module_name)
@@ -59,7 +63,7 @@ class ClassDescriptorWithModuleName(ClassDescriptorWithModuleAndClassName):
         return self.get_class().name
 
 
-class ClassDescriptorWithModuleNameAndCmdclassMember(ClassDescriptorWithModuleAndClassName):
+class ClassDescriptorWithModuleNameAndCommandClassMember(ClassDescriptorWithModuleAndClassName):
     """
     The command is in a module that have specific layout, its __init__.py has commandlcass member. This member
     stores the command class.
@@ -67,15 +71,15 @@ class ClassDescriptorWithModuleNameAndCmdclassMember(ClassDescriptorWithModuleAn
     def __init__(self, module_name: str):
         super().__init__(module_name, 'command_class')
 
-    def get_name(self) -> str:
-        return self._get_module_object().name
-
 
 class ClassDescriptorWithConcreteClass(ClassDescriptor):
     """
     This descriptor stores the class itself, mainly used for testing.
     """
-    def __init__(self, class_object: Command):
+    def __init__(self, class_object: type):
+        if not issubclass(class_object, Command):
+            raise ClassIsNotSubclassOfCommand(
+                    'The {} class is not subclass of dewi.core.command.Command'.format(class_object.__name__))
         super().__init__()
         self.class_object = class_object
 

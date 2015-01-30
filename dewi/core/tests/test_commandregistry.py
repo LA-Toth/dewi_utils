@@ -1,8 +1,9 @@
+from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry, CommandRegistryException, ClassDescriptor,\
     ClassDescriptorWithModuleName,\
-    ClassDescriptorWithModuleNameAndCmdclassMember,\
+    ClassDescriptorWithModuleNameAndCommandClassMember,\
     ClassDescriptorWithModuleAndClassName, ClassDescriptorWithConcreteClass,\
-    ClassNotFoundException
+    ClassNotFound, ClassIsNotSubclassOfCommand
 
 import dewi.tests
 
@@ -11,18 +12,18 @@ import dewi.tests
 
 
 class Command1:
-    pass
+    name = 'command-1'
 
 
 class Command2:
-    pass
+    name = 'command-2'
 
 
 class test_commandregistry:  # pylint: disable=C0103
-    pass
+    name = 'test-command-registry'
 
 
-commandclass = Command2  # pylint: disable=C0103
+command_class = Command2  # pylint: disable=C0103
 
 
 class CommandRegistryTest(dewi.tests.TestCase):
@@ -34,7 +35,7 @@ class CommandRegistryTest(dewi.tests.TestCase):
         self.assert_raises(CommandRegistryException, *args)
 
     def assert_class_not_found(self, *args):
-        self.assert_raises(ClassNotFoundException, *args)
+        self.assert_raises(ClassNotFound, *args)
 
     def test_initialized_as_empty(self):
         self.assert_equal(self.tested.get_command_count(), 0, "Freshly created command registry is non-empty")
@@ -70,29 +71,43 @@ class CommandRegistryTest(dewi.tests.TestCase):
         descriptor = ClassDescriptor()
         self.assert_raises(NotImplementedError, descriptor.get_class)
 
+    def test_class_descriptors_get_name_is_not_implemented(self):
+        descriptor = ClassDescriptor()
+        self.assert_raises(NotImplementedError, descriptor.get_name)
+
     def test_class_descriptor_with_module_name_only_returns_class_with_same_name(self):
         descriptor = ClassDescriptorWithModuleName(__name__)
         self.assert_equal(test_commandregistry, descriptor.get_class())
+        self.assert_equal('test-command-registry', descriptor.get_name())
 
     def test_class_descriptor_with_module_name_and_class_name_returns_expected_class(self):
         descriptor = ClassDescriptorWithModuleAndClassName(__name__, 'Command1')
         self.assert_equal(Command1, descriptor.get_class())
+        self.assert_equal('command-1', descriptor.get_name())
 
     def test_class_descriptor_with_module_name_and_class_name_throws_exception_when_class_not_found(self):
         descriptor = ClassDescriptorWithModuleAndClassName(__name__, 'Command123243')
         self.assert_class_not_found(descriptor.get_class)
 
-    def test_class_descriptor_with_module_name_and_cmdclass_returns_expected_class(self):
-        descriptor = ClassDescriptorWithModuleNameAndCmdclassMember(__name__)
+    def test_class_descriptor_with_module_name_and_command_class_returns_expected_class(self):
+        descriptor = ClassDescriptorWithModuleNameAndCommandClassMember(__name__)
         self.assert_equal(Command2, descriptor.get_class())
+        self.assert_equal('command-2', descriptor.get_name())
 
-    def test_class_descriptor_with_module_name_and_cmd_class_throws_exception_when_class_not_found(self):
-        descriptor = ClassDescriptorWithModuleNameAndCmdclassMember('os')
+    def test_class_descriptor_with_module_name_and_command_class_throws_exception_when_class_not_found(self):
+        descriptor = ClassDescriptorWithModuleNameAndCommandClassMember('os')
         self.assert_class_not_found(descriptor.get_class)
 
     def test_class_descriptor_with_concrete_class_returns_expected_class(self):
-        class LocalCommand(object):
-            pass
+        class LocalCommand(Command):
+            name = 'local-command'
 
         descriptor = ClassDescriptorWithConcreteClass(LocalCommand)
         self.assert_equal(LocalCommand, descriptor.get_class())
+        self.assert_equal('local-command', descriptor.get_name())
+
+    def test_class_descriptor_with_concrete_class_rejects_non_subclass_of_command(self):
+        class LocalCommand:
+            pass
+
+        self.assert_raises(ClassIsNotSubclassOfCommand, ClassDescriptorWithConcreteClass, LocalCommand)
