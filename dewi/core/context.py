@@ -1,5 +1,6 @@
 # Copyright 2015 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+import collections
 
 
 class ContextError(Exception):
@@ -14,7 +15,7 @@ class ContextEntryAlreadyRegistered(ContextError):
     pass
 
 
-class Context:
+class Context(collections.Mapping):
     """
     A context is a generic purpose registry, which helps
     communicate between different parts of the code. Instead of a global variable
@@ -58,3 +59,9 @@ class Context:
         self.__check_entry(item)
 
         return self.__entries[item]
+
+    def __contains__(self, item):
+        return item in self.__entries
+
+    def __iter__(self):
+        return iter(self.__entries)
