@@ -86,3 +86,7 @@ class PluginLoader:
             dependencies = dependency_graph[name]
             self.__build_dependency_list(dependency_graph, visited_nodes, dependency_list, dependencies)
             dependency_list.append(name)
+
+    @property
+    def loaded_plugins(self) -> frozenset:
+        return frozenset(self.__loaded_plugins)

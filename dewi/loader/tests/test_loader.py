@@ -141,3 +141,16 @@ class TestLoader(dewi.tests.TestCase):
         self.assert_raises(
             PluginLoaderError,
             self.loader.load, {'dewi.loader.tests.test_loader.TestPluginO1'})
+
+    def test_loaded_plugin_property(self):
+        self.assert_equal(set(), self.loader.loaded_plugins)
+        self.loader.load({'dewi.loader.tests.test_loader.TestPlugin3'})
+        self.assert_equal(
+            {
+                'dewi.loader.tests.test_loader.TestPlugin3',
+                'dewi.loader.tests.test_loader.TestPlugin1',
+                'dewi.loader.tests.test_loader.TestPlugin2a',
+                'dewi.loader.tests.test_loader.TestPlugin2b',
+            },
+            self.loader.loaded_plugins
+        )
