@@ -3,7 +3,6 @@ Feature: Using plugins to create actually running application
   In order to influence the behaviour of the program
   I want to specify the loaded plugins
 
-    @wip
     Scenario: a plugin from Dewi can be loaded
       Given a predefined plugin loader
        When a plugin is loaded
