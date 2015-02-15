@@ -34,3 +34,11 @@ codingstandards: pep8
 .PHONY: pep8
 pep8:
 	$(PEP8) --ignore=E501,E126,E241,E121 --repeat $(PACKAGE_NAMES)
+
+.PHONY: features
+features:
+	PYTHONPATH=features:$(PYTHONPATH) $(BEHAVE) --tags=-wip
+
+.PHONY: features-wip
+features-wip:
+	PYTHONPATH=features:$(PYTHONPATH) $(BEHAVE) --tags=wip
