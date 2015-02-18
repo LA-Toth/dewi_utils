@@ -102,6 +102,9 @@ class CommandRegistryTest(dewi.tests.TestCase):
         class LocalCommand(Command):
             name = 'local-command'
 
+            def perform(self, args):
+                pass
+
         descriptor = ClassDescriptorWithConcreteClass(LocalCommand)
         self.assert_equal(LocalCommand, descriptor.get_class())
         self.assert_equal('local-command', descriptor.get_name())
