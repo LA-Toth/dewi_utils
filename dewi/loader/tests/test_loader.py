@@ -116,6 +116,11 @@ class TestLoader(dewi.tests.TestCase):
             PluginLoaderError,
             self.loader.load, {'dewi.loader.tests42.test_loader.TestPluginThatWillNeverExist'})
 
+    def test_load_plugin_without_module_name(self):
+        self.assert_raises(
+            PluginLoaderError,
+            self.loader.load, {'J316'})
+
     def test_load_plugin_with_single_dependency(self):
         context = self.loader.load({'dewi.loader.tests.test_loader.TestPlugin2a'})
         self.assert_equal(12, context['plugin2a'])

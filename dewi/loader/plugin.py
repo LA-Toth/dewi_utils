@@ -6,6 +6,9 @@ from dewi.core.context import Context
 
 
 class Plugin:
+    """
+    A plugin is an extension of DEWI.
+    """
 
     def get_description(self) -> str:
         raise NotImplementedError

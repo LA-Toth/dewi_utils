@@ -40,11 +40,10 @@ class PluginLoader:
         return self.__loaded_plugins[name]
 
     def __load_plugin(self, name: str):
-        module_name, class_name = name.rsplit('.', 1)
-
         try:
+            module_name, class_name = name.rsplit('.', 1)
             module = importlib.import_module(module_name)
-        except ImportError:
+        except (ImportError, ValueError):
             raise PluginLoaderError("Plugin '{}' is not found".format(name))
 
         try:
