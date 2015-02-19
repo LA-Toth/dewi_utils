@@ -8,3 +8,7 @@ Feature: Using plugins to create actually running application
        When a plugin is loaded
        Then the plugin is listed in the registered plugins
         And its load() method is called
+
+    Scenario: load the sample command plugin as command line
+       When the 'sample' command is run from the sample plugin
+       Then the application exit status is 42
