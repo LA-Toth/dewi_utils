@@ -1,6 +1,6 @@
 Feature: Using plugins to create actually running application
-  As a user
-  In order to influence the behaviour of the program
+  As a DEWI user
+  In order to influence the behaviour of Dewi
   I want to specify the loaded plugins
 
     Scenario: a plugin from Dewi can be loaded
