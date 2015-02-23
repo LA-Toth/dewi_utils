@@ -2,23 +2,38 @@ include Makefile.vars
 
 .PHONY: help
 help:
-	@echo "Help"
+	@echo "Available common targets:"
+	@echo "check            --- check everything"
+	@echo "all              --- check everything, alias of check"
+	@echo "pytests          --- run Python unit tests"
+	@echo "cs               --- run coding standards checks"
+	@echo "pylint           --- run pylint checks only"
+	@echo "pep8             --- run pep8 checks only"
+	@echo "features         --- run behave scenarios without @wip tag"
+	@echo "features-wip     --- run behave scenarios with @wip tag"
+
+.PHONY: all
+all: check
+
 
 .PHONY: check
-check: tests cs
+check: cs pytests features
 
-.PHONY: tests
-tests:
+.PHONY: pytests
+pytests:
+	@echo Running Python unit tests
 	$(NOSE) -s $(NOSE_TEST_PATHS)
 
 .PHONY: cs
 cs: pep8
+	@echo Runing pylint
 	export PYLINTHOME=$(PYLINT_DIR)
 	mkdir -p $(PYLINT_DIR)
 	PYTHONPATH=".:$(PYTHONPATH)" $(PYLINT) --rcfile=.pylintrc $(PACKAGE_NAMES)
 
 .PHONY: codingstandards
 codingstandards: pep8
+	@echo Running pylint with reports
 	export PYLINTHOME=$(PYLINT_DIR)
 	mkdir -p $(PYLINT_DIR)
 	PYTHONPATH=".:$(PYTHONPATH)" $(PYLINT) --report=yes --rcfile=.pylintrc $(PACKAGE_NAMES)
@@ -33,12 +48,15 @@ codingstandards: pep8
 # E121  continuation line indentation is not a multiple of four   This is not a problem locally, helps readability
 .PHONY: pep8
 pep8:
+	@echo Running pep8
 	$(PEP8) --ignore=E501,E126,E241,E121 --repeat $(PACKAGE_NAMES)
 
 .PHONY: features
 features:
+	@echo Running feature specifications - non-wip scenarios
 	PYTHONPATH=features:$(PYTHONPATH) $(BEHAVE) --tags=-wip
 
 .PHONY: features-wip
 features-wip:
+	@echo Running feature specifications - wip scenarios
 	PYTHONPATH=features:$(PYTHONPATH) $(BEHAVE) --tags=wip
