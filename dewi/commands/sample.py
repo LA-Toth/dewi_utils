@@ -14,9 +14,7 @@ class SampleCommand(Command):
 
 class SamplePlugin(Plugin):
     def load(self, c: Context):
-        c['commandregistry'].register_command_class(
-            SampleCommand.name,
-            ClassDescriptorWithConcreteClass(SampleCommand))
+        c['commands'].register_class(SampleCommand)
 
     def get_description(self) -> str:
         return "plugin description"
