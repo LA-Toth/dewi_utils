@@ -3,7 +3,7 @@ from dewi.core.commandregistry import CommandRegistry, CommandRegistryException,
     ClassDescriptorWithModuleName,\
     ClassDescriptorWithModuleNameAndCommandClassMember,\
     ClassDescriptorWithModuleAndClassName, ClassDescriptorWithConcreteClass,\
-    ClassNotFound, ClassIsNotSubclassOfCommand
+    ClassNotFound, ClassIsNotSubclassOfCommand, CommandRegistrar
 
 import dewi.tests
 
@@ -114,3 +114,39 @@ class CommandRegistryTest(dewi.tests.TestCase):
             pass
 
         self.assert_raises(ClassIsNotSubclassOfCommand, ClassDescriptorWithConcreteClass, LocalCommand)
+
+
+class TestCommandRegistrar(dewi.tests.TestCase):
+
+    def set_up(self):
+        self.__registry = CommandRegistry()
+        self.__registrar = CommandRegistrar(self.__registry)
+
+    def test_registration_of_a_simple_command(self):
+        class LocalCommand(Command):
+            name = 'local-command'
+
+            def perform(self, args):
+                pass
+
+        self.__registrar.register_class(LocalCommand)
+        self.assert_equal(1, self.__registry.get_command_count())
+        self.assert_equal(['local-command'], self.__registry.get_command_names())
+        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('local-command').get_class())
+
+    def test_registration_of_a_command_with_aliases(self):
+        class LocalCommand(Command):
+            name = 'local-command'
+            aliases = ['lc', 'a', 'b42']
+
+            def perform(self, args):
+                pass
+
+        self.__registrar.register_class(LocalCommand)
+        self.assert_equal(4, self.__registry.get_command_count())
+        self.assert_equal({'local-command', 'a', 'b42', 'lc'}, set(self.__registry.get_command_names()))
+        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('local-command').get_class())
+        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('b42').get_class())
+
+    def test_registration_fails_if_not_a_command_is_registered(self):
+        self.assert_raises(ClassIsNotSubclassOfCommand, self.__registrar.register_class, CommandRegistry)

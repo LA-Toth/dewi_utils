@@ -120,3 +120,18 @@ class CommandRegistry(object):
 
     def get_command_names(self) -> collections.Sequence:
         return list(self.__registry.keys())
+
+
+class CommandRegistrar:
+    """
+    Wrap a CommandRegistry object for easier registration
+    """
+
+    def __init__(self, cr: CommandRegistry):
+        self.__registry = cr
+
+    def register_class(self, command_class: type):
+        desc = ClassDescriptorWithConcreteClass(command_class)
+        self.__registry.register_command_class(command_class.name, desc)
+        for alias in command_class.aliases:
+            self.__registry.register_command_class(alias, desc)
