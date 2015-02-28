@@ -1,3 +1,6 @@
+# Copyright 2012-2015 Laszlo Attila Toth
+# Distributed under the terms of the GNU General Public License v3
+
 from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry, CommandRegistryException, ClassDescriptor,\
     ClassDescriptorWithModuleName,\

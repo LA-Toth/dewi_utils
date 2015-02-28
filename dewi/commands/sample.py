@@ -1,3 +1,6 @@
+# Copyright 2015 Laszlo Attila Toth
+# Distributed under the terms of the GNU General Public License v3
+
 import collections
 from dewi.core.command import Command
 from dewi.core.commandregistry import ClassDescriptorWithConcreteClass
