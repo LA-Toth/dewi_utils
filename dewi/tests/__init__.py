@@ -1,4 +1,31 @@
+import io
 import unittest
+import sys
+
+
+def redirect_outputs(stdout=None, stderr=None):
+    class Redirection:
+        def __init__(self):
+            self.stdout = stdout or io.StringIO()
+            self.stderr = stderr or io.StringIO()
+
+            self.__saved_stdouts = []
+            self.__saved_stderrs = []
+
+        def __enter__(self):
+            self.__saved_stdouts.append(sys.stdout)
+            self.__saved_stderrs.append(sys.stderr)
+
+            sys.stdout = self.stdout
+            sys.stderr = self.stderr
+
+            return self
+
+        def __exit__(self, *args):
+            sys.stdout = self.__saved_stdouts.pop()
+            sys.stderr = self.__saved_stderrs.pop()
+
+    return Redirection()
 
 
 class TestCase(unittest.TestCase):
