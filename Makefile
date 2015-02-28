@@ -4,23 +4,18 @@ include Makefile.vars
 help:
 	@echo "Available common targets:"
 	@echo "check            --- check everything"
-	@echo "all              --- check everything, alias of check"
-	@echo "pytests          --- run Python unit tests"
+	@echo "tests            --- run Python unit tests"
 	@echo "cs               --- run coding standards checks"
 	@echo "pylint           --- run pylint checks only"
 	@echo "pep8             --- run pep8 checks only"
 	@echo "features         --- run behave scenarios without @wip tag"
 	@echo "features-wip     --- run behave scenarios with @wip tag"
 
-.PHONY: all
-all: check
-
-
 .PHONY: check
-check: cs pytests features
+check: cs tests features
 
-.PHONY: pytests
-pytests:
+.PHONY: tests
+tests:
 	@echo Running Python unit tests
 	$(NOSE) -s $(NOSE_TEST_PATHS)
 
