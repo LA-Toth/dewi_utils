@@ -1,5 +1,8 @@
 # Copyright 2015 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+
+import collections
+
 from dewi.core.commandregistry import CommandRegistry, CommandRegistrar
 from dewi.core.context import Context
 
@@ -10,6 +13,8 @@ class CorePlugin(Plugin):
     def get_description(self):
         return "Core features of DEWI"
 
+    def get_dependencies(self) -> collections.Iterable:
+        return ('dewi.core.commandregistry.CommandRegistryPlugin',)
+
     def load(self, c: Context):
-        c.register('commandregistry', CommandRegistry())
-        c.register('commands', CommandRegistrar(c['commandregistry']))
+        pass
