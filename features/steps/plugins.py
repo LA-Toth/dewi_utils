@@ -24,8 +24,11 @@ def assert_that_load_method_is_called(context):
 
 @when('the \'sample\' command is run from the sample plugin')
 def run_main_app_with_sample_command(context):
-    app = MainApplication()
-    context.result = app.run({'dewi.commands.sample.SamplePlugin'}, ['sample'])
+    app = MainApplication(PluginLoader(), 'dewi-features')
+    try:
+        app.run(['-p', 'dewi.commands.sample.SamplePlugin', 'sample'])
+    except SystemExit as exc:
+        context.result = exc.code
 
 
 @then('the application exit status is {exit_status}')

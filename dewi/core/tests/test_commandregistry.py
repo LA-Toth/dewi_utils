@@ -1,6 +1,8 @@
 # Copyright 2012-2015 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
+import argparse
+
 from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry, CommandRegistryException, ClassDescriptor,\
     ClassDescriptorWithModuleName,\
@@ -105,7 +107,7 @@ class CommandRegistryTest(dewi.tests.TestCase):
         class LocalCommand(Command):
             name = 'local-command'
 
-            def perform(self, args):
+            def run(self, args: argparse.Namespace):
                 pass
 
         descriptor = ClassDescriptorWithConcreteClass(LocalCommand)
@@ -129,7 +131,7 @@ class TestCommandRegistrar(dewi.tests.TestCase):
         class LocalCommand(Command):
             name = 'local-command'
 
-            def perform(self, args):
+            def run(self, args: argparse.Namespace):
                 pass
 
         self.__registrar.register_class(LocalCommand)
@@ -142,7 +144,7 @@ class TestCommandRegistrar(dewi.tests.TestCase):
             name = 'local-command'
             aliases = ['lc', 'a', 'b42']
 
-            def perform(self, args):
+            def run(self, args: argparse.Namespace):
                 pass
 
         self.__registrar.register_class(LocalCommand)

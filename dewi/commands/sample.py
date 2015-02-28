@@ -1,9 +1,9 @@
 # Copyright 2015 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
+import argparse
 import collections
 from dewi.core.command import Command
-from dewi.core.commandregistry import ClassDescriptorWithConcreteClass
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin
 
@@ -11,7 +11,7 @@ from dewi.loader.plugin import Plugin
 class SampleCommand(Command):
     name = 'sample'
 
-    def perform(self, args: collections.Iterable):
+    def run(self, ns: argparse.ArgumentParser):
         return 42
 
 
