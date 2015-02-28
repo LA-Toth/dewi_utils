@@ -42,7 +42,7 @@ class MainApplication:
     def run(self, args: collections.Iterable):
         app_ns = self.__parse_app_args(args)
 
-        plugins = app_ns.plugin
+        plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
         plugins.append('dewi.core.commandregistry.CommandRegistryPlugin')
         try:
             context = self.__loader.load(set(plugins))
