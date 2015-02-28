@@ -110,7 +110,7 @@ class TestMainApplication(dewi.tests.TestCase):
 
     def test_run_help_of_command(self):
         redirect = self.__invoke_application_redirected(
-            ['-p', 'test', '--', 'fake', '-h'],
+            ['-p', 'test', 'fake', '-h'],
             expected_exit_value=0)
         self.assert_in('myprogram fake [-h]', redirect.stdout.getvalue())
         self.assert_equal('', redirect.stderr.getvalue())

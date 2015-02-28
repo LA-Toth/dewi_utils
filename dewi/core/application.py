@@ -35,7 +35,7 @@ class MainApplication:
             default=[], action='append')
         parser.add_argument('command', nargs=1, help='Command to be run')
         parser.add_argument(
-            'commandargs', nargs='*', help='Additonal options and arguments of the specified command',
+            'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
             default=[],)
         return parser.parse_args(args)
 
