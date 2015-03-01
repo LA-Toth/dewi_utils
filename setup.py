@@ -52,7 +52,7 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Programming Language :: Python',
@@ -60,7 +60,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
-        'Topic :: Software Development :: Libraries :: Application Frameworks'
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Documentation :: Sphinx',
     ],
     zip_safe=True,

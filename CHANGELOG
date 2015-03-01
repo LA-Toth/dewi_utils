@@ -1,0 +1,6 @@
+0.1
+  - Initial release
+  - Supports / provide plugins and commands
+  - Added edit command, to easily open file with vim at a specific line,
+    the argument can be copied directly from anything which have similar
+    output as grep -nH ... | cut -f-2 -d:
