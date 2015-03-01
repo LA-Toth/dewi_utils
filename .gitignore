@@ -14,5 +14,7 @@ __pycache__
 *.orig
 *.rej
 
-# Default directory for './setup.py build'
+# Directories for ./setup.py
 /build
+/dist
+/*.egg-info
