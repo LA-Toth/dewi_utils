@@ -57,6 +57,7 @@ class MainApplication:
 
             command.register_arguments(parser)
             ns = parser.parse_args(app_ns.commandargs)
+            ns._running_command_ = command_name
             sys.exit(command.run(ns))
         except SystemExit:
             self.__wait_for_termination_if_needed(app_ns)
