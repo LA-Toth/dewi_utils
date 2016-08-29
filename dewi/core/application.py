@@ -1,4 +1,4 @@
-# Copyright 2015 Laszlo Attila Toth
+# Copyright 2015-2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
@@ -33,6 +33,7 @@ class MainApplication:
         parser.add_argument(
             '-p', '--plugin', help='Load this plugin. This option can be specified more than once.',
             default=[], action='append')
+        parser.add_argument('--wait', action='store_true', help='Wait for user input before terminating application')
         parser.add_argument('command', nargs=1, help='Command to be run')
         parser.add_argument(
             'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
@@ -58,9 +59,16 @@ class MainApplication:
             ns = parser.parse_args(app_ns.commandargs)
             sys.exit(command.run(ns))
         except SystemExit:
+            self.__wait_for_termination_if_needed(app_ns)
             raise
         except BaseException as exc:
             print(exc, file=sys.stderr)
+            self.__wait_for_termination_if_needed(app_ns)
             sys.exit(1)
 
         sys.exit(0)
+
+    def __wait_for_termination_if_needed(self, app_ns):
+        if app_ns.wait:
+            print("\nPress ENTER to continue")
+            input("")
