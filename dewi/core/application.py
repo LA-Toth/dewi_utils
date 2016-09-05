@@ -60,7 +60,7 @@ class MainApplication:
             command = command_class()
             parser = argparse.ArgumentParser(
                 description=command.description,
-                prog='{} {}'.format(self.__program_name, command.name))
+                prog='{} {}'.format(self.__program_name, command_name))
 
             command.register_arguments(parser)
             ns = parser.parse_args(app_ns.commandargs)
