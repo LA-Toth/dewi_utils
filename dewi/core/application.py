@@ -84,8 +84,6 @@ class MainApplication:
             self.__wait_for_termination_if_needed(app_ns)
             sys.exit(1)
 
-        sys.exit(0)
-
     def __wait_for_termination_if_needed(self, app_ns):
         if app_ns.wait:
             print("\nPress ENTER to continue")
