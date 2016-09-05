@@ -4,6 +4,7 @@
 import argparse
 import collections
 import sys
+import traceback
 
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader
@@ -34,6 +35,10 @@ class MainApplication:
             '-p', '--plugin', help='Load this plugin. This option can be specified more than once.',
             default=[], action='append')
         parser.add_argument('--wait', action='store_true', help='Wait for user input before terminating application')
+        parser.add_argument(
+            '--print-backtraces', action='store_true',
+            help='Print backtraces of the exceptions')
+        parser.add_argument('--debug', '-d', action='store_true', help='Enable print/log debug messages')
         parser.add_argument('command', nargs=1, help='Command to be run')
         parser.add_argument(
             'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
@@ -42,6 +47,8 @@ class MainApplication:
 
     def run(self, args: collections.Iterable):
         app_ns = self.__parse_app_args(args)
+        if app_ns.debug:
+            app_ns.print_backtraces = True
 
         plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
         plugins.append('dewi.core.commandregistry.CommandRegistryPlugin')
@@ -58,11 +65,21 @@ class MainApplication:
             command.register_arguments(parser)
             ns = parser.parse_args(app_ns.commandargs)
             ns._running_command_ = command_name
+            ns._debug_ = app_ns.debug
+            ns._print_backtraces_ = app_ns.print_backtraces
             sys.exit(command.run(ns))
         except SystemExit:
             self.__wait_for_termination_if_needed(app_ns)
             raise
         except BaseException as exc:
+            if app_ns.print_backtraces:
+                einfo = sys.exc_info()
+                tb = traceback.extract_tb(einfo[2])
+                tb_str = 'An exception occured:\n  Type: %s\n  Message: %s\n\n' % \
+                         (einfo[0].__name__, einfo[1])
+                for t in tb:
+                    tb_str += '  File %s:%s in %s\n    %s\n' % (t.filename, t.lineno, t.name, t.line)
+                print(tb_str)
             print(exc, file=sys.stderr)
             self.__wait_for_termination_if_needed(app_ns)
             sys.exit(1)
