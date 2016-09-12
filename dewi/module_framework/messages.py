@@ -1,0 +1,41 @@
+# Copyright 2016 Laszlo Attila Toth
+# Distributed under the terms of the GNU General Public License v3
+
+import enum
+import typing
+
+
+class Level(enum.Enum):
+    INFO = 'INFO'
+    WARNING = '*WARNING*'
+    ERROR = '**** ERROR ****'
+
+
+class Message:
+    def __init__(self, level: Level, category, message: str):
+        self.level = level
+        self.category = category
+        self.message = message
+
+
+class Messages:
+    """
+     @type _messages typing.Dict[Level, typing.List[Message]]
+     """
+
+    def __init__(self):
+        self._messages = dict()
+        for level in Level:
+            self._messages[level] = list()
+
+    def add(self, level: Level,  category, message: str):
+        self._messages[level].append(Message(level, category, message))
+
+    @property
+    def messages(self) -> typing.Dict[Level, typing.List[Message]]:
+        return self._messages
+
+    def print_without_category(self):
+        for level in Level:
+            for msg in self._messages[level]:
+                print("[{}] {}".format(level.value, msg.message))
