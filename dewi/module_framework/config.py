@@ -42,13 +42,13 @@ class Config:
         return c
 
     def print(self, file=None):
-        self._print(self._config, '', file=None)
+        self._print(self._config, '', file=file)
 
     def _print(self, config: dict, prefix: str, file=None):
         for k in sorted(config.keys()):
             v = config[k]
 
             if isinstance(v, dict):
-                self._print(v, "{}{}.".format(prefix, k))
+                self._print(v, "{}{}.".format(prefix, k), file=file)
             else:
                 print("{}{}: {}".format(prefix, k, v), file=file)
