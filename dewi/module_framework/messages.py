@@ -4,8 +4,11 @@
 import enum
 import typing
 
+CORE_CATEGORY = 'core'
+
 
 class Level(enum.Enum):
+    DEBUG = 'debug'
     INFO = 'INFO'
     WARNING = '*WARNING*'
     ERROR = '**** ERROR ****'
