@@ -31,7 +31,7 @@ class Messages:
         for level in Level:
             self._messages[level] = list()
 
-    def add(self, level: Level,  category, message: str):
+    def add(self, level: Level, category, message: str):
         self._messages[level].append(Message(level, category, message))
 
     @property
