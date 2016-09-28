@@ -20,6 +20,9 @@ class LogParserModule:
     def set(self, entry: str, value):
         self._config.set(entry, value)
 
+    def append(self, entry: str, value):
+        self._config.append(entry, value)
+
     def get(self, entry: str):
         return self._config.get(entry)
 
