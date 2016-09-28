@@ -1,5 +1,6 @@
 # Copyright 2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+import yaml
 
 
 class InvalidEntry(KeyError):
@@ -53,6 +54,9 @@ class Config:
             return None
 
         return c
+
+    def dump(self, file):
+        yaml.dump(self._config, file, indent=4, default_flow_style=False)
 
     def print(self, file=None):
         self._print(self._config, '', file=file)
