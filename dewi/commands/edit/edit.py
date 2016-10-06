@@ -2,10 +2,13 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-
+import collections
 import re
 import subprocess
+
 from dewi.core.command import Command
+from dewi.core.context import Context
+from dewi.loader.plugin import Plugin
 
 
 def convert_to_vim_args(args):
@@ -35,3 +38,14 @@ class EditCommand(Command):
         args = ['vim'] + convert_to_vim_args(ns.file_list)
         pipe = subprocess.Popen(args)
         pipe.communicate()
+
+
+class EditPlugin(Plugin):
+    def get_description(self) -> str:
+        return 'Command plugin of: ' + EditCommand.description
+
+    def get_dependencies(self) -> collections.Iterable:
+        return {'dewi.core.CorePlugin'}
+
+    def load(self, c: Context):
+        c['commands'].register_class(EditCommand)

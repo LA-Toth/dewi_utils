@@ -3,17 +3,19 @@
 
 import collections
 
-from dewi.commands.edit.edit import EditCommand
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin
 
 
-class FileManipulationPlugin(Plugin):
+class CommandsPlugin(Plugin):
     def get_description(self) -> str:
-        return "File manipulation commnads"
+        return "Commnands of DEWI"
 
     def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
+        return {
+            'dewi.core.CorePlugin',
+            'dewi.commands.edit.edit.EditPlugin',
+        }
 
     def load(self, c: Context):
-        c['commands'].register_class(EditCommand)
+        pass
