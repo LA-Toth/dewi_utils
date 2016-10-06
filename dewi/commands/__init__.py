@@ -15,6 +15,7 @@ class CommandsPlugin(Plugin):
         return {
             'dewi.core.CorePlugin',
             'dewi.commands.edit.edit.EditPlugin',
+            'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
         }
 
     def load(self, c: Context):
