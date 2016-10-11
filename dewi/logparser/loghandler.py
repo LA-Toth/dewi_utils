@@ -29,18 +29,24 @@ class LogParserModule:
     def get(self, entry: str):
         return self._config.get(entry)
 
-    def _add_message(self, level: Level, category, message: str):
-        self._messages.add(level, category, message)
+    def _add_message(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
+        self._messages.add(level, category, message, details)
 
-    def _add_message_to_config_too(self, level: Level, category, message: str):
-        self._messages.add(level, category, message)
+    def _add_message_to_config_too(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
+        self._messages.add(level, category, message, details)
+
+        msg_dict = dict(
+            level=level.name,
+            category=category,
+            message=message,
+        )
+
+        if details:
+            msg_dict.update(dict(details=details))
+
         self._config.append(
             '_messages',
-            dict(
-                level=level.name,
-                category=category,
-                message=message,
-            )
+            msg_dict
         )
 
     add_message = _add_message

@@ -15,10 +15,11 @@ class Level(enum.Enum):
 
 
 class Message:
-    def __init__(self, level: Level, category, message: str):
+    def __init__(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
         self.level = level
         self.category = category
         self.message = message
+        self.details = details
 
 
 class Messages:
@@ -31,8 +32,8 @@ class Messages:
         for level in Level:
             self._messages[level] = list()
 
-    def add(self, level: Level, category, message: str):
-        self._messages[level].append(Message(level, category, message))
+    def add(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
+        self._messages[level].append(Message(level, category, message, details))
 
     @property
     def messages(self) -> typing.Dict[Level, typing.List[Message]]:
