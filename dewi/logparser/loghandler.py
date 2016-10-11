@@ -56,15 +56,15 @@ class _Pattern:
             else:
                 self.process = self.callback
 
-    def process_regex(self, matched_line):
-        m = self.message_regex.match(matched_line.group('msg'))
+    def process_regex(self, time, program, pid, msg):
+        m = self.message_regex.match(msg)
 
         if m:
-            self.callback(matched_line)
+            self.callback(time, program, pid, msg)
 
-    def process_substring(self, matched_line):
-        if self.message_substring in matched_line.group('msg'):
-            self.callback(matched_line)
+    def process_substring(self, time, program, pid, msg):
+        if self.message_substring in msg:
+            self.callback(time, program, pid, msg)
 
 
 class LogHandlerModule(Module):
@@ -158,12 +158,18 @@ class LogHandlerModule(Module):
             "Run time: {} line(s) in {} s ({:.2f} kHz)".format(cnt, diff, cnt / diff / 1000))
 
     def _process_line(self, line: str):
-        line_match = self.parser.parse(line)
-        if not line_match:
+        parts = line.split(' ', 3)
+        if len(parts) != 4:
             return
 
-        for module in self._get_program_modules(line_match.group('app')):
-            module.process(line_match)
+        if '[' in parts[2]:
+            program, pid = parts[2].split('[')
+            pid = pid.split(']')[0]
+        else:
+            program, pid = parts[2][:-1], None
+
+        for module in self._get_program_modules(program):
+            module.process(parts[0], program, pid, parts[3])
 
         for module in self._other_parsers:
-            module.process(line_match)
+            module.process(parts[0], program, pid, parts[3])
