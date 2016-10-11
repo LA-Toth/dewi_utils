@@ -13,9 +13,12 @@ from dewi.module_framework.module import Module
 
 
 class LogParserModule:
-    def __init__(self, config: Config, messages: Messages):
+    def __init__(self, config: Config, messages: Messages, *, add_messages_to_config: bool = False):
         self._config = config
         self._messages = messages
+
+        if add_messages_to_config:
+            self.add_message = self._add_message_to_config_too
 
     def set(self, entry: str, value):
         self._config.set(entry, value)
@@ -26,8 +29,21 @@ class LogParserModule:
     def get(self, entry: str):
         return self._config.get(entry)
 
-    def add_message(self, level: Level, category, message: str):
+    def _add_message(self, level: Level, category, message: str):
         self._messages.add(level, category, message)
+
+    def _add_message_to_config_too(self, level: Level, category, message: str):
+        self._messages.add(level, category, message)
+        self._config.append(
+            '_messages',
+            dict(
+                level=level.name,
+                category=category,
+                message=message,
+            )
+        )
+
+    add_message = _add_message
 
     def get_registration(self) -> typing.List[typing.Dict[str, typing.Union[str, callable]]]:
         return []
