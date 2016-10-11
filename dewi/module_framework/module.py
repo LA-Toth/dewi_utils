@@ -3,9 +3,8 @@
 
 import typing
 
-from dewi.module_framework.messages import Messages, Level
-
 from dewi.module_framework.config import Config
+from dewi.module_framework.messages import Messages, Level
 
 
 class Module:
