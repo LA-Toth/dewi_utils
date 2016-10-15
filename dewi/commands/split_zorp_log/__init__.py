@@ -150,7 +150,7 @@ class SplitZorpLogCommand(Command):
             help='The original Zorp log file to be splitted. Omit or use - to read from stdin')
 
     def run(self, args: argparse.Namespace):
-        splitter = Splitter(args.directory, args.delimiter, args.reopen, args.silent, args.zorplogfile)
+        splitter = Splitter(args.zorplogfile, args.directory, args.delimiter, args.reopen, args.silent)
         splitter.run()
 
 
