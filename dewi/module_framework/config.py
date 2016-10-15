@@ -17,8 +17,8 @@ class Config:
     def set(self, entry: str, value):
         c, key = self._get_container_and_key(entry)
 
-        if key in c and isinstance(c[key], (dict, list)):
-            raise InvalidEntry("The '{}' entry should not refer either a dict or a list".format(entry))
+        if key in c and isinstance(c[key], (dict, list, set)):
+            raise InvalidEntry("The '{}' entry should not refer either a dict, list or set".format(entry))
 
         c[key] = value
 
@@ -43,6 +43,14 @@ class Config:
 
         c[key].append(value)
 
+    def add_to_set(self, list_entry: str, value):
+        c, key = self._get_container_and_key(list_entry)
+
+        if key not in c:
+            c[key] = set()
+
+        c[key].add(value)
+
     def get(self, entry: str):
         keys = entry.split('.')
         c = self._config
@@ -54,6 +62,10 @@ class Config:
             return None
 
         return c
+
+    def delete(self, list_entry: str):
+        c, key = self._get_container_and_key(list_entry)
+        del c[key]
 
     def dump(self, file):
         yaml.dump(self._config, file, indent=4, default_flow_style=False)
