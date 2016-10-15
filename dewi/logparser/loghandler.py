@@ -140,9 +140,6 @@ class LogHandlerModule(Module):
 
         dictionary[key].add(value)
 
-    def _get_program_modules(self, program: str):
-        return self._program_parsers[program] if program in self._program_parsers else set()
-
     def _finalize_parsers(self):
         for module in self.modules:
             module.finish()
@@ -167,11 +164,7 @@ class LogHandlerModule(Module):
         cnt = 0
         for fn in files:
             with open(fn) as f:
-                line = 'non-empty'
-                while line:
-                    line = f.readline()
-                    cnt += 1
-                    self._process_line(line)
+                cnt += self._process_file(f)
 
         end = time.clock()
         diff = end - start
@@ -179,19 +172,30 @@ class LogHandlerModule(Module):
             Level.DEBUG, CORE_CATEGORY,
             "Run time: {} line(s) in {} s ({:.2f} kHz)".format(cnt, diff, cnt / diff / 1000))
 
-    def _process_line(self, line: str):
-        parts = line.split(' ', 3)
-        if len(parts) != 4:
-            return
+    def _process_file(self, f):
+        # This is a heavily optimized code, please consider the consequences before changing it
+        # The loop body must be extremely fast, because it runs on every log line
 
-        if '[' in parts[2]:
-            program, pid = parts[2].split('[')
-            pid = pid.split(']')[0]
-        else:
-            program, pid = parts[2][:-1], None
+        cnt = 0
+        line = 'non-empty'
+        while line:
+            line = f.readline()
+            cnt += 1
+            parts = line.split(' ', 3)
+            if len(parts) != 4:
+                continue
 
-        for module in self._get_program_modules(program):
-            module.process(parts[0], program, pid, parts[3])
+            if '[' in parts[2]:
+                program, pid = parts[2].split('[')
+                pid = pid.split(']')[0]
+            else:
+                program, pid = parts[2][:-1], None
 
-        for module in self._other_parsers:
-            module.process(parts[0], program, pid, parts[3])
+            if program in self._program_parsers:
+                for module in self._program_parsers[program]:
+                    module.process(parts[0], program, pid, parts[3])
+
+            for module in self._other_parsers:
+                module.process(parts[0], program, pid, parts[3])
+
+        return cnt
