@@ -6,12 +6,19 @@ import typing
 
 CORE_CATEGORY = 'core'
 
+_levels = {
+    'd': '     debug     ',
+    'i': ' .   INFO    . ',
+    'w': ' *  WARNING  * ',
+    'e': ' *** ERROR *** '
+}
+
 
 class Level(enum.Enum):
-    DEBUG = 'debug'
-    INFO = 'INFO'
-    WARNING = '*WARNING*'
-    ERROR = '**** ERROR ****'
+    DEBUG = _levels['d']
+    INFO = _levels['i']
+    WARNING = _levels['w']
+    ERROR = _levels['e']
 
 
 class Message:
