@@ -25,11 +25,10 @@ class WebModule(LogParserModule):
     def start(self):
         self._failed_auths = dict()
 
-    def auth_failure(self, line_match):
-        msg = line_match.group('msg')
+    def auth_failure(self, time, program, pid, msg):
         m = re.match(r'; username=\'([^\']+)\'', msg)
         if m:
-            self._add_to_map(self._failed_auths, m.group(1), line_match.group('date') + 'T' + line_match.group('time'))
+            self._add_to_map(self._failed_auths, m.group(1), time)
 
     def _add_to_map(self, map, key: str, value: str):
         if key not in map:

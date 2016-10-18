@@ -18,9 +18,9 @@ class HaModule(LogParserModule):
         """
         return [{'program': 'cl_status', 'callback': self.process_entry}]
 
-    def process_entry(self, line_match):
+    def process_entry(self,  time, program, pid, msg):
         """
         Processes the whole match, and depending on the content may add some messages
         In this example every log message is added to the warnings.
         """
-        self.add_message(Level.WARNING, 'HA', 'CL:' + line_match.group('msg'))
+        self.add_message(Level.WARNING, 'HA', 'CL:' + msg)
