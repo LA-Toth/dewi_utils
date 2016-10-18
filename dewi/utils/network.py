@@ -1,3 +1,6 @@
+# Copyright (C) 2016 Laszlo Attila Toth
+# Distributed under the terms of GNU <Lesser> General Public License v3
+
 import os
 import re
 import typing
