@@ -12,7 +12,7 @@ class Parser(object):
         )
 
         self._date_time_pattern = re.compile(
-            r'^(?P<date>\d+-\d+-\d+)T(?P<time>\d\d:\d\d:\d\d)\+[0-9]+:[0-9]+'
+            r'^(?P<date>\d+-\d+-\d+)T(?P<time>\d\d:\d\d:\d\d)[-+][0-9]+:[0-9]+'
         )
 
     def parse_date(self, line):
