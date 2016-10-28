@@ -1,5 +1,6 @@
 # Copyright 2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+import typing
 
 from dewi.module_framework.messages import Level
 from steve.commands.debug_bundle_processor.logparsers.base_module import BaseModule
@@ -22,7 +23,7 @@ class RebootModule(BaseModule):
     def start(self):
         self._reboots = list()
 
-    def system_reboot(self, time, program, pid, msg):
+    def system_reboot(self, time: str, program: str, pid: typing.Optional[str], msg: str):
         self._reboots.append(time)
 
     def finish(self):

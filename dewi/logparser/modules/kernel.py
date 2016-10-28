@@ -1,5 +1,6 @@
 # Copyright 2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+import typing
 
 from dewi.module_framework.messages import Level
 from steve.commands.debug_bundle_processor.logparsers.base_module import BaseModule
@@ -21,7 +22,7 @@ class KernelModule(BaseModule):
     def start(self):
         self._blocked_process_list = list()
 
-    def _blocked_process(self, time, program, pid, msg):
+    def _blocked_process(self, time: str, program: str, pid: typing.Optional[str], msg: str):
         # example msg:
         # [16974495.906550] INFO: task java:14545 blocked for more than 120 seconds.
 

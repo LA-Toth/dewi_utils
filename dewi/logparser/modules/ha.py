@@ -1,5 +1,6 @@
 # Copyright 2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+import typing
 
 from dewi.logparser.loghandler import LogParserModule
 from dewi.module_framework.messages import Level
@@ -18,7 +19,7 @@ class HaModule(LogParserModule):
         """
         return [{'program': 'cl_status', 'callback': self.process_entry}]
 
-    def process_entry(self,  time, program, pid, msg):
+    def process_entry(self, time: str, program: str, pid: typing.Optional[str], msg: str):
         """
         Processes the whole match, and depending on the content may add some messages
         In this example every log message is added to the warnings.

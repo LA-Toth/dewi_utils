@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import re
+import typing
 
 from dewi.logparser.loghandler import LogParserModule
 from dewi.module_framework.messages import Level
@@ -25,8 +26,8 @@ class WebModule(LogParserModule):
     def start(self):
         self._failed_auths = dict()
 
-    def auth_failure(self, time, program, pid, msg):
-        m = re.match(r'; username=\'([^\']+)\'', msg)
+    def auth_failure(self, time: str, program: str, pid: typing.Optional[str], msg: str):
+        m = re.match(r'.*; username=\'([^\']+)\'', msg)
         if m:
             self._add_to_map(self._failed_auths, m.group(1), time)
 
