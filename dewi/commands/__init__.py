@@ -16,6 +16,7 @@ class CommandsPlugin(Plugin):
             'dewi.core.CorePlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
+            'dewi.commands.ssh_ubuntu_windows.SshToUbuntuOnWindowsPlugin',
         }
 
     def load(self, c: Context):
