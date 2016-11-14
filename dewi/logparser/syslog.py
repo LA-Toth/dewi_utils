@@ -1,6 +1,6 @@
 # Copyright 2016 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
-
+import datetime
 import re
 
 
@@ -31,3 +31,9 @@ class Parser(object):
             return None
         else:
             return parsed
+
+
+def to_timestamp(date_time: str):
+    if date_time[-3] == ':':
+        date_time = date_time[:-3] + date_time[-2:]
+    return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z").timestamp()
