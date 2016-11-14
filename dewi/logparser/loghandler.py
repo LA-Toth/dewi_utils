@@ -194,8 +194,8 @@ class LogHandlerModule(Module):
             if program in self._program_parsers:
                 for module in self._program_parsers[program]:
                     module.process(parts[0], program, pid, parts[3])
-
-            for module in self._other_parsers:
-                module.process(parts[0], program, pid, parts[3])
+            else:
+                for module in self._other_parsers:
+                    module.process(parts[0], program, pid, parts[3])
 
         return cnt
