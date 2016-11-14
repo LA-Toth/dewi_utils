@@ -152,7 +152,7 @@ class LogHandlerModule(Module):
                 continue
 
             filename = os.path.join(self._log_dir, file)
-            with open(filename) as f:
+            with open(filename, encoding='UTF-8', errors='surrogateescape') as f:
                 line = f.readline()
                 parsed = self.parser.parse_date(line)
                 date_file_map[parsed.group('date')] = filename
@@ -163,7 +163,7 @@ class LogHandlerModule(Module):
         start = time.clock()
         cnt = 0
         for fn in files:
-            with open(fn) as f:
+            with open(fn, encoding='UTF-8', errors='surrogateescape') as f:
                 cnt += self._process_file(f)
 
         end = time.clock()
