@@ -43,7 +43,7 @@ class Splitter:
         if self._file_name == '-':
             self.__split_session_opened(sys.stdin)
         else:
-            with open(self._file_name) as f:
+            with open(self._file_name, encoding='UTF-8', errors='surrogateescape') as f:
                 self.__split_session_opened(f)
 
         self.__close_files()
@@ -101,7 +101,7 @@ class Splitter:
         file_path = os.path.join(directory, session_id + '.log')
 
         try:
-            f = open(file_path, 'at')
+            f = open(file_path, 'at', encoding='UTF-8', errors='surrogateescape')
         except IOError as e:
             if e.errno == errno.EMFILE:
                 self.__close_some_files()
