@@ -28,7 +28,7 @@ class Message:
                  hint: typing.Optional[typing.List[str]] = None,
                  details: typing.Optional[typing.List[str]] = None):
         self.level = level
-        self.category = category
+        self.category = category if isinstance(category, str) else list(category)
         self.message = message
         self.hint = hint
         self.details = details
