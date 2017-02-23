@@ -1,4 +1,4 @@
-# Copyright 2016 Laszlo Attila Toth
+# Copyright 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 import os
@@ -29,11 +29,17 @@ class LogParserModule:
     def get(self, entry: str):
         return self._config.get(entry)
 
-    def _add_message(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
-        self._messages.add(level, category, message, details)
+    def _add_message(self, level: Level, category, message: str,
+                     *,
+                     hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
+                     details: typing.Optional[typing.Union[typing.List[str], str]] = None):
+        self._messages.add(level, category, message, hint=hint, details=details)
 
-    def _add_message_to_config_too(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
-        self._messages.add(level, category, message, details)
+    def _add_message_to_config_too(self, level: Level, category, message: str,
+                                   *,
+                                   hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
+                                   details: typing.Optional[typing.Union[typing.List[str], str]] = None):
+        self._messages.add(level, category, message, hint=hint, details=details)
 
         msg_dict = dict(
             level=level.name,
@@ -41,8 +47,15 @@ class LogParserModule:
             message=message,
         )
 
+        if hint:
+            if isinstance(hint, str):
+                hint = [hint]
+            msg_dict['hint'] = hint
+
         if details:
-            msg_dict.update(dict(details=details))
+            if isinstance(details, str):
+                details = [details]
+            msg_dict['details'] = details
 
         self._config.append(
             '_messages',

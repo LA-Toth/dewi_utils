@@ -1,4 +1,4 @@
-# Copyright 2016 Laszlo Attila Toth
+# Copyright 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 import enum
@@ -22,10 +22,15 @@ class Level(enum.Enum):
 
 
 class Message:
-    def __init__(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
+    def __init__(self,
+                 level: Level, category, message: str,
+                 *,
+                 hint: typing.Optional[typing.List[str]] = None,
+                 details: typing.Optional[typing.List[str]] = None):
         self.level = level
         self.category = category
         self.message = message
+        self.hint = hint
         self.details = details
 
 
@@ -39,8 +44,15 @@ class Messages:
         for level in Level:
             self._messages[level] = list()
 
-    def add(self, level: Level, category, message: str, details: typing.Optional[dict] = None):
-        self._messages[level].append(Message(level, category, message, details))
+    def add(self, level: Level, category, message: str,
+            *,
+            hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
+            details: typing.Optional[typing.Union[typing.List[str], str]] = None):
+        if isinstance(hint, str):
+            hint = [hint]
+        if isinstance(details, str):
+            details = [details]
+        self._messages[level].append(Message(level, category, message, hint=hint, details=details))
 
     @property
     def messages(self) -> typing.Dict[Level, typing.List[Message]]:
