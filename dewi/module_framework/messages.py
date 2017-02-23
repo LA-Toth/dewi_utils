@@ -4,7 +4,7 @@
 import enum
 import typing
 
-CORE_CATEGORY = 'core'
+CORE_CATEGORY = 'Core'
 
 _levels = {
     'd': '     debug     ',
