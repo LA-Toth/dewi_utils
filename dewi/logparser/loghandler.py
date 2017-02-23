@@ -13,9 +13,15 @@ from dewi.module_framework.module import Module
 
 
 class LogParserModule:
-    def __init__(self, config: Config, messages: Messages, *, add_messages_to_config: bool = False):
+    def __init__(self,
+                 config: Config,
+                 messages: Messages,
+                 *,
+                 add_messages_to_config: bool = False,
+                 messages_config_key: typing.Optional[str] = None):
         self._config = config
         self._messages = messages
+        self._messages_config_key = messages_config_key or 'messages'
 
         if add_messages_to_config:
             self.add_message = self._add_message_to_config_too
@@ -58,7 +64,7 @@ class LogParserModule:
             msg_dict['details'] = details
 
         self._config.append(
-            '_messages',
+            self._messages_config_key,
             msg_dict
         )
 
