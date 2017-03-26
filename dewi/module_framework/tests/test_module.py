@@ -40,6 +40,6 @@ class ModuleTest(dewi.tests.TestCase):
         m.add_message(Level.INFO, ('a', 'category', 'representation'), 'a message')
 
         self.assert_equal(
-            [call.add(Level.INFO, ('a', 'category', 'representation'), 'a message')],
+            [call.add(Level.INFO, ('a', 'category', 'representation'), 'a message', details=None, hint=None)],
             msgs.mock_calls
         )
