@@ -1,8 +1,7 @@
 # Copyright (C) 2017 Laszlo Attila Toth
 # Distributed under the terms of GNU General Public License v3
-from xml.etree import ElementTree
-
 import typing
+from xml.etree import ElementTree
 
 
 def create_dict_from_xml_string(xml: str):
@@ -26,7 +25,9 @@ def _add_as_list(elem: ElementTree):
                 else:
                     l.append(_add_as_list(child_item))
         elif child_item.text:
-            l.append(child_item.text)
+            text = child_item.text.strip()
+            if text:
+                l.append(text)
     return l
 
 
@@ -43,14 +44,20 @@ def _add_as_dict(elem: ElementTree) -> typing.Union[dict, str]:
         if elem.items():
             value['_attrs'] = dict(elem.items())
         if elem.text:
-            value['text'] = elem.text
+            text = elem.text.strip()
+            if text:
+                value['text'] = text
 
     elif elem.items():
         value = dict(_attrs=dict(elem.items()))
         if elem.text:
-            value['text'] = elem.text
+            text = elem.text.strip()
+            if text:
+                value['text'] = text
 
     elif elem.text:
-        value = elem.text
+        text = elem.text.strip()
+        if text:
+            value = text
 
     return value

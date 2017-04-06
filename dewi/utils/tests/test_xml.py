@@ -29,6 +29,16 @@ class XmlTest(dewi.tests.TestCase):
         self.assert_xml_equals_dict({'parent': {'_attrs': {'a': '34'}, 'child': 'A text'}},
                                     '<root_node><parent a="34"><child>A text</child></parent></root_node>')
 
+    def test_child_of_child_with_attrs_or_text_and_newlines(self):
+        self.assert_xml_equals_dict({'parent': {'_attrs': {'a': '34'}, 'child': 'A text'}},
+                                    '''<root_node>
+                                        <parent a="34">
+                                            <child>
+                                                A text
+                                            </child>
+                                        </parent>
+                                    </root_node>''')
+
     def test_that_element_with_text_and_attrs_is_supported(self):
         self.assert_xml_equals_dict({'parent': {'child': {'_attrs': {'an_attr': '42', 'public': 'true'}, 'text': 'The text'}}},
                                     '<root_node><parent><child an_attr="42" public="true">The text</child>'
