@@ -34,7 +34,7 @@ class FileSyncEntry:
 
     def __str__(self):
         return "{}(local_path='{}', target_path='{}', ...)".format(self.__class__.__name__, self.local_path,
-                                                                       self.target_path)
+                                                                   self.target_path)
 
     def __repr__(self):
         return self.__str__()
