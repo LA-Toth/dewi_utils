@@ -41,10 +41,13 @@ codingstandards: pep8
 # E126  continuation line over-indented for hanging indent        This is not a problem locally, helps readability
 # E241  multiple spaces after ','                                 This is not a problem locally, helps readability
 # E121  continuation line indentation is not a multiple of four   This is not a problem locally, helps readability
+.PHONY: codestyle
+codestyle:
+	@echo "Running pycodestyle (pep8)"
+	$(PYCODESTYLE) --ignore=E501,E126,E241,E121 --repeat $(PACKAGE_NAMES)
+
 .PHONY: pep8
-pep8:
-	@echo Running pep8
-	$(PEP8) --ignore=E501,E126,E241,E121 --repeat $(PACKAGE_NAMES)
+pep8: codestyle
 
 .PHONY: features
 features:
