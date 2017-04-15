@@ -38,7 +38,7 @@ class TestFileSynchronizer(dewi.tests.TestCase):
         self.remote_root = '/remote/dir'
         self.dirs = [self.dir_name]
         self.fs = VirtualCommandTrackerFilesystem(self.dirs)
-        self.tested = FileSynchronizer(self.remote_root, filesystem=self.fs)
+        self.tested = FileSynchronizer('/local/root', self.remote_root, filesystem=self.fs)
 
         # NOTE: the remote name is relative path, used in DetailedEntry
         self.remote_name = 'path/to/a/remote/file'

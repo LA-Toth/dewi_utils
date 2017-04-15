@@ -26,7 +26,7 @@ class SyncApp:
 
     def _create_watchdog_handler(self) -> FileSystemChangeHandler:
         entry_manager = FileSyncEntryManager(self._entries)
-        synchronizer = FileSynchronizer(self._target_directory, self._filesystem)
+        synchronizer = FileSynchronizer(self._directory, self._target_directory, self._filesystem)
         fsw = FileSystemChangeWatcher([self._directory])
         fsw.register_watcher(SkippableChangeWatcher([self._directory]))
         fsw.register_watcher(FileSynchronizerWatcher(synchronizer, entry_manager))
