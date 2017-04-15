@@ -8,8 +8,7 @@ from dewi.realtime_sync.filesystem import Filesystem
 
 
 class FileSynchronizer:
-    def __init__(self, local_root: str, remote_root: str, filesystem: Filesystem):
-        self.local_root_directory = local_root
+    def __init__(self, remote_root: str, filesystem: Filesystem):
         self.remote_root_directory = remote_root
         self.fs = filesystem
 
