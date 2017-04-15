@@ -10,6 +10,7 @@ import typing
 from dewi.core.command import Command
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin
+from dewi.realtime_sync.app import LocalSyncApp, SyncOverSshApp
 from dewi.realtime_sync.filesync_data import FileSyncEntry, FileSyncFlags
 
 
@@ -117,9 +118,22 @@ class FileSyncCommand(Command):
         return [self._parse_entry(e, skip_chmod) for e in entries]
 
     def run(self, args: argparse.Namespace):
-        print('Here comes the code to run sync. The namespace:')
-        print(args)
-        print(self._parse_entries(args.entry, args.skip_chmod))
+
+        entries = self._parse_entries(args.entry, args.skip_chmod)
+        if args.mode == 'local':
+            self._local_sync(args, entries)
+        else:
+            self._remote_sync(args, entries)
+
+    def _local_sync(self, args: argparse.Namespace, entries: typing.List[FileSyncEntry]):
+        app = LocalSyncApp(args.directory, args.target_directory, entries)
+        app.run()
+
+    def _remote_sync(self, args: argparse.Namespace, entries: typing.List[FileSyncEntry]):
+        app = SyncOverSshApp(args.directory, args.target_directory, entries,
+                             user=args.user, host=args.host, port=args.port,
+                             check_host_key=not args.skip_host_key_check)
+        app.run()
 
 
 class FileSyncPlugin(Plugin):
