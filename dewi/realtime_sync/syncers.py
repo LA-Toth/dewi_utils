@@ -14,7 +14,7 @@ class FileSynchronizer:
         self.fs = filesystem
 
     def sync(self, path: str, entry: DetailedEntry):
-        remote_name = self.remote_root_directory + entry.remote_name
+        remote_name = os.path.join(self.remote_root_directory, entry.remote_name)
 
         if self.fs.exists(path):
             if self.fs.is_dir(path):

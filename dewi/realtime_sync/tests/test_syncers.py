@@ -40,14 +40,16 @@ class TestFileSynchronizer(dewi.tests.TestCase):
         self.fs = VirtualCommandTrackerFilesystem(self.dirs)
         self.tested = FileSynchronizer('/local/root', self.remote_root, filesystem=self.fs)
 
-        self.local_name = '/a/file'
-        self.remote_name = '/path/to/a/remote/file'
-        self.expected_remote_name = self.remote_root + self.remote_name
-        self.expected_remote_dir_name = os.path.dirname(self.expected_remote_name)
+        # NOTE: the remote name is relative path, used in DetailedEntry
+        self.remote_name = 'path/to/a/remote/file'
+
+        self.local_full_name = '/path/to/a/dir/a/file'
+        self.expected_remote_name = '/remote/dir/path/to/a/remote/file'
+        self.expected_remote_dir_name = '/remote/dir/path/to/a/remote'
 
     def get_usual_commands(self, user: str = 'root', group: str = 'root', permissions='644'):
         return [
-            ['copy', [self.local_name, self.expected_remote_name]],
+            ['copy', [self.local_full_name, self.expected_remote_name]],
             ['chown', [self.expected_remote_name, user, group]],
             ['chmod', [self.expected_remote_name, permissions]],
         ]
@@ -60,7 +62,7 @@ class TestFileSynchronizer(dewi.tests.TestCase):
 
     def assert_file_sync(self, entry: FileSyncEntry,
                          expected_commands: typing.List[typing.List[typing.Union['str', typing.List[typing.Any]]]]):
-        self.assert_sync(self.local_name, entry, expected_commands)
+        self.assert_sync(self.local_full_name, entry, expected_commands)
 
     def assert_dir_sync(self, entry: FileSyncEntry,
                         expected_commands: typing.List[typing.List[typing.Union['str', typing.List[typing.Any]]]]):
@@ -71,7 +73,7 @@ class TestFileSynchronizer(dewi.tests.TestCase):
         self.assert_sync(local_path, entry, [['remove', [self.expected_remote_name]]])
 
     def assert_file_is_removed(self, entry: FileSyncEntry):
-        self.assert_removal(self.local_name, entry)
+        self.assert_removal(self.local_full_name, entry)
 
     def assert_dir_is_removed(self, entry: FileSyncEntry):
         self.assert_removal(self.dir_name, entry)
@@ -116,4 +118,4 @@ class TestFileSynchronizer(dewi.tests.TestCase):
 
     def test_skip_of_chmod(self):
         self.assert_file_sync(self.EXACT_FILE_TO_A_DIR_WITH_NO_CHMOD_ENTRY,
-                              [['copy', [self.local_name, self.expected_remote_name]]])
+                              [['copy', [self.local_full_name, self.expected_remote_name]]])
