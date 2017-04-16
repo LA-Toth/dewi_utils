@@ -1,26 +1,22 @@
 # Copyright (c) 2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
-
 import argparse
 import collections
-import sys
 import typing
 
 from dewi.core.command import Command
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin
 from dewi.realtime_sync.app import LocalSyncApp, SyncOverSshApp
-from dewi.realtime_sync.filesync_data import FileSyncEntry, FileSyncFlags
+from dewi.realtime_sync.filesync_data import FileSyncEntry
+from dewi.realtime_sync.loader import EntryListLoader
 
 
 class FileSyncCommand(Command):
     name = 'filesync'
     aliases = ['codesync', 'dirsync', 'treesync']
     description = "Sync content of a directory to a remote location controlled by mapping rules"
-
-    ENTRY_DEFAULT_FIELDS = ['', '', '', '', '', '']
-    ENTRY_FLAGS_FIELD_IDX = len(ENTRY_DEFAULT_FIELDS) - 1
 
     def register_arguments(self, parser: argparse.ArgumentParser):
         parsers = parser.add_subparsers(title='Subcommand for specific locations', dest='mode')
@@ -78,48 +74,9 @@ class FileSyncCommand(Command):
             help='Always skip chmod and chown (to run as non-admin on target FS)'
         )
 
-    def _map_flags(self, flags_str: str, entry: str) -> typing.List[FileSyncFlags]:
-        flags = list(flags_str)
-        result = []
-
-        for flag in flags:
-            found = False
-            for sync_flag in FileSyncFlags:
-                if sync_flag.value == flag:
-                    found = True
-                    result.append(sync_flag)
-
-            if not found:
-                print("Flag '{}' is not known".format(flag))
-                print("Bad entry was: " + entry)
-                sys.exit(1)
-
-        return result
-
-    def _parse_entry(self, entry: str, skip_chmod: bool) -> FileSyncEntry:
-        parts = entry.split(';')
-        if len(parts) < 2:
-            print("At least two fields are necessary separated by semicolon: source;target")
-            print("Full format: source;target;permissions;owner;group;flags")
-            sys.exit(1)
-
-        for i in range(2, len(self.ENTRY_DEFAULT_FIELDS)):
-            if len(parts) < i + 1:
-                parts.append(self.ENTRY_DEFAULT_FIELDS[i])
-
-        if skip_chmod:
-            parts[self.ENTRY_FLAGS_FIELD_IDX] += 'n'
-
-        source, target, perm, user, group, flags = parts
-
-        return FileSyncEntry(source, target, user, group, perm, self._map_flags(flags, entry))
-
-    def _parse_entries(self, entries: typing.List[str], skip_chmod: bool) -> typing.List[FileSyncEntry]:
-        return [self._parse_entry(e, skip_chmod) for e in entries]
-
     def run(self, args: argparse.Namespace):
-
-        entries = self._parse_entries(args.entry, args.skip_chmod)
+        loader = EntryListLoader()
+        entries = loader.load_from_string_list(args.entry, args.skip_chmod)
         if args.mode == 'local':
             self._local_sync(args, entries)
         else:
