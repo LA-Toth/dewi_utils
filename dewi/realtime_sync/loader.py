@@ -1,5 +1,6 @@
 # Copyright (C) 2017 Tóth, László Attila
 # Distributed under the terms of GNU General Public License v3
+from io import TextIOWrapper
 import sys
 import typing
 
@@ -49,3 +50,17 @@ class EntryListLoader:
     def load_from_string_list(self, entries: typing.List[str], skip_chmod: bool) -> typing.List[FileSyncEntry]:
         return [self._create_entry_based_on_string(e, skip_chmod) for e in entries]
 
+    def load_from_stream(self, stream: TextIOWrapper, skip_chmod: bool) -> typing.List[FileSyncEntry]:
+        result = []
+        for line in stream:
+            line = line.strip()
+            if line.startswith('#') or not line.strip():
+                continue
+
+            result.append(self._create_entry_based_on_string(line, skip_chmod))
+
+        return result
+
+    def load_from_file(self, filename: str, skip_chmod: bool) -> typing.List[FileSyncEntry]:
+        with open(filename) as f:
+            return self.load_from_stream(f, skip_chmod)
