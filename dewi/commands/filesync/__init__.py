@@ -75,6 +75,10 @@ class FileSyncCommand(Command):
         )
 
     def run(self, args: argparse.Namespace):
+        if args.mode is None:
+            print("Missing subcommand.\n")
+            args._parser.print_help()
+            return 1
         loader = EntryListLoader()
         entries = loader.load_from_string_list(args.entry, args.skip_chmod)
         if args.mode == 'local':
