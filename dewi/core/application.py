@@ -67,6 +67,7 @@ class MainApplication:
             ns._running_command_ = command_name
             ns._debug_ = app_ns.debug
             ns._print_backtraces_ = app_ns.print_backtraces
+            ns._parser = parser
             sys.exit(command.run(ns))
         except SystemExit:
             self.__wait_for_termination_if_needed(app_ns)
