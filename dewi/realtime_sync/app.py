@@ -6,8 +6,8 @@ import typing
 from dewi.realtime_sync.filesync_data import FileSyncEntry, FileSyncEntryManager
 from dewi.realtime_sync.filesystem import Filesystem, LocalFilesystem, RemoteFilesystem
 from dewi.realtime_sync.syncers import FileSynchronizer
-from dewi.realtime_sync.watchers import FileSynchronizerWatcher, FileSystemChangeHandler, FileSystemChangeWatcher, \
-    SkippableChangeWatcher, WatchDog
+from dewi.realtime_sync.watchers import FileSynchronizerWatcher, FileSystemChangeWatcher, SkippableChangeWatcher
+from dewi.realtime_sync.watchers.watchdog import FileSystemChangeHandler, WatchDog
 
 
 class SyncApp:
