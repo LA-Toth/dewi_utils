@@ -17,6 +17,7 @@ class CommandsPlugin(Plugin):
             'dewi.commands.collect_images.ImageCollectorPlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
+            'dewi.commands.select_images.ImageSelectorPlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
             'dewi.commands.ssh_ubuntu_windows.SshToUbuntuOnWindowsPlugin',
         }
