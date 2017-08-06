@@ -14,6 +14,9 @@ class Config:
     def get_config(self):
         return dict(self._config)
 
+    def overwrite_config(self, config: dict):
+        self._config = config
+
     def set(self, entry: str, value):
         c, key = self._get_container_and_key(entry)
 
