@@ -14,6 +14,7 @@ class CommandsPlugin(Plugin):
     def get_dependencies(self) -> collections.Iterable:
         return {
             'dewi.core.CorePlugin',
+            'dewi.commands.collect_images.ImageCollectorPlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
