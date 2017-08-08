@@ -5,21 +5,19 @@ Name
 ----
 DEWI: Old Welsh form of David
 
-This name is similar to DWA, which was the project's original name,
-and it's stands for Developer's Work Are.
+The name is chosen because of the similarity to DWA, which was the project's
+original name, which stands for Developer's Work Area.
 
 
 Purpose
 -------
 
-When somebody develops products for years, he has several smaller or larger
-scripts which helps his development, and may have several aliases in bash,
-or in his favorite shell. But these scripts can be in the same place, tested,
-and so on. This is one target of DEWI, give several commands to help
-the repetitive tasks.
+As the name implies the original purpose was to add tools - commands - helping
+product development.
 
-DEWI's other target is that it can also be used a framework, it's highly
-extensible, via its plugin framework, see below some example.
+Now it is my toolchain written in Python, and it can be used for several different
+tasks, such as edit files or sync file source to a remote location, manage photos
+or images, and finally it is a framework of other unpublished codes.
 
 
 Installation
@@ -61,40 +59,109 @@ This command doesn't do too much, simply exits with exit status `42`::
         dewi -p dewi.commands.sample.SamplePlugin sample
 
 
-Usage as a framework
-~~~~~~~~~~~~~~~~~~~~
+Usage as a plugin framework
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The basic assumption is that somebody wants to use his own Python script
-to start everything and use custom plugins. This can be partially done as::
+A minimal example can be found in the ``samples/as_framework`` directory,
+the application is named as Steven.
+
+Assuming that it's already created, it can be the aforementioned way::
 
         dewi -p example.my.custom.Plugin mycustom-command
+        dewi -p steven.StevenPlugin xssh ....
 
-But this can be hidden competely, using name e.g. `myprog`, based on
-``dewi.__main__``:
+The exact plugin can be hidden if there is a main entry point or script:
 
 .. code-block:: python
 
-   #!/usr/bin/env python3
-
-   import sys
-   from dewi.core.application import MainApplication
-   from dewi.loader.loader import PluginLoader
+    #!/usr/bin/env python3
+    from dewi.core.application import MainApplication
+    from dewi.loader.loader import PluginLoader
 
 
-   def main():
-       args = ['-p', 'example.my.custom.Plugin'] + sys.argv[1:]
+    def main():
+        args = ['-p', 'steven.StevenPlugin'] + sys.argv[1:]
 
-       loader = PluginLoader()
-       app = MainApplication(loader, 'myprog')
-       app.run(args)
-
-   if __name__ == '__main__':
-       main()
+        loader = PluginLoader()
+        app = MainApplication(loader, 'steven')
+        app.run(args)
 
 
-If you need more details:
+    if __name__ == '__main__':
+        main()
 
-* check ``dewi.commands.edit.edit``: how to write a command with arguments
-* check ``dewi.commands.sample``: how to write a custom plugin and register
-  a command into it. Note that each plugin should depend on
-  ``dewi.core.CorePlugin``.
+
+Usage as a regular Python library
+---------------------------------
+
+Some parts of DEWI can be used as regular Python library, without the Plugin
+boilerplate. A simple example is creating a somewhat typesafe (config) tree:
+
+.. code-block:: python
+
+    from dewi.config.config import Config
+    from dewi.config.node import Node
+
+
+    class Hardware(Node):
+        def __init__(self):
+            self.hw_type: str = ''
+            self.mem_size: int = None
+            self.mem_free: int = None
+            self.mem_mapped: int = None
+
+
+    class MainNode(Node):
+        def __init__(self):
+            # Handling as str, but None is used as unset
+            self.version: str = None
+            self.hw = Hardware()
+            # ... further fields
+
+        def __repr__(self) -> str:
+            return str(self.__dict__)
+
+
+    class SampleConfig(Config):
+        def __init__(self):
+            super().__init__()
+            self.set('root', MainNode())
+
+        def get_main_node(self) -> MainNode:
+            return self.get('root')
+
+
+    # ....
+    sc = SampleConfig()
+    sc.get_main_node().hw.mem_size = 1024  # OK
+    sc.set('root.hw.mem_size', 1024)       # OK
+    sc.set('root.hw.memsize', 1024)        # NOT OK, typo
+
+    # but...
+    c = Config()
+    c.set('root.hw.mem_size', 1024)  # OK
+    c.set('root.hw.memsize', 1024)   # OK, but typo
+
+As you can see, DEWI can be used as library, and it can contain slightly different
+solutions of the same problem.
+
+
+Current features
+----------------
+
+* Plugin and command frameworks
+* A configuration tree which is a smart dict, ``Config``, in ``dewi.config.config``
+* A typesafe tree node for config tree, ``Node``, in ``dewi.config.node``
+* Processing files from a directory subtree by modules in ``dewi.module_framework.module``
+* Message / Messages classes for module framework in ``dewi.module_framework.messages``
+* Log event processing module base based on the module framework in ``dewi.logparser.loghandler``
+* Log file processing class, ``LogHandlerModule`` also in ``dewi.logparser.loghandler``
+* Realtime sync framework in ``dewi.realtime_sync`` with ``filesync`` command
+* Commands for collecting and sorting images (photos)
+* Modules for
+   * Kayako REST API in ``dewi.utils.kayako_rest``
+   * network card vendor lookup in ``dewi.utils.network``
+   * Converting XML to a dict in ``dewi.utils.xml``
+   * Looking up of executable binaries in ``dewi.utils.process``
+   * enhancing dicts in ``dewi.utils.dictionaries``
+   * Events in a lithurgical year (Hungarian Lutheran) in ``dewi.utils.lithurgical``

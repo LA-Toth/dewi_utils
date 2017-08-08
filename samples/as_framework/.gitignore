@@ -1,0 +1,10 @@
+*.pyc
+*.swp
+*.swo
+\#*
+*~
+*.rej
+*.bak
+
+# if it is symlinked
+/dewi
