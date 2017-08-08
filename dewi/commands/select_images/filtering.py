@@ -17,7 +17,7 @@ import readline
 import yaml
 
 from dewi.commands.select_images.fileentry import FileEntry
-from dewi.module_framework.config import Config
+from dewi.config.config import Config
 
 
 class FilterResult(enum.Enum):

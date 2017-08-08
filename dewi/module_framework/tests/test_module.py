@@ -1,11 +1,11 @@
-# Copyright 2016 Laszlo Attila Toth
+# Copyright 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
-from unittest.mock import call, Mock
+from unittest.mock import Mock, call
 
 import dewi.tests
-from dewi.module_framework.config import Config
-from dewi.module_framework.messages import Messages, Level
+from dewi.config.config import Config
+from dewi.module_framework.messages import Level, Messages
 from dewi.module_framework.module import Module
 
 

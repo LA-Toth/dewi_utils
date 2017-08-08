@@ -6,9 +6,9 @@ import re
 import time
 import typing
 
+from dewi.config.config import Config
 from dewi.logparser.syslog import Parser
-from dewi.module_framework.config import Config
-from dewi.module_framework.messages import Messages, Level, CORE_CATEGORY
+from dewi.module_framework.messages import CORE_CATEGORY, Level, Messages
 from dewi.module_framework.module import Module
 
 

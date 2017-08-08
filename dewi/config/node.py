@@ -12,7 +12,7 @@ class Node(collections.MutableMapping):
     This class is a base class to add typesafe objects to a Config.
     Example:
 
-    >>> from dewi.module_framework.config import Config
+    >>> from dewi.config.config import Config
     >>> class A(Node):
     >>>     entry: str = 'default-value'
     >>> c = Config()
