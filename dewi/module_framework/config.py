@@ -1,5 +1,8 @@
-# Copyright 2016 Laszlo Attila Toth
+# Copyright 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+
+import typing
+
 import yaml
 
 
@@ -70,8 +73,14 @@ class Config:
         c, key = self._get_container_and_key(list_entry)
         del c[key]
 
-    def dump(self, file):
-        yaml.dump(self._config, file, indent=4, default_flow_style=False)
+    def dump(self, file, ignore: typing.Optional[typing.List[str]] = None):
+        cfg = self._config
+        if ignore:
+            cfg = dict(cfg)
+            for item in ignore:
+                del cfg[item]
+
+        yaml.dump(cfg, file, indent=4, default_flow_style=False)
 
     def print(self, file=None):
         self._print(self._config, '', file=file)
