@@ -1,9 +1,0 @@
-name: myplugin1
-description: 'Example Plugin With Module-like Commands'
-author: 'Laszlo Attila Toth'
-email: 'laszlo.attila.toth@gmail.com'
-source:
-    basedirectory: 'lib/'
-    commandmodule:
-        name: 'MyPlugin1.Commands'
-        type: MODULE_AND_CLASS_HAS_SAME_NAME
