@@ -2,14 +2,15 @@
 # Distributed under the terms of the GNU General Public License v3
 import typing
 
+from dewi.logparser.loghandler import LogParserModule
 from dewi.module_framework.messages import Level
-from steve.commands.debug_bundle_processor.logparsers.base_module import BaseModule
 
 
-class KernelModule(BaseModule):
+class KernelModule(LogParserModule):
     """
     Example module to track processes which are unresponsible on a system having high - I/O - load
     """
+
     def get_registration(self):
         return [
             {

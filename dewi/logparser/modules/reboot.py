@@ -2,11 +2,11 @@
 # Distributed under the terms of the GNU General Public License v3
 import typing
 
+from dewi.logparser.loghandler import LogParserModule
 from dewi.module_framework.messages import Level
-from steve.commands.debug_bundle_processor.logparsers.base_module import BaseModule
 
 
-class RebootModule(BaseModule):
+class RebootModule(LogParserModule):
     """
     Example module that calculates reboots on a system that have @reboot cron jobs
     """
