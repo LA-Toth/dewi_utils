@@ -7,7 +7,7 @@ from dewi.config.config import Config
 from dewi.module_framework.messages import Level, Messages
 
 
-class Module:
+class GenericModule:
     def __init__(self,
                  config: Config,
                  messages: Messages,
@@ -20,15 +20,6 @@ class Module:
 
         if add_messages_to_config:
             self.add_message = self._add_message_to_config_too
-
-    def require(self) -> typing.List[str]:
-        return ()
-
-    def provide(self) -> str:
-        raise NotImplementedError()
-
-    def run(self):
-        pass
 
     def set(self, entry: str, value):
         self._config.set(entry, value)
@@ -73,3 +64,14 @@ class Module:
         )
 
     add_message = _add_message
+
+
+class Module(GenericModule):
+    def require(self) -> typing.List[str]:
+        return []
+
+    def provide(self) -> str:
+        raise NotImplementedError()
+
+    def run(self):
+        pass
