@@ -34,16 +34,23 @@ class Message:
         self.hint = hint
         self.details = details
 
+    @property
+    def as_dict(self) -> dict:
+        return dict(
+            level=self.level.name,
+            category=self.category,
+            subcategory=self.subcategory,
+            message=self.message,
+            hint=self.hint,
+            details=self.details
+        )
+
 
 class Messages:
-    """
-     @type _messages typing.Dict[Level, typing.List[Message]]
-     """
-
     def __init__(self):
-        self._messages = dict()
-        for level in Level:
-            self._messages[level] = list()
+        self._messages: typing.Dict[str, typing.Dict[str, typing.List[Message]]] = dict()
+        self._errors: typing.List[str] = list()
+        self._warnings: typing.List[str] = list()
 
     def add(self, level: Level, category: str, sub_category: str, message: str,
             *,
@@ -53,13 +60,59 @@ class Messages:
             hint = [hint]
         if isinstance(details, str):
             details = [details]
-        self._messages[level].append(Message(level, category, sub_category, message, hint=hint, details=details))
+
+        self._add(level, category, sub_category, message, hint, details)
+
+    def _add(self,
+             level: Level, category: str, sub_category: str, message: str,
+             hint: typing.Optional[typing.List[str]] = None,
+             details: typing.Optional[typing.List[str]] = None):
+
+        if category not in self._messages:
+            self._messages[category] = dict()
+
+        if sub_category not in self._messages[category]:
+            self._messages[category][sub_category] = list()
+
+        self._messages[category][sub_category].append(
+            Message(level, category, sub_category, message, hint=hint, details=details))
+
+        if level == Level.ERROR:
+            self._errors.append(message)
+        elif level == Level.WARNING:
+            self._warnings.append(message)
 
     @property
-    def messages(self) -> typing.Dict[Level, typing.List[Message]]:
+    def messages(self) -> typing.Dict[str, typing.Dict[str, typing.List[Message]]]:
         return self._messages
 
+    @property
+    def as_dict(self) -> typing.Dict[str, typing.Dict[str, typing.List[dict]]]:
+        result = dict()
+        for c in self._messages:
+            result[c] = dict()
+            for sc in self._messages[c]:
+                result[c][sc] = list()
+                for msg in self._messages[c][sc]:
+                    result[c][sc].append(msg.as_dict)
+
+        return result
+
+    @property
+    def errors(self) -> typing.List[str]:
+        return self._errors
+
+    @property
+    def warnings(self) -> typing.List[str]:
+        return self._warnings
+
     def print_without_category(self):
-        for level in Level:
-            for msg in self._messages[level]:
-                print("[{}] {}".format(level.value, msg.message))
+        for category in self._messages:
+            msg_with_subcategories = self._messages[category]
+            for subcategory in msg_with_subcategories:
+                messages = msg_with_subcategories[subcategory]
+                for msg in messages:
+                    c = category
+                    if category != subcategory:
+                        c += ' :: ' + subcategory
+                    print("[{}] {}:: {}".format(msg.level.value, c, msg.message))
