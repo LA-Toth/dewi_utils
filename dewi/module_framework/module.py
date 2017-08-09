@@ -30,21 +30,22 @@ class GenericModule:
     def get(self, entry: str):
         return self._config.get(entry)
 
-    def _add_message(self, level: Level, category, message: str,
+    def _add_message(self, level: Level, category: str, sub_category: str, message: str,
                      *,
                      hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
                      details: typing.Optional[typing.Union[typing.List[str], str]] = None):
-        self._messages.add(level, category, message, hint=hint, details=details)
+        self._messages.add(level, category, sub_category, message, hint=hint, details=details)
 
-    def _add_message_to_config_too(self, level: Level, category, message: str,
+    def _add_message_to_config_too(self, level: Level, category: str, sub_category: str, message: str,
                                    *,
                                    hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
                                    details: typing.Optional[typing.Union[typing.List[str], str]] = None):
-        self._messages.add(level, category, message, hint=hint, details=details)
+        self._messages.add(level, category, sub_category, message, hint=hint, details=details)
 
         msg_dict = dict(
             level=level.name,
             category=category,
+            sub_category=category,
             message=message,
         )
 

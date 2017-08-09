@@ -23,12 +23,13 @@ class Level(enum.Enum):
 
 class Message:
     def __init__(self,
-                 level: Level, category, message: str,
+                 level: Level, category: str, sub_category: str, message: str,
                  *,
                  hint: typing.Optional[typing.List[str]] = None,
                  details: typing.Optional[typing.List[str]] = None):
         self.level = level
-        self.category = category if isinstance(category, str) else list(category)
+        self.category = category
+        self.subcategory = sub_category
         self.message = message
         self.hint = hint
         self.details = details
@@ -44,7 +45,7 @@ class Messages:
         for level in Level:
             self._messages[level] = list()
 
-    def add(self, level: Level, category, message: str,
+    def add(self, level: Level, category: str, sub_category: str, message: str,
             *,
             hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
             details: typing.Optional[typing.Union[typing.List[str], str]] = None):
@@ -52,7 +53,7 @@ class Messages:
             hint = [hint]
         if isinstance(details, str):
             details = [details]
-        self._messages[level].append(Message(level, category, message, hint=hint, details=details))
+        self._messages[level].append(Message(level, category, sub_category, message, hint=hint, details=details))
 
     @property
     def messages(self) -> typing.Dict[Level, typing.List[Message]]:
