@@ -131,7 +131,7 @@ class LogHandlerModule(Module):
         end = time.clock()
         diff = end - start
         self.add_message(
-            Level.DEBUG, CORE_CATEGORY,
+            Level.DEBUG, CORE_CATEGORY, CORE_CATEGORY,
             "Run time: {} line(s) in {} s ({:.2f} kHz)".format(cnt, diff, cnt / diff / 1000))
 
     def _process_file(self, f):

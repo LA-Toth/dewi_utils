@@ -40,5 +40,5 @@ class WebModule(LogParserModule):
     def finish(self):
         for user in self._failed_auths:
             self.add_message(
-                Level.WARNING, 'Web',
+                Level.WARNING, 'Web', 'Auth',
                 "User '{}' has {} failed auth(s)".format(user, len(self._failed_auths[user])))

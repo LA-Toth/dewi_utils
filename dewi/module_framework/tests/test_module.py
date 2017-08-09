@@ -37,9 +37,9 @@ class ModuleTest(dewi.tests.TestCase):
     def test_module_wraps_messages_add(self):
         msgs = Mock(Messages)
         m = Module(Config(), msgs)
-        m.add_message(Level.INFO, ('a', 'category', 'representation'), 'a message')
+        m.add_message(Level.INFO, 'category', 'subcat', 'a message')
 
         self.assert_equal(
-            [call.add(Level.INFO, ('a', 'category', 'representation'), 'a message', details=None, hint=None)],
+            [call.add(Level.INFO, 'category', 'subcat', 'a message', details=None, hint=None)],
             msgs.mock_calls
         )

@@ -17,9 +17,7 @@ class GenericModule:
         self._config = config
         self._messages = messages
         self._messages_config_key = messages_config_key or 'messages'
-
-        if add_messages_to_config:
-            self.add_message = self._add_message_to_config_too
+        self._save_msg_to_cfg = add_messages_to_config
 
     def set(self, entry: str, value):
         self._config.set(entry, value)
@@ -30,41 +28,36 @@ class GenericModule:
     def get(self, entry: str):
         return self._config.get(entry)
 
-    def _add_message(self, level: Level, category: str, sub_category: str, message: str,
-                     *,
-                     hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
-                     details: typing.Optional[typing.Union[typing.List[str], str]] = None):
+    def add_message(self,
+                    level: Level, category: str, sub_category: str, message: str,
+                    *,
+                    hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
+                    details: typing.Optional[typing.Union[typing.List[str], str]] = None):
+
         self._messages.add(level, category, sub_category, message, hint=hint, details=details)
 
-    def _add_message_to_config_too(self, level: Level, category: str, sub_category: str, message: str,
-                                   *,
-                                   hint: typing.Optional[typing.Union[typing.List[str], str]] = None,
-                                   details: typing.Optional[typing.Union[typing.List[str], str]] = None):
-        self._messages.add(level, category, sub_category, message, hint=hint, details=details)
+        if self._save_msg_to_cfg:
+            msg_dict = dict(
+                level=level.name,
+                category=category,
+                sub_category=category,
+                message=message,
+            )
 
-        msg_dict = dict(
-            level=level.name,
-            category=category,
-            sub_category=category,
-            message=message,
-        )
+            if hint:
+                if isinstance(hint, str):
+                    hint = [hint]
+                msg_dict['hint'] = hint
 
-        if hint:
-            if isinstance(hint, str):
-                hint = [hint]
-            msg_dict['hint'] = hint
+            if details:
+                if isinstance(details, str):
+                    details = [details]
+                msg_dict['details'] = details
 
-        if details:
-            if isinstance(details, str):
-                details = [details]
-            msg_dict['details'] = details
-
-        self._config.append(
-            self._messages_config_key,
-            msg_dict
-        )
-
-    add_message = _add_message
+            self._config.append(
+                self._messages_config_key,
+                msg_dict
+            )
 
 
 class Module(GenericModule):

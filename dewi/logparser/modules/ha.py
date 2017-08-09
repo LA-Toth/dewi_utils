@@ -24,4 +24,4 @@ class HaModule(LogParserModule):
         Processes the whole match, and depending on the content may add some messages
         In this example every log message is added to the warnings.
         """
-        self.add_message(Level.WARNING, 'HA', 'CL:' + msg)
+        self.add_message(Level.WARNING, 'HA', 'HA', 'CL:' + msg)

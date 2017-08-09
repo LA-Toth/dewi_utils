@@ -29,7 +29,7 @@ class RebootModule(LogParserModule):
     def finish(self):
         if len(self._reboots):
             self.add_message(
-                Level.WARNING, 'System',
+                Level.WARNING, 'System', 'Reboot and startup',
                 "System is rebooted; count='{}'".format(len(self._reboots)))
 
             for reboot_time in self._reboots:
