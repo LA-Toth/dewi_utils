@@ -62,10 +62,25 @@ class GenericModule:
 
 class Module(GenericModule):
     def require(self) -> typing.List[str]:
+        """A list of tags that should be provided by another module."""
         return []
 
     def provide(self) -> str:
+        """
+        Provides a tag identifying current module.
+
+        Multiple modules can have same tag, but each of them must have different filter tag if ModuleRunner is in use.
+        """
         raise NotImplementedError()
+
+    def get_filter_tags(self) -> typing.List[str]:
+        """
+        Prefilter the module for instance by OS or by product name depending on the client of module framework.
+
+        If ModuleRunner is in use, each different filter tag must contain unique provided tag list:
+        if two modules have both same filter tag and both have the same provided tag, it is an error.
+        """
+        return []
 
     def run(self):
         pass
