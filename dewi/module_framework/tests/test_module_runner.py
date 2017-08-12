@@ -191,5 +191,4 @@ class ModuleRunnerTestWithMultipleModules(ModuleRunnerTestBase):
         self.assert_true(md.called, "Module D run should be called")
         self.assert_true(me.called, "Module E run should be called")
 
-        # It's a valid solution for current implementation
-        self.assert_equal(cfg.get('_called_'), ['d', 'e', 'b'])
+        self.assert_less(cfg.get('_called_').index('e'), cfg.get('_called_').index('b'))
