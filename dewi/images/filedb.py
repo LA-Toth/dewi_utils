@@ -5,7 +5,7 @@
 import sqlite3
 import typing
 
-from dewi.commands.select_images.fileentry import FileEntry
+from dewi.images.fileentry import FileEntry
 
 
 class FileDatabase:

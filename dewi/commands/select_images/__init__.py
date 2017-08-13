@@ -5,11 +5,11 @@ import argparse
 import collections
 import os
 
-from dewi.commands.select_images.filedb import FileDatabase
-from dewi.commands.select_images.fileentry import FileEntry
 from dewi.commands.select_images.filtering import Filter, FilterResult, ProcessInputToFilter
 from dewi.core.command import Command
 from dewi.core.context import Context
+from dewi.images.filedb import FileDatabase
+from dewi.images.fileentry import FileEntry
 from dewi.loader.plugin import Plugin
 
 
