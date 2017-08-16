@@ -55,7 +55,7 @@ class GenericModule:
                 msg_dict['details'] = details
 
             self._config.append(
-                self._messages_config_key,
+                '{}.{}.{}'.format(self._messages_config_key, category, sub_category),
                 msg_dict
             )
 
