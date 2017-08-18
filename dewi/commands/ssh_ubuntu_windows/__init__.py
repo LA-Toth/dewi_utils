@@ -1,16 +1,14 @@
-# Copyright (c) 2016 Laszlo Attila Toth
+# Copyright (c) 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 
 import argparse
-import collections
 import os
 import shlex
 import subprocess
 
 from dewi.core.command import Command
-from dewi.core.context import Context
-from dewi.loader.plugin import Plugin
+from dewi.core.commandplugin import CommandPlugin
 
 
 class SshToUbuntuOnWindows(Command):
@@ -29,12 +27,4 @@ class SshToUbuntuOnWindows(Command):
         return shlex.quote('/mnt/' + path[0].lower() + '/'.join(path[2:].split('\\')))
 
 
-class SshToUbuntuOnWindowsPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + SshToUbuntuOnWindows.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(SshToUbuntuOnWindows)
+SshToUbuntuOnWindowsPlugin = CommandPlugin.create(SshToUbuntuOnWindows)

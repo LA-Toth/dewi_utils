@@ -1,4 +1,4 @@
-# Copyright (c) 2016 Laszlo Attila Toth
+# Copyright (c) 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 
@@ -9,10 +9,8 @@ import os
 import re
 import sys
 
-from dewi.core.context import Context
-from dewi.loader.plugin import Plugin
-
 from dewi.core.command import Command
+from dewi.core.commandplugin import CommandPlugin
 
 
 class Splitter:
@@ -154,12 +152,4 @@ class SplitZorpLogCommand(Command):
         splitter.run()
 
 
-class SplitZorpLogPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + SplitZorpLogCommand.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(SplitZorpLogCommand)
+SplitZorpLogPlugin = CommandPlugin.create(SplitZorpLogCommand)

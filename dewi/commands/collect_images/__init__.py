@@ -2,17 +2,15 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-import collections
 import os
 import sqlite3
 import subprocess
 import typing
 
 from dewi.core.command import Command
-from dewi.core.context import Context
+from dewi.core.commandplugin import CommandPlugin
 from dewi.images.filedb import FileDatabase
 from dewi.images.fileentry import FileEntry
-from dewi.loader.plugin import Plugin
 
 
 class ImageCollector:
@@ -85,12 +83,4 @@ class ImageCollectorCommand(Command):
         sorter.run()
 
 
-class ImageCollectorPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + ImageCollectorCommand.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(ImageCollectorCommand)
+ImageCollectorPlugin = CommandPlugin.create(ImageCollectorCommand)

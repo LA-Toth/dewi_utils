@@ -2,15 +2,13 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-import collections
 import os
 
 from dewi.core.command import Command
-from dewi.core.context import Context
+from dewi.core.commandplugin import CommandPlugin
 from dewi.images.filedb import FileDatabase
 from dewi.images.fileentry import FileEntry
 from dewi.images.filtering import Filter, FilterResult, ProcessInputToFilter
-from dewi.loader.plugin import Plugin
 
 
 class ImageSelector:
@@ -101,12 +99,4 @@ class ImageSelectorCommand(Command):
         sorter.run()
 
 
-class ImageSelectorPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + ImageSelectorCommand.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(ImageSelectorCommand)
+ImageSelectorPlugin = CommandPlugin.create(ImageSelectorCommand)

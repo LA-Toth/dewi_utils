@@ -2,12 +2,10 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-import collections
 import typing
 
 from dewi.core.command import Command
-from dewi.core.context import Context
-from dewi.loader.plugin import Plugin
+from dewi.core.commandplugin import CommandPlugin
 from dewi.realtime_sync.app import LocalSyncApp, SyncOverSshApp
 from dewi.realtime_sync.filesync_data import FileSyncEntry
 from dewi.realtime_sync.loader import EntryListLoader
@@ -97,12 +95,4 @@ class FileSyncCommand(Command):
         app.run()
 
 
-class FileSyncPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + FileSyncCommand.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(FileSyncCommand)
+FileSyncPlugin = CommandPlugin.create(FileSyncCommand)

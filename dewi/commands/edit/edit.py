@@ -1,14 +1,12 @@
-# Copyright (c) 2015 Laszlo Attila Toth
+# Copyright (c) 2015-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-import collections
 import re
 import subprocess
 
 from dewi.core.command import Command
-from dewi.core.context import Context
-from dewi.loader.plugin import Plugin
+from dewi.core.commandplugin import CommandPlugin
 
 
 def convert_to_vim_args(args):
@@ -32,7 +30,7 @@ class EditCommand(Command):
     description = 'Calls vim with the file names and line numbers parsed from argument list.'
 
     def register_arguments(self, parser: argparse.ArgumentParser):
-        parser.add_argument('file_list', nargs=argparse.REMAINDER,  help='List of files for editing')
+        parser.add_argument('file_list', nargs=argparse.REMAINDER, help='List of files for editing')
 
     def run(self, ns: argparse.Namespace):
         args = ['vim'] + convert_to_vim_args(ns.file_list)
@@ -40,12 +38,4 @@ class EditCommand(Command):
         pipe.communicate()
 
 
-class EditPlugin(Plugin):
-    def get_description(self) -> str:
-        return 'Command plugin of: ' + EditCommand.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
-
-    def load(self, c: Context):
-        c['commands'].register_class(EditCommand)
+EditPlugin = CommandPlugin.create(EditCommand)
