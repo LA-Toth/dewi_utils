@@ -10,7 +10,7 @@ _levels = {
     'd': '     debug     ',
     'i': ' .   INFO    . ',
     'w': ' *  WARNING  * ',
-    'e': ' *** ERROR *** '
+    'a': ' *** ALERT *** '
 }
 
 
@@ -18,7 +18,7 @@ class Level(enum.Enum):
     DEBUG = _levels['d']
     INFO = _levels['i']
     WARNING = _levels['w']
-    ERROR = _levels['e']
+    ALERT = _levels['a']
 
 
 class Message:
@@ -49,7 +49,7 @@ class Message:
 class Messages:
     def __init__(self):
         self._messages: typing.Dict[str, typing.Dict[str, typing.List[Message]]] = dict()
-        self._errors: typing.List[str] = list()
+        self._alerts: typing.List[str] = list()
         self._warnings: typing.List[str] = list()
 
     def add(self, level: Level, category: str, sub_category: str, message: str,
@@ -77,8 +77,8 @@ class Messages:
         self._messages[category][sub_category].append(
             Message(level, category, sub_category, message, hint=hint, details=details))
 
-        if level == Level.ERROR:
-            self._errors.append(message)
+        if level == Level.ALERT:
+            self._alerts.append(message)
         elif level == Level.WARNING:
             self._warnings.append(message)
 
@@ -99,8 +99,8 @@ class Messages:
         return result
 
     @property
-    def errors(self) -> typing.List[str]:
-        return self._errors
+    def alerts(self) -> typing.List[str]:
+        return self._alerts
 
     @property
     def warnings(self) -> typing.List[str]:
