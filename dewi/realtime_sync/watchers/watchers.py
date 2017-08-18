@@ -8,6 +8,8 @@
 import os
 import typing
 
+import time
+
 from dewi.realtime_sync.filesync_data import FileSyncEntryManager
 from dewi.realtime_sync.syncers import FileSynchronizer
 
@@ -151,7 +153,8 @@ class FileSystemChangeWatcher:
         self._process_change(path, 'deleted', 'removed')
 
     def _process_change(self, path: str, change_type: str, callback: str):
-        print(" * File system changed: {}: {}".format(change_type.capitalize(), path))
+        print(" * [{}] File system changed: {}: {}".
+              format(time.strftime("%Y-%m-%d %H:%M:%S"), change_type.capitalize(), path))
         for watcher in self._watchers:
             processed = getattr(watcher, callback)(path)
 
