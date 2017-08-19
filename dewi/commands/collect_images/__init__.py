@@ -68,7 +68,8 @@ class ImageCollector:
 class ImageCollectorCommand(Command):
     name = 'collect-images'
     aliases = ['image-collector']
-    parser_description = "Sort photos - or files - by its modification name and detect duplicates."
+    description = "Collect photos - or other files - into SQLite database with timestamp, size and MD5 checksum. " \
+                  "Use 'select-images' for next step."
 
     def register_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(

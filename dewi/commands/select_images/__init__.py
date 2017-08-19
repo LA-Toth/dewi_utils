@@ -83,7 +83,8 @@ class ImageSelector:
 class ImageSelectorCommand(Command):
     name = 'select-images'
     aliases = ['image-selector']
-    parser_description = "Select photos - or files"
+    description = "Select photos - or files collected by 'collect-images' and create a filter file in YAML format. " \
+                  "Use 'dedup-images' for next step."
 
     def register_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(

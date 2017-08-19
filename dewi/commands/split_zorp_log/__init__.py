@@ -127,7 +127,7 @@ class Splitter:
 class SplitZorpLogCommand(Command):
     name = 'splitzorplog'
     aliases = ['splitsession', 'splitlog', 'splitzorpsession']
-    parser_description = "Splits a Zorp log into several file, one session per file"
+    description = "Splits a Zorp log into several file, one session per file"
 
     def register_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(

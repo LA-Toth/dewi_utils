@@ -13,8 +13,8 @@ from dewi.core.commandplugin import CommandPlugin
 
 class SshToUbuntuOnWindows(Command):
     name = 'ssh_chdir'
-    aliases = ['ssh_ubuntu_on_owndiws', 'cu', 'chroot']
-    parser_description = "Ssh to localhost, to ubuntu on windows, into current directory"
+    aliases = ['ssh_ubuntu_on_windows', 'cu', 'chroot']
+    description = "Ssh to localhost, to ubuntu on windows, into current directory"
 
     def run(self, args: argparse.Namespace):
         path = self.__prepare_path(os.getcwd())
