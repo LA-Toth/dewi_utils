@@ -1,8 +1,9 @@
-# Copyright 2012-2015 Laszlo Attila Toth
+# Copyright 2012-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
 
 import collections
 import sys
+import typing
 
 from dewi.core.command import Command
 from dewi.core.context import Context
@@ -28,7 +29,7 @@ class ClassDescriptor(object):
     There is also a method that lets the class to be get - without instantiation of it.
     """
 
-    def get_class(self):
+    def get_class(self) -> typing.Type[Command]:
         raise NotImplementedError()
 
     def get_name(self):
@@ -39,12 +40,13 @@ class ClassDescriptorWithModuleAndClassName(ClassDescriptor):
     """
     Both the module name and the command class name are specified
     """
+
     def __init__(self, module_name: str, class_name: str):
         super().__init__()
         self._module_name = module_name
         self._class_name = class_name
 
-    def get_class(self) -> Command:
+    def get_class(self) -> typing.Type[Command]:
         module = self._get_module_object()
         try:
             return getattr(module, self._class_name)
@@ -74,6 +76,7 @@ class ClassDescriptorWithModuleNameAndCommandClassMember(ClassDescriptorWithModu
     The command is in a module that have specific layout, its __init__.py has commandlcass member. This member
     stores the command class.
     """
+
     def __init__(self, module_name: str):
         super().__init__(module_name, 'command_class')
 
@@ -82,14 +85,15 @@ class ClassDescriptorWithConcreteClass(ClassDescriptor):
     """
     This descriptor stores the class itself, mainly used for testing.
     """
-    def __init__(self, class_object: type):
+
+    def __init__(self, class_object: typing.Type[Command]):
         if not issubclass(class_object, Command):
             raise ClassIsNotSubclassOfCommand(
-                    'The {} class is not subclass of dewi.core.command.Command'.format(class_object.__name__))
+                'The {} class is not subclass of dewi.core.command.Command'.format(class_object.__name__))
         super().__init__()
         self.class_object = class_object
 
-    def get_class(self) -> Command:
+    def get_class(self) -> typing.Type[Command]:
         return self.class_object
 
     def get_name(self) -> str:
@@ -127,6 +131,9 @@ class CommandRegistry(object):
     def get_command_names(self) -> collections.Sequence:
         return list(self.__registry.keys())
 
+    def __contains__(self, command_name: str) -> bool:
+        return command_name in self.__registry
+
 
 class CommandRegistrar:
     """
@@ -136,7 +143,7 @@ class CommandRegistrar:
     def __init__(self, cr: CommandRegistry):
         self.__registry = cr
 
-    def register_class(self, command_class: type):
+    def register_class(self, command_class: typing.Type[Command]):
         desc = ClassDescriptorWithConcreteClass(command_class)
         self.__registry.register_command_class(command_class.name, desc)
         for alias in command_class.aliases:
