@@ -7,7 +7,7 @@ import time
 import typing
 
 from dewi.config.config import Config
-from dewi.logparser.syslog import Parser
+from dewi.logparser.syslog import ISO8601Parser
 from dewi.module_framework.messages import CORE_CATEGORY, Level, Messages
 from dewi.module_framework.module import GenericModule, Module
 
@@ -68,7 +68,7 @@ class LogHandlerModule(Module):
         if not os.path.exists(self._log_dir):
             self._log_dir = os.path.join(base_path, 'var_log')
 
-        self.parser = Parser()
+        self.parser = ISO8601Parser()
         self.modules = list()
         self._program_parsers = dict()
         self._other_parsers = set()

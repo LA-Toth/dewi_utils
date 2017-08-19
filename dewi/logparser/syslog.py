@@ -1,10 +1,16 @@
-# Copyright 2016 Laszlo Attila Toth
+# Copyright 2016-2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU General Public License v3
+
 import datetime
 import re
 
 
-class Parser(object):
+class ISO8601Parser(object):
+    """
+    Parses log lines having 'time host application message' format,
+    and time is the form defined in RFC 3339, e.g.
+    1990-12-31T15:59:60-08:00 (anyway, it is a leap second)
+    """
     def __init__(self):
         self.__pattern = re.compile(
             r'^(?P<date>\d+-\d+-\d+)T(?P<time>\d\d:\d\d:\d\d)\+[0-9]+:[0-9]+ ' +
@@ -32,8 +38,8 @@ class Parser(object):
         else:
             return parsed
 
-
-def to_timestamp(date_time: str):
-    if date_time[-3] == ':':
-        date_time = date_time[:-3] + date_time[-2:]
-    return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z").timestamp()
+    @classmethod
+    def to_timestamp(cls, date_time: str):
+        if date_time[-3] == ':':
+            date_time = date_time[:-3] + date_time[-2:]
+        return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z").timestamp()
