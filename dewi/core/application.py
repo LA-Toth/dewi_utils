@@ -6,6 +6,7 @@ import collections
 import sys
 import traceback
 
+from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader
 from dewi.loader.plugin import Plugin
@@ -42,7 +43,7 @@ class MainApplication:
         parser.add_argument('command', nargs=1, help='Command to be run')
         parser.add_argument(
             'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
-            default=[],)
+            default=[], )
         return parser.parse_args(args)
 
     def run(self, args: collections.Iterable):
@@ -56,19 +57,33 @@ class MainApplication:
             context = self.__loader.load(set(plugins))
             command_name = app_ns.command[0]
 
-            command_class = context['commandregistry'].get_command_class_descriptor(command_name).get_class()
-            command = command_class()
-            parser = argparse.ArgumentParser(
-                description=command.description,
-                prog='{} {}'.format(self.__program_name, command_name))
+            command_registry: CommandRegistry = context['commandregistry']
 
-            command.register_arguments(parser)
-            ns = parser.parse_args(app_ns.commandargs)
-            ns._running_command_ = command_name
-            ns._debug_ = app_ns.debug
-            ns._print_backtraces_ = app_ns.print_backtraces
-            ns._parser = parser
-            sys.exit(command.run(ns))
+            if command_name in command_registry:
+
+                command_class = command_registry.get_command_class_descriptor(command_name).get_class()
+                command = command_class()
+                parser = argparse.ArgumentParser(
+                    description=command.description,
+                    prog='{} {}'.format(self.__program_name, command_name))
+
+                command.register_arguments(parser)
+                ns = parser.parse_args(app_ns.commandargs)
+                ns._running_command_ = command_name
+                ns._debug_ = app_ns.debug
+                ns._print_backtraces_ = app_ns.print_backtraces
+                ns._parser = parser
+                sys.exit(command.run(ns))
+
+            else:
+                print(f"ERROR: The command '{command_name}' is not known.\n")
+                print('Available commands and aliases:')
+                for name in sorted(command_registry.get_command_names()):
+                    print('{:30s}   - {}'.format(
+                        name,
+                        command_registry.get_command_class_descriptor(name).get_class().description))
+                sys.exit(1)
+
         except SystemExit:
             self.__wait_for_termination_if_needed(app_ns)
             raise

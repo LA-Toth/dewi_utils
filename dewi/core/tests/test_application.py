@@ -53,7 +53,6 @@ class FakePluginLoader(PluginLoader):
 
 
 class TestMainApplication(dewi.tests.TestCase):
-
     def set_up(self):
         self.command = FakeCommand()
         self.loader = FakePluginLoader(FakeCommand)
@@ -102,11 +101,28 @@ class TestMainApplication(dewi.tests.TestCase):
         self.assert_in('Fake Command Error', redirect.stderr.getvalue())
 
     def test_unknown_command(self):
+        """
+        Test that the output is something like the following,
+        without checking the exact space character count between the command name (fake)
+        and the description (- A fake command for tests).
+
+        ---8<---
+        ERROR: The command 'unknown-name' is not known.
+
+        Available commands and aliases:
+        fake                             - A fake command for tests
+        --->8---
+        """
+
         redirect = self.__invoke_application_redirected(
             ['-p', 'test', 'unknown-name'],
             expected_exit_value=1)
-        self.assert_equal('', redirect.stdout.getvalue())
-        self.assert_in("Specified command class name is not found; name='unknown-name'", redirect.stderr.getvalue())
+        self.assert_equal('', redirect.stderr.getvalue())
+
+        output = redirect.stdout.getvalue()
+        self.assert_in("ERROR: The command 'unknown-name' is not known.\n", output)
+        self.assert_in("Available commands and aliases:\nfake ", output)
+        self.assert_in(" - A fake command for tests\n", output)
 
     def test_run_help_of_command(self):
         redirect = self.__invoke_application_redirected(
