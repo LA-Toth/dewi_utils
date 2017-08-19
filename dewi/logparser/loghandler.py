@@ -31,10 +31,10 @@ class _Pattern:
         regex = config.get('message_regex', '')
 
         if regex:
-            self.message_regex = re.compile(regex)
+            self.message_regex: typing.Pattern[str] = re.compile(regex)
             self.process = self.process_regex
         else:
-            self.message_regex = ''
+            self.message_regex: typing.Pattern[str] = ''
             if self.message_substring:
                 self.process = self.process_substring
             else:
