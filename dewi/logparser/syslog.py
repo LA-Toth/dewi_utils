@@ -5,6 +5,8 @@ import datetime
 import re
 import typing
 
+import time
+
 
 class Parser:
     def parse_date(self, line: str) -> typing.Optional[typing.Match[str]]:
@@ -53,3 +55,19 @@ class ISO8601Parser(Parser):
         if date_time[-3] == ':':
             date_time = date_time[:-3] + date_time[-2:]
         return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z").timestamp()
+
+
+class GenericParser(Parser):
+    def __init__(self):
+        self._date_time_pattern = re.compile(
+            r'^([A-Za-z]+ [0-9]+ )'
+        )
+
+    def parse_date(self, line: str) -> typing.Optional[typing.Match[str]]:
+        matched = self._date_time_pattern.match(line)
+        if not matched:
+            return None
+
+        time_struct = time.strptime(matched.group(1) + time.strftime('%Y'), '%b %d %Y')
+
+        return f'{time_struct.tm_year}-{time_struct.tm_mon:02d}-{time_struct.tm_mday:02d}'
