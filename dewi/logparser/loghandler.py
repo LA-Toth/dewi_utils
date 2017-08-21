@@ -7,7 +7,7 @@ import time
 import typing
 
 from dewi.config.config import Config
-from dewi.logparser.syslog import ISO8601Parser
+from dewi.logparser.syslog import GenericParser, Parser
 from dewi.module_framework.messages import CORE_CATEGORY, Level, Messages
 from dewi.module_framework.module import GenericModule, Module
 
@@ -51,24 +51,31 @@ class _Pattern:
             self.callback(time, program, pid, msg)
 
 
+class LogFileDefinition:
+    def __init__(self, directory_list: typing.List[str], file_regex: typing.Union[typing.Pattern[str], str],
+                 parser: Parser):
+        self.directory_list = directory_list
+        self.file_regex = file_regex
+        self.parser = parser
+
+
+class GenericLogFileDefinition(LogFileDefinition):
+    def __init__(self):
+        super().__init__(['/var/log'], r'^(syslog|system.log|messages)', GenericParser())
+
+
 class LogHandlerModule(Module):
     """
     @type modules typing.List[LogParserModule]
     """
 
-    def __init__(self, config: Config, messages: Messages, base_path: str):
+    def __init__(self, config: Config, messages: Messages, log_file_definition: LogFileDefinition):
         """
         base_path: which contains the directory of log messages
         It can be e.g. '/var'
         """
         super().__init__(config, messages)
-        self._log_dir = os.path.join(base_path, 'logs')
-        if not os.path.exists(self._log_dir):
-            self._log_dir = os.path.join(base_path, 'log')
-        if not os.path.exists(self._log_dir):
-            self._log_dir = os.path.join(base_path, 'var_log')
-
-        self.parser = ISO8601Parser()
+        self._log_file_definition = log_file_definition
         self.modules = list()
         self._program_parsers = dict()
         self._other_parsers = set()
@@ -108,15 +115,20 @@ class LogHandlerModule(Module):
 
     def _collect_files(self):
         date_file_map = dict()
-        files = os.listdir(self._log_dir)
+        log_dir: str = None
+
+        for entry in self._log_file_definition.directory_list:
+            if os.path.exists(entry):
+                log_dir = entry
+        files = os.listdir(log_dir)
         for file in files:
-            if not file.startswith('messages-') and not file.startswith('syslog-'):
+            if not re.match(self._log_file_definition.file_regex, file):
                 continue
 
-            filename = os.path.join(self._log_dir, file)
+            filename = os.path.join(log_dir, file)
             with open(filename, encoding='UTF-8', errors='surrogateescape') as f:
                 line = f.readline()
-                parsed = self.parser.parse_date(line)
+                parsed = self._log_file_definition.parser.parse_date(line)
                 date_file_map[parsed.group('date')] = filename
 
         return [date_file_map[k] for k in sorted(date_file_map.keys())]
