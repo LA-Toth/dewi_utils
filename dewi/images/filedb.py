@@ -60,8 +60,14 @@ class FileDatabase:
 
     def iterate(self):
         c = self._conn.cursor()
-        for row in c.execute('SELECT * FROM photo_file_info ORDER BY orig_filename'):
+        for row in c.execute('SELECT *,rowid FROM photo_file_info ORDER BY orig_filename'):
             yield row
+
+    def iterate_photo_entries(self) -> typing.Iterable[FileEntry]:
+        c = self._conn.cursor()
+        for db_entry in c.execute('SELECT *,rowid FROM photo_file_info ORDER BY orig_filename'):
+            yield FileEntry(db_entry[0], os.path.basename(db_entry[0]),
+                            db_entry[2], db_entry[4], db_entry[3], db_entry[5], db_entry[6])
 
     def __contains__(self, item: str):
         c = self._conn.cursor()

@@ -155,7 +155,6 @@ class ProcessInputToFilter:
         self._parser = self._build_parser()
         self._load_history()
         self._current_entry: FileEntry = None
-        self._current_checksum: str = None
         self._process_exit_value: bool = None
         self._ns: argparse.Namespace = None
 
@@ -228,9 +227,8 @@ class ProcessInputToFilter:
             pass
         atexit.register(readline.write_history_file, self._histfile)
 
-    def set_entry(self, entry: FileEntry, checksum: str):
+    def set_entry(self, entry: FileEntry):
         self._current_entry = entry
-        self._current_checksum = checksum
 
     def read_and_process_line(self):
         self._process_exit_value = None
@@ -272,7 +270,6 @@ class ProcessInputToFilter:
 
     def _print_entry_with_checksum(self):
         self._current_entry.print()
-        print(' -- cheksum    : ' + self._current_checksum)
 
     def _handle_quit(self):
         self._process_exit_value = False

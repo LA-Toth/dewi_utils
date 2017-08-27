@@ -27,19 +27,16 @@ class ImageSelector:
 
     def run(self):
         set_quit = False
-        for db_entry in self.db.iterate():
+        for entry in self.db.iterate_photo_entries():
             if set_quit:
                 break
 
-            entry = FileEntry(db_entry[0], os.path.basename(db_entry[0]), db_entry[2], db_entry[4], db_entry[3])
-            checksum = db_entry[5]
-
-            hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, checksum)
+            hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
             if hash_key in self._selected_hash:
                 self._count['d'] += 1
                 continue
 
-            self.read_to_filter.set_entry(entry, checksum)
+            self.read_to_filter.set_entry(entry)
             result = FilterResult.UNSPECIFIED
 
             while result == FilterResult.UNSPECIFIED:
@@ -54,7 +51,7 @@ class ImageSelector:
                         result = FilterResult.ACCEPT  # doesn't matter
                 else:
                     if result == FilterResult.ACCEPT:
-                        self._select_entry(entry, checksum)
+                        self._select_entry(entry)
                     else:
                         self._count['r'] += 1
 
@@ -63,8 +60,8 @@ class ImageSelector:
 
         self._print_stats()
 
-    def _select_entry(self, entry: FileEntry, checksum: str) -> bool:
-        hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, checksum)
+    def _select_entry(self, entry: FileEntry) -> bool:
+        hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
         self._selected_for_move.append(entry)
         self._selected_hash[hash_key] = True
         self._count['n'] += 1
