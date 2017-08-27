@@ -15,6 +15,7 @@ class CommandsPlugin(Plugin):
         return {
             'dewi.core.CorePlugin',
             'dewi.commands.collect_images.ImageCollectorPlugin',
+            'dewi.commands.deduplicate_images.ImageDeduplicatorPlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
             'dewi.commands.select_images.ImageSelectorPlugin',
