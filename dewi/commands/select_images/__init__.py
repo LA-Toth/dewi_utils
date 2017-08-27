@@ -2,7 +2,6 @@
 # Distributed under the terms of the GNU General Public License v3
 
 import argparse
-import os
 
 from dewi.core.command import Command
 from dewi.core.commandplugin import CommandPlugin
@@ -90,7 +89,7 @@ class ImageSelectorCommand(Command):
 
         parser.add_argument(
             '--sql', '--sqlite-db', '--db', '-d', dest='db', required=True,
-            help='SQLite database to store data')
+            help='SQLite database to read')
 
     def run(self, args: argparse.Namespace):
         sorter = ImageSelector(args.filter_file, args.db)
