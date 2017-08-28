@@ -20,14 +20,20 @@ tests:
 	$(NOSE) -s $(NOSE_TEST_PATHS)
 
 .PHONY: cs
-cs: pep8
+cs: pylint pep8
+
+.PHONY: pylint
+pylint:
 	@echo Runing pylint
 	export PYLINTHOME=$(PYLINT_DIR)
 	mkdir -p $(PYLINT_DIR)
 	PYTHONPATH=".:$(PYTHONPATH)" $(PYLINT) --rcfile=.pylintrc $(PACKAGE_NAMES)
 
 .PHONY: codingstandards
-codingstandards: pep8
+codingstandards: pylint-report pep8
+
+.PHONY: pylint-report
+pylint-report:
 	@echo Running pylint with reports
 	export PYLINTHOME=$(PYLINT_DIR)
 	mkdir -p $(PYLINT_DIR)
