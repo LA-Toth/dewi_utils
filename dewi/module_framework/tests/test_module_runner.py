@@ -96,10 +96,8 @@ class ModuleRunnerTestBase(dewi.tests.TestCase):
 
 class ModuleRunnerTestWithOneOrTwoModulesAndDifferentTags(ModuleRunnerTestBase):
     def test_runner_without_modules(self):
-        try:
-            self.runner.run()
-        except:
-            self.assert_false(True, "Test should not reach this line")
+        self.runner.run()
+        self.assert_true(True, "Test should reach this line")
 
     def test_that_single_module_without_filter_runs_without_Filter(self):
         m = self._c(TestModule1)
