@@ -45,6 +45,10 @@ class FileEntry:
     def date_as_exif_data(self):
         return time.strftime('%Y:%m:%d %H:%M:%S', self._mod_date)
 
+    @property
+    def key(self):
+        return (self.uppercase_basename, self.size, self.mod_date, self.checksum)
+
     def __str__(self):
         return str(self.__dict__)
 

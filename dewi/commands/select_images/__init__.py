@@ -30,8 +30,7 @@ class ImageSelector:
             if set_quit:
                 break
 
-            hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
-            if hash_key in self._selected_hash:
+            if entry.key in self._selected_hash:
                 self._count['d'] += 1
                 continue
 
@@ -60,9 +59,8 @@ class ImageSelector:
         self._print_stats()
 
     def _select_entry(self, entry: FileEntry) -> bool:
-        hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
         self._selected_for_move.append(entry)
-        self._selected_hash[hash_key] = True
+        self._selected_hash[entry.key] = True
         self._count['n'] += 1
         return True
 

@@ -79,8 +79,7 @@ class ImageDeduplicator:
         if self.db.has_new_path_info():
             return
         for entry in self.db.iterate_photo_entries():
-            hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
-            if hash_key in self._selected_hash:
+            if entry.key in self._selected_hash:
                 self._count['d'] += 1
                 continue
 
@@ -91,9 +90,8 @@ class ImageDeduplicator:
                 self._count['r'] += 1
 
     def _select_entry(self, entry: FileEntry) -> bool:
-        hash_key = (entry.uppercase_basename, entry.size, entry.mod_date, entry.checksum)
         self._selected_for_move.append(entry)
-        self._selected_hash[hash_key] = True
+        self._selected_hash[entry.key] = True
         self._count['n'] += 1
         return True
 
@@ -216,9 +214,12 @@ class ImageDeduplicator:
             if not self.config.dry_run:
                 if not os.path.exists(entry.orig_path):
                     print(f'SKIP MISSING SOURCE FILE: {entry.orig_path}', file=self.log)
-                else:
+                elif not os.path.exists(path):
                     os.makedirs(os.path.dirname(path), 0o755, exist_ok=True)
                     shutil.copy2(entry.orig_path, path)
+                else:
+                    print(f'SKIP EXISTING TARGET {path} - SOURCE FILE: {entry.orig_path}', file=self.log)
+
 
     def _print_stats(self):
         print('Stats: ')
