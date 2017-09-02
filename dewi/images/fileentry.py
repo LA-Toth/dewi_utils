@@ -49,6 +49,10 @@ class FileEntry:
     def key(self):
         return (self.uppercase_basename, self.size, self.mod_date, self.checksum)
 
+    @property
+    def key_without_date(self):
+        return (self.uppercase_basename, self.size, self.checksum)
+
     def __str__(self):
         return str(self.__dict__)
 

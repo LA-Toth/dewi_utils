@@ -3,7 +3,6 @@
 
 import argparse
 import os
-import shutil
 import subprocess
 import time
 import typing
@@ -12,7 +11,6 @@ from dewi.core.command import Command
 from dewi.core.commandplugin import CommandPlugin
 from dewi.images.filedb import FileDatabase
 from dewi.images.fileentry import FileEntry
-from dewi.images.filtering import Filter, FilterResult
 
 
 class SafeEraserConfig:
@@ -20,6 +18,7 @@ class SafeEraserConfig:
         self.sqlite_filename: str = None
         self.log_file: str = None
         self.dry_run = False
+        self.exiftool = 'exiftool-5.24'
 
 
 class Step:
@@ -39,6 +38,7 @@ class SafeEraser:
         self.safe_to_delete = list()
         self.known_rows = set()
         self.copied_hashes = dict()
+        self.copied_hashes_without_date = dict()
 
         self.steps: typing.List[Step] = [
             Step(self._read_from_db, 'Read copied file entries'),
@@ -74,6 +74,7 @@ class SafeEraser:
                 self.safe_to_delete.append(entry.orig_path)
                 self.known_rows.add(entry.id)
                 self.copied_hashes[entry.key] = entry
+                self.copied_hashes_without_date[entry.key_without_date] = entry
 
             else:
                 print(f'*** NOT Found {real_path}, original (and dups) CANNNOT be deleted from {entry.orig_path}',
@@ -88,12 +89,44 @@ class SafeEraser:
             if entry.id in self.known_rows:
                 continue
 
+            if not os.path.exists(entry.orig_path):
+                self.known_rows.add(entry.id)
+                continue
+
             if entry.key in self.copied_hashes:
                 print(f'! DUPLICATE found at {entry.orig_path}, original: {self.copied_hashes[entry.key].orig_path}',
                       file=self.log)
                 self.known_rows.add(entry.id)
                 self.safe_to_delete.append(entry.orig_path)
                 count += 1
+            elif entry.key_without_date in self.copied_hashes_without_date:
+                try:
+                    date_line = subprocess.check_output([self.config.exiftool, '-t', entry.orig_path]).decode(
+                        'UTF-8')
+                    date_new = \
+                        [x.split('\t')[1] for x in date_line.splitlines(keepends=False)
+                         if x.startswith('Date/Time Original')]
+                except subprocess.CalledProcessError:
+                    date_new = []
+
+                if not date_new:
+                    print(f'** Missing exif date info in file {entry.orig_path}', file=self.log)
+                    continue
+
+                date_new = date_new[0]
+                date_new_ts = time.mktime(time.strptime(date_new, '%Y:%m:%d %H:%M:%S'))
+
+                if abs(date_new_ts - entry.mod_date) < self.MOD_DATE_MAX_DIFF or \
+                                abs(abs(date_new_ts - entry.mod_date) - 3600) < self.MOD_DATE_MAX_DIFF:
+                    print(
+                        f'. DUPLICATE found at {entry.orig_path}, original: ' + self.copied_hashes_without_date[
+                            entry.key_without_date].orig_path + \
+                        f' date diff is {entry.mod_date - date_new_ts}',
+                        file=self.log)
+                    self.known_rows.add(entry.id)
+                    self.safe_to_delete.append(entry.orig_path)
+                    count += 1
+
         print(f'Found {count} more files for deletion')
         print(f'Found {count} more files for deletion', file=self.log)
 
