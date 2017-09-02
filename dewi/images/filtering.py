@@ -107,10 +107,14 @@ class Filter:
                         accepted_dir = True
                         break
 
-            for part in (self._config.get('dirs.partial_path.reject') or []):
-                if part in directory:
-                    accepted_dir = False
-                    break
+            if directory in (self._config.get('dirs.path.reject') or []):
+                accepted_dir = False
+
+            if accepted_dir or accepted_dir is None:
+                for part in (self._config.get('dirs.partial_path.reject') or []):
+                    if part in directory:
+                        accepted_dir = False
+                        break
 
             if accepted_dir or accepted_dir is None:
                 for part in (self._config.get('dirs.subdir.reject') or []):
