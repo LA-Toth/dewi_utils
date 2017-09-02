@@ -45,7 +45,7 @@ class ImageCollector:
     def _skip_file(self, name: str) -> bool:
         _, ext = os.path.splitext(name.lower())
 
-        return ext not in ['.jpg', '.jpeg', '.cr2', '.mov', '.thm']
+        return ext not in ['.jpg', '.jpeg', '.cr2', '.mov', '.thm', '.mp4']
 
     def _mod_date_and_file_size(self, full_path: str) -> typing.Tuple[int, int]:
         f = os.stat(full_path)
