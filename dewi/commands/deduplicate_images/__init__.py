@@ -108,8 +108,10 @@ class ImageDeduplicator:
 
     def _add_entry_to_fs(self, entry: FileEntry):
         full_path = os.path.join(self.config.main_target_dir, entry.new_name)
+
         if full_path not in self._target_entries:
             self._target_entries[full_path] = entry
+
         elif entry.checksum == self._target_entries[full_path].checksum:
             # This is likely the same file, even if the time stamp differs. This can occur
             # when importing into iPhoto (eg. before 2010!), or
@@ -121,9 +123,11 @@ class ImageDeduplicator:
                 full_path].orig_path + ' ' + full_path + '\n')
             entry.print(self.log)
             self._target_entries[full_path].print(self.log)
+
             if not os.path.exists(entry.orig_path):
                 self._target_entries[full_path] = entry
                 print('Choosing NEW entry (missing original file)', file=self.log)
+
             elif os.path.exists(entry.orig_path):
                 # The modification date of the entry can be exactly the same as in the EXIF data
                 # or it has to be within a few seconds, probably because it takes time to write to the memory card.
