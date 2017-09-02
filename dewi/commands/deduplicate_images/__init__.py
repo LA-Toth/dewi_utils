@@ -50,7 +50,8 @@ class ImageDeduplicator:
         self.moved = dict()
         self._selected_for_move: typing.List[FileEntry] = list()
         self._selected_hash = dict()  # (uppercase-name, file-size, date, checksum) => true
-        self._count = dict(n=0, r=0, d=0, s=0)  # new, reject, dup, skipped
+        self._count = dict(n=0, r=0, d=0)  # new, reject, dup
+        self._print_count = False
 
         self._target_entries: typing.Dict[str, FileEntry] = dict()
 
@@ -78,6 +79,9 @@ class ImageDeduplicator:
     def _read_from_db(self):
         if self.db.has_new_path_info():
             return
+
+        self._print_count = True
+
         for entry in self.db.iterate_photo_entries():
             if entry.key in self._selected_hash:
                 self._count['d'] += 1
@@ -220,15 +224,15 @@ class ImageDeduplicator:
                 else:
                     print(f'SKIP EXISTING TARGET {path} - SOURCE FILE: {entry.orig_path}', file=self.log)
 
-
     def _print_stats(self):
+        if not self._print_count:
+            return
+
         print('Stats: ')
         print(f'* NEW      : {self._count["n"]}')
         print(f'* DUP      : {self._count["d"]}')
         print(f'* REJECTED : {self._count["r"]}')
-        print(f'* SKIP     : {self._count["s"]}')
         print(f'# DONE     : ' + str(self._count['n'] + self._count['d'] + self._count['r']))
-        print(f'# TOTAL    : ' + str(self._count['n'] + self._count['d'] + self._count['r'] + self._count['s']))
 
 
 class ImageDeduplicatorCommand(Command):
