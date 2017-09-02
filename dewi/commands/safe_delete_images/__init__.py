@@ -138,10 +138,11 @@ class SafeEraser:
         for path in self.safe_to_delete:
             if self.config.dry_run or os.path.exists(path):
                 print(f'DELETE {path}', file=self.log)
-                os.unlink(path)
+                if not self.config.dry_run:
+                    os.unlink(path)
                 count += 1
             else:
-                print(f'DELETE {path}', file=self.log)
+                print(f'ALREADY DELETED {path}', file=self.log)
                 missing += 1
 
         print(f'Deleted {count} of {len(self.safe_to_delete)} files; already removed (missing) {missing} files')
