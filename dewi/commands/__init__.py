@@ -18,6 +18,7 @@ class CommandsPlugin(Plugin):
             'dewi.commands.deduplicate_images.ImageDeduplicatorPlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
+            'dewi.commands.safe_delete_images.SafeEraserPlugin',
             'dewi.commands.select_images.ImageSelectorPlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
             'dewi.commands.ssh_ubuntu_windows.SshToUbuntuOnWindowsPlugin',
