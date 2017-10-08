@@ -46,7 +46,21 @@ class Request:
         return base64.b64encode(digest)
 
     def _generate_url(self):
-        self.url += '&' + urllib.parse.urlencode(self.params)
+        self.url += '&' + self._prepare_parameters(self.params)
+
+    def _prepare_parameters(self, params: typing.Optional[dict]):
+        if not params:
+            return dict()
+
+        result = list()
+        for key, value in params.items():
+            if isinstance(value, (list, tuple)):
+                for v in value:
+                    result.append((key + '[]', v))
+            else:
+                result.append((key, value))
+
+        return urllib.parse.urlencode(result)
 
     def _urlopen(self, *args, **kwargs):
         if self.api_host.unsafe_ssl:
@@ -67,14 +81,14 @@ class Request:
     def put(self):
         self._check_if_processed()
         request = urllib.request.Request(self.url, method='PUT',
-                                         data=urllib.parse.urlencode(self.params).encode('UTF-8'))
+                                         data=self._prepare_parameters(self.params).encode('UTF-8'))
         with self._urlopen(request) as response:
             return response.read()
 
     def post(self):
         self._check_if_processed()
         request = urllib.request.Request(self.url, method='POST',
-                                         data=urllib.parse.urlencode(self.params).encode('UTF-8'))
+                                         data=self._prepare_parameters(self.params).encode('UTF-8'))
         with self._urlopen(request) as response:
             return response.read()
 
