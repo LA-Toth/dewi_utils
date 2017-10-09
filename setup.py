@@ -18,8 +18,8 @@
 
 
 import sys
-if sys.hexversion < 0x03040000:
-    raise RuntimeError("Required python version: 3.4 or newer (current: %s)" % sys.version)
+if sys.hexversion < 0x03060000:
+    raise RuntimeError("Required python version: 3.6 or newer (current: %s)" % sys.version)
 
 try:
     from setuptools import setup, find_packages
@@ -29,35 +29,46 @@ except ImportError:
 
 setup(
     name="dewi",
-    description="A developer tool and framework to support everyday development including large projects",
+    description="A toolchain and framework for everyday tasks",
     long_description=\
     """
-    DEWI is a developer tool, bunch of commands, to support everyday development. This means
-    very small comamnds, such as wrap vim to parse file.txt:123-like lines to check out, make,
-    etc. a large project which has source code even in dozen of repositories.
+    DEWI is started as a developer tool, but contains many different commands (small tools).
 
     DEWI can also use as a framework via its plugins - it's highly extensible.
 
-    The first versions are for finalize this framework and add some useful command.
+    It contains commands for
+    * syncing directory trees to local / remote location
+    * manage photos to eliminate duplicates and sort them in year/year-month/year-month-day/FNAME.EXT form
+    * edit files specified as filename:linenumber form
+    * split Balabit's Zorp logs to one session per file
+    * log into the Ubuntu (Linux) running bash on ubuntu on windows, to the same directory
+
+    It also contains framework for
+    * plugins (used by DEWI)
+    * generic modules (to split task, and so on) with a Config - dict to store values; and emit messages
+    * logparser: parse log files by modules based on the generic modules and emit messages
     """,
     license="GPLv3",
-    version="0.1",
+    version="0.90",
     author="Laszlo Attila Toth",
-    author_email="laszlo.attila.toth@gmail.com",
+    author_email="laszlo.attila.toth+dewi@gmail.com",
     maintainer="Laszlo Attila Toth",
-    maintainer_email="laszlo.attila.toth.com",
-    keywords='tool framework development',
-    url="https://github.com/LA-Toth/dwa",
+    maintainer_email="laszlo.attila.toth+dewi@gmailcom",
+    keywords='tool framework development synchronization',
+    url="https://github.com/LA-Toth/dewi",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: English',
         'Operating System :: POSIX',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3:6',
+        'Topic :: System :: Filesystems',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Application Frameworks',

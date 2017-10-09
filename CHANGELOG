@@ -1,3 +1,29 @@
+0.90
+  - Major update
+  - in_directory() context manager
+  - a product list loader
+  - module for lutheran lithurgical feasts
+  - main app: --wait to wait before exiting (useful on Windows)
+  - main app: --debug / --print-backtrace options
+  - dewi.module_framework: add module support for any command (see README.rst)
+     * another Config() as dewi.config.Config() class
+     * Messages() class
+  - dewi.logparser: parse logs in a directory + modules (see README.rst)
+  - dewi.utils.network: MAC to vendor mapping
+  - dewi.utils.dictionaries: customized behaviour of dicts
+  - dewi.utils.render.py: add Jinja2 TemplateRenderer
+  - dewi.realtime_sync + filesync (treesync):
+    sync a directory tree (source code) to a local or remote directory with rules
+  - dewi.utils.process: find_binary/which to search for executable in PATH
+  - dewi.utils.kayako_rest: Request + Host classes to communicate with Kayako's REST API
+  - dewi.config.node: Node is a typesafe dict for dewi.config module
+  - dewi.images + 4 commands to sort photos from multiple locations:
+      * collect-images -> to an SQLite DB
+      * select-images: select useful entries from collected images
+      * dedup-images: copy unique images into a new location (original -> new mapping is in DB)
+      * safe-delete-images: delete images that are copied by dedup-images (if already copied)
+  - add examples + updated README.rst
+
 0.1
   - Initial release
   - Supports / provide plugins and commands
