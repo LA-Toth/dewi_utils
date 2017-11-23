@@ -32,6 +32,7 @@ class CommandsPlugin(Plugin):
             'dewi.commands.ImageHandlerCommandsPlugin',
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
+            'dewi.commands.license.LicensePlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
             'dewi.commands.ssh_ubuntu_windows.SshToUbuntuOnWindowsPlugin',
         }
