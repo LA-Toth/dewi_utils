@@ -1,3 +1,7 @@
+1.0
+  - It can be marked as stable.
+  - Changed to LGPL, to use freely in proprietary code (eg. by me)
+
 0.90
   - Major update
   - in_directory() context manager

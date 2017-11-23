@@ -48,8 +48,8 @@ setup(
     * generic modules (to split task, and so on) with a Config - dict to store values; and emit messages
     * logparser: parse log files by modules based on the generic modules and emit messages
     """,
-    version="0.90",
     license="LGPLv3",
+    version="1.0",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -57,12 +57,13 @@ setup(
     keywords='tool framework development synchronization',
     url="https://github.com/LA-Toth/dewi",
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Natural Language :: English',
         'Operating System :: POSIX',
+        'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
@@ -73,6 +74,7 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Documentation :: Sphinx',
+        'Topic :: Utilities',
     ],
     zip_safe=True,
     use_2to3=False,
