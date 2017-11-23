@@ -1,5 +1,5 @@
 # Copyright 2017 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Distributed under the terms of the GNU Lesser General Public License v3
 
 #
 # This file contains file watchers for specific systems

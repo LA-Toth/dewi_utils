@@ -1,5 +1,5 @@
-# Copyright (c) 2015 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Copyright 2015-2017 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
 #
 # The term "product" means a real product (e.g LibreOffice 4.0) or anything
 # that should be developed as a whole: it may have one or more modules

@@ -48,8 +48,8 @@ setup(
     * generic modules (to split task, and so on) with a Config - dict to store values; and emit messages
     * logparser: parse log files by modules based on the generic modules and emit messages
     """,
-    license="GPLv3",
     version="0.90",
+    license="LGPLv3",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -60,7 +60,7 @@ setup(
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Operating System :: MacOS :: MacOS X',

@@ -1,5 +1,5 @@
 # Copyright 2017 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Distributed under the terms of the GNU Lesser General Public License v3
 
 import dewi.tests
 from dewi.realtime_sync.filesync_data import FileSyncEntryManager, FileSyncFlags, FileSyncEntry

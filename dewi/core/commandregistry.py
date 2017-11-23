@@ -1,5 +1,5 @@
 # Copyright 2012-2017 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
 import sys

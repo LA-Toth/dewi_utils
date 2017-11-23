@@ -1,5 +1,5 @@
-# Copyright (C) 2017 Laszlo Attila Toth
-# Distributed under the terms of GNU General Public License v3
+# Copyright (C)-2017 2017 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
 import typing
 from xml.etree import ElementTree
 

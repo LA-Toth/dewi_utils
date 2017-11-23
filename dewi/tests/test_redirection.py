@@ -1,5 +1,5 @@
-# Copyright (c) 2015 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Copyright 2015-2017 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
 
 import io
 import sys

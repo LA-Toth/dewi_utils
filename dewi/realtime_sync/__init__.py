@@ -1,5 +1,5 @@
 # Copyright 2017 Laszlo Attila Toth
-# Distributed under the terms of the GNU General Public License v3
+# Distributed under the terms of the GNU Lesser General Public License v3
 
 #
 # This package contains a framework for syncing files from the source code to a remote server
