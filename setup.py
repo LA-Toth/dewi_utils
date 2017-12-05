@@ -85,5 +85,8 @@ setup(
         ]
     },
     requires=[
+        'Jinja2',
+        'pyyaml',
+        'watchdog',
     ]
 )
