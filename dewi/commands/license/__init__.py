@@ -77,7 +77,7 @@ class LicenseChange:
         for header in headers:
             if header.startswith(self.LICENSE_PREFIX):
                 result.append(f'{self.LICENSE_PREFIX} {self.LICENSES[self.license]}')
-            elif header.startswith(self.COPYRIGHT_PREFIX2):
+            elif header.lower().startswith(self.COPYRIGHT_PREFIX2.lower()):
                 result.append(self._get_copyright_header(header[len(self.COPYRIGHT_PREFIX2):]))
             elif header.startswith(self.COPYRIGHT_PREFIX):
                 result.append(self._get_copyright_header(header[len(self.COPYRIGHT_PREFIX):]))
