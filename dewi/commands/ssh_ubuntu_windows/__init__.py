@@ -12,8 +12,8 @@ from dewi.core.commandplugin import CommandPlugin
 
 
 class SshToUbuntuOnWindows(Command):
-    name = 'ssh_chdir'
-    aliases = ['ssh_ubuntu_on_windows', 'cu', 'chroot']
+    name = 'ssh_ubuntu_on_windows'
+    aliases = ['cu', 'chroot']
     description = "Ssh to localhost, to ubuntu on windows, into current directory"
 
     def run(self, args: argparse.Namespace):

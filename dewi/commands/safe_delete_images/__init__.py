@@ -151,8 +151,7 @@ class SafeEraser:
 
 
 class SafeEraserCommand(Command):
-    name = 'safe-erase-images'
-    aliases = ['safe-delete-images']
+    name = 'safe-delete-images'
     description = "Erase duplicated photos - or files that successfully copied to their target location"
 
     def register_arguments(self, parser: argparse.ArgumentParser):

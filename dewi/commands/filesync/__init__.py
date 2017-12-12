@@ -13,7 +13,7 @@ from dewi.realtime_sync.loader import EntryListLoader
 
 class FileSyncCommand(Command):
     name = 'filesync'
-    aliases = ['codesync', 'dirsync', 'treesync']
+    aliases = ['dirsync']
     description = "Sync content of a directory to a remote location controlled by mapping rules"
 
     def register_arguments(self, parser: argparse.ArgumentParser):

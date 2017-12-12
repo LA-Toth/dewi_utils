@@ -241,7 +241,7 @@ class ImageDeduplicator:
 
 class ImageDeduplicatorCommand(Command):
     name = 'deduplicate-images'
-    aliases = ['image-deduplicator', 'dedup-images', 'sort images']
+    aliases = ['dedup-images']
     description = "Select photos - or files"
 
     def register_arguments(self, parser: argparse.ArgumentParser):
