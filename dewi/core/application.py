@@ -6,6 +6,8 @@ import collections
 import sys
 import traceback
 
+from dewi.core import CommandRegistrar
+from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader
@@ -21,6 +23,55 @@ class DewiPlugin(Plugin):
 
     def load(self, c: Context):
         pass
+
+
+def _list_comands(prog_name: str, command_registry: CommandRegistry, *, all_commands: bool = False):
+    max_length = 0
+    commands = dict()
+    for name in command_registry.get_command_names():
+        desc = command_registry.get_command_class_descriptor(name)
+        command = desc.get_class()
+        command_name = desc.get_name()
+
+        if name == command_name:
+            cmdname = name
+        else:
+
+            if not all_commands:
+                continue
+            cmdname = '{0}      - alias of {1}'.format(name, command_name)
+
+        if len(cmdname) > max_length:
+            max_length = len(cmdname)
+
+        commands[name] = (cmdname, command.description)
+
+    format_str = "  {0:<" + str(max_length) + "}   -- {1}"
+
+    print(f'Available {prog_name.capitalize()} Commands.')
+    for name in sorted(commands):
+        cmdname, description = commands[name]
+        print(format_str.format(cmdname, description))
+
+
+class ListAllCommand(Command):
+    name = 'list-all'
+    description = 'Lists all available command with aliases'
+
+    def run(self, args: argparse.Namespace):
+        context: Context = args._context_
+        command_registry: CommandRegistry = context['commandregistry']
+        _list_comands(args._program_name_, command_registry, all_commands=True)
+
+
+class ListCommand(Command):
+    name = 'list'
+    description = 'Lists all available command with their names only'
+
+    def run(self, args: argparse.Namespace):
+        context: Context = args._context_
+        command_registry: CommandRegistry = context['commandregistry']
+        _list_comands(args._program_name_, command_registry)
 
 
 class MainApplication:
@@ -40,7 +91,7 @@ class MainApplication:
             '--print-backtraces', action='store_true',
             help='Print backtraces of the exceptions')
         parser.add_argument('--debug', '-d', action='store_true', help='Enable print/log debug messages')
-        parser.add_argument('command', nargs=1, help='Command to be run')
+        parser.add_argument('command', nargs='?', help='Command to be run', default='list')
         parser.add_argument(
             'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
             default=[], )
@@ -53,11 +104,16 @@ class MainApplication:
 
         plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
         plugins.append('dewi.core.commandregistry.CommandRegistryPlugin')
+
         try:
             context = self.__loader.load(set(plugins))
-            command_name = app_ns.command[0]
+            command_name = app_ns.command
 
             command_registry: CommandRegistry = context['commandregistry']
+            command_registrar: CommandRegistrar = context['commands']
+
+            command_registrar.register_class(ListAllCommand)
+            command_registrar.register_class(ListCommand)
 
             if command_name in command_registry:
 
@@ -79,9 +135,9 @@ class MainApplication:
 
             else:
                 print(f"ERROR: The command '{command_name}' is not known.\n")
-                print('Available commands and aliases:')
+                print('Available commands with aliases:')
                 for name in sorted(command_registry.get_command_names()):
-                    print('{:30s}   - {}'.format(
+                    print('  {:30s}   -- {}'.format(
                         name,
                         command_registry.get_command_class_descriptor(name).get_class().description))
                 sys.exit(1)
