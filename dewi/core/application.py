@@ -73,6 +73,8 @@ class MainApplication:
                 ns._debug_ = app_ns.debug
                 ns._print_backtraces_ = app_ns.print_backtraces
                 ns._parser = parser
+                ns._context_ = context
+                ns._program_name_ = self.__program_name
                 sys.exit(command.run(ns))
 
             else:
