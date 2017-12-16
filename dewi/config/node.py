@@ -28,6 +28,11 @@ class Node(collections.MutableMapping):
     def __setitem__(self, key, value):
         return setattr(self, key, value)
 
+    def __setattr(self, key, value):
+        if key not in self:
+            raise KeyError(key)
+        super().__setattr__(key, value)
+
     def __iter__(self):
         return iter(self.__dict__)
 
