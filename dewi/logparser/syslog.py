@@ -51,10 +51,14 @@ class ISO8601Parser(Parser):
             return parsed
 
     @classmethod
-    def to_timestamp(cls, date_time: str):
+    def to_timestamp(cls, date_time: str) -> float:
+        return cls.to_datetime(date_time).timestamp()
+
+    @classmethod
+    def to_datetime(self, date_time: str) -> datetime.datetime:
         if date_time[-3] == ':':
             date_time = date_time[:-3] + date_time[-2:]
-        return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z").timestamp()
+        return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z")
 
 
 class GenericParser(Parser):
