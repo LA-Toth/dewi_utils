@@ -7,8 +7,10 @@ import os.path
 import typing
 
 import dewi.utils.yaml as _yaml
+from dewi.rrdtool.config import GraphConfig
 from dewi.rrdtool.interval import GraphInterval
 from dewi.rrdtool.loader import GraphLoader
+from dewi.rrdtool.modifiers import ConfigModifier
 from dewi.rrdtool.writer import GraphResult, GraphWriter
 
 
@@ -21,17 +23,22 @@ class RrdTool:
 
     Default set of intervals is year/month/week/day, but with wider ranges, see GraphInterval type.
     The width and height of the graphs can also be specified.
+
+    The loaded config may be post-modified for more usable and readable graphs by the `modifiers` parameter.
     """
+
     def __init__(self,
                  munin_directory: str,
                  end_time: typing.Optional[datetime.datetime],
                  *,
+                 modifiers: typing.Optional[typing.List[ConfigModifier]] = None,
                  intervals: typing.Optional[typing.List[GraphInterval]] = None,
                  width: typing.Optional[int] = None,
                  height: typing.Optional[int] = None
                  ):
         self._munin_directory = munin_directory
         self._end_time: datetime.datetime = end_time
+        self._modifiers = modifiers
         self._intervals = intervals or GraphInterval.default_intervals()
         self._width = width or 800
         self._height = height or 300
@@ -42,8 +49,15 @@ class RrdTool:
         loader.load()
         config = loader.config
 
+        self._modify_config(config)
+
         g = GraphWriter(self._munin_directory, config, self._graphs, self._end_time, self._width, self._height)
         g.generate(self._intervals)
+
+    def _modify_config(self, config: GraphConfig):
+        if self._modifiers is not None:
+            for modifier in self._modifiers:
+                modifier.modify(config)
 
     @property
     def graph_result(self) -> GraphResult:
