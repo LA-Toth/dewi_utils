@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import datetime
@@ -94,12 +94,15 @@ class GraphWriter:
         env['LC_LANG'] = 'en_US.UTF-8'
 
         if self._last_update_date_time is not None:
-            offset = self._last_update_date_time.utcoffset().total_seconds()
-            # Strange, but inversion is needed for rrdtool
-            sign = '-' if offset > 0 else '-'
-            offset = int(abs(offset)) // 60
-            h, m = offset // 60, offset % 60
-            env['TZ'] = f'UTC{sign}{h:02d}:{m:02d}'
+            offset = self._last_update_date_time.utcoffset()
+
+            if offset:
+                offset = offset.total_seconds()
+                # Strange, but inversion is needed for rrdtool
+                sign = '-' if offset > 0 else '-'
+                offset = int(abs(offset)) // 60
+                h, m = offset // 60, offset % 60
+                env['TZ'] = f'UTC{sign}{h:02d}:{m:02d}'
 
         return env
 

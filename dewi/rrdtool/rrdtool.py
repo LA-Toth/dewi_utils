@@ -1,9 +1,10 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import datetime
 import os
 import os.path
+import subprocess
 import typing
 
 import dewi.utils.yaml as _yaml
@@ -51,6 +52,9 @@ class RrdTool:
 
         self._modify_config(config)
 
+        if not self._end_time:
+            self._calculate_end_time(config)
+
         g = GraphWriter(self._munin_directory, config, self._graphs, self._end_time, self._width, self._height)
         g.generate(self._intervals)
 
@@ -58,6 +62,20 @@ class RrdTool:
         if self._modifiers is not None:
             for modifier in self._modifiers:
                 modifier.modify(config)
+
+    def _calculate_end_time(self, config: GraphConfig):
+        filename = self._get_an_rrd_file_name(config)
+        result = subprocess.check_output(['rrdtool', 'info', filename]).decode('UTF-8').splitlines(keepends=False)
+        for line in result:
+            if line.startswith('last_update = '):
+                self._end_time = datetime.datetime.fromtimestamp(int(line.replace('last_update = ', '')))
+
+    def _get_an_rrd_file_name(self, config: GraphConfig) -> str:
+        d = config.domains[next(iter(config.domains))]
+        h = d.hosts[next(iter(d.hosts))]
+        p = h.plugins[next(iter(h.plugins))]
+        f = p.fields[p.field_order[0]]
+        return os.path.join(self._munin_directory, f.filename)
 
     @property
     def graph_result(self) -> GraphResult:
