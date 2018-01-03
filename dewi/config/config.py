@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import typing
@@ -19,6 +19,9 @@ class Config:
 
     def overwrite_config(self, config: dict):
         self._config = config
+
+    def _top_level_unsafe_set(self, key: str, value):
+        self._config[key] = value
 
     def set(self, entry: str, value):
         c, key = self._get_container_and_key(entry)
