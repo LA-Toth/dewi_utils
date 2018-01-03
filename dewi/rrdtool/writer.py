@@ -28,6 +28,13 @@ class GraphResult(Node):
     def __init__(self):
         self.graphs: typing.List[GraphNode] = list()
 
+    def load_from(self, data: dict):
+        self.graphs = list()
+        for g in data['graphs']:
+            n = GraphNode()
+            n.load_from(g)
+            self.graphs.append(n)
+
 
 class GraphWriter:
     """
