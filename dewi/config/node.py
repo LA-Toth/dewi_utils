@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
@@ -42,6 +42,16 @@ class Node(collections.MutableMapping):
     def __repr__(self):
         return str(self.__dict__)
 
+    def load_from(self, data: dict):
+        load_node(self, data)
+
+
+def load_node(node: Node, d: dict):
+    for key, value in d.items():
+        if key in node and isinstance(node[key], Node):
+            node[key].load_from(value)
+        else:
+            node[key] = value
 
 def represent_node(dumper: Dumper, data: Node):
     return dumper.represent_dict(data)
