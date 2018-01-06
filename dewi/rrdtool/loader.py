@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import os.path
@@ -47,11 +47,18 @@ class GraphLoader:
 
     def _postprocess(self):
         for domain, host, plugin in self.config.plugins:
+            self.config.domains[domain].hosts[host].plugins[plugin].name = plugin
             if self.config.domains[domain].hosts[host].plugins[plugin].period is None:
                 self.config.domains[domain].hosts[host].plugins[plugin].period = 'seconds'
 
+        for domain in self.config.domains:
+            self.config.domains[domain].name = domain
+            for host in self.config.domains[domain]:
+                self.config.domains[domain].hosts[host].name = host
+
         for domain, host, plugin, field_ in self.config.fields:
             field = self.config.domains[domain].hosts[host].plugins[plugin].fields[field_]
+            field.name = field_
 
             if 'type' not in field.options:
                 field.options['type'] = 'GAUGE'
