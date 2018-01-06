@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import typing
@@ -59,6 +59,12 @@ class Domain(NodeWithName):
 class GraphConfig(Node):
     def __init__(self):
         self.domains: typing.Dict[str, Domain] = DefaultDict(Domain)
+
+    @property
+    def hosts(self) -> typing.Iterator[typing.Tuple[str, str, str]]:
+        for domain in self.domains:
+            for host in self.domains[domain].hosts:
+                yield domain, host
 
     @property
     def plugins(self) -> typing.Iterator[typing.Tuple[str, str, str]]:
