@@ -32,6 +32,7 @@ class RrdTool:
                  munin_directory: str,
                  end_time: typing.Optional[datetime.datetime],
                  *,
+                 reference_datetime: typing.Optional[datetime.datetime] = None,
                  modifiers: typing.Optional[typing.List[ConfigModifier]] = None,
                  intervals: typing.Optional[typing.List[GraphInterval]] = None,
                  width: typing.Optional[int] = None,
@@ -39,6 +40,7 @@ class RrdTool:
                  ):
         self._munin_directory = munin_directory
         self._end_time: datetime.datetime = end_time
+        self._reference_datetime: datetime.datetime = reference_datetime
         self._modifiers = modifiers
         self._intervals = intervals or GraphInterval.default_intervals()
         self._width = width or 800
@@ -68,7 +70,8 @@ class RrdTool:
         result = subprocess.check_output(['rrdtool', 'info', filename]).decode('UTF-8').splitlines(keepends=False)
         for line in result:
             if line.startswith('last_update = '):
-                self._end_time = datetime.datetime.fromtimestamp(int(line.replace('last_update = ', '')))
+                tz = self._reference_datetime.tzinfo if self._reference_datetime else None
+                self._end_time = datetime.datetime.fromtimestamp(int(line.replace('last_update = ', '')), tz=tz)
 
     def _get_an_rrd_file_name(self, config: GraphConfig) -> str:
         d = config.domains[next(iter(config.domains))]
