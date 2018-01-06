@@ -4,6 +4,9 @@
 import typing
 from collections import defaultdict
 
+import yaml
+from yaml.dumper import Dumper
+
 from dewi.config.node import Node
 
 
@@ -80,3 +83,10 @@ class GraphConfig(Node):
                 for plugin in self.domains[domain].hosts[host].plugins:
                     for field in self.domains[domain].hosts[host].plugins[plugin].fields:
                         yield domain, host, plugin, field
+
+
+def represent_node(dumper: Dumper, data: DefaultDict):
+    return dumper.represent_dict(data)
+
+
+yaml.add_multi_representer(DefaultDict, represent_node)
