@@ -1,3 +1,12 @@
+1.1
+  - add support of generating .PNG files from .rrd files in a munin directory
+  - dewi.utils.yaml: add the module to save a dict to a YAML file
+  - config/node.py: add Node.load_from() to load from a dict (from eg. YAML);
+  - config/node: __setattr__ checks whether key is already in the node
+  - config/config: add _top_level_unsafe_set() used by subclasses, for self[key] = value
+  - logparser: add ISO8601Parser.to_datetime, reuse it in to_timestamp
+  - dewi.core.application: add list and list-all commands, w/o args 'list' is used
+
 1.0
   - It can be marked as stable.
   - Changed to LGPL, to use freely in proprietary code (eg. by me)

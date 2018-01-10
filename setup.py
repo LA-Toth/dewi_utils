@@ -49,7 +49,7 @@ setup(
     * logparser: parse log files by modules based on the generic modules and emit messages
     """,
     license="LGPLv3",
-    version="1.0",
+    version="1.1",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
