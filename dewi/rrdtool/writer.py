@@ -7,7 +7,7 @@ import shlex
 import subprocess
 import typing
 
-from dewi.config.node import Node
+from dewi.config.node import Node, NodeList
 from dewi.rrdtool import config
 from dewi.rrdtool.interval import GraphInterval, GraphIntervalType
 
@@ -26,14 +26,7 @@ class GraphNode(Node):
 
 class GraphResult(Node):
     def __init__(self):
-        self.graphs: typing.List[GraphNode] = list()
-
-    def load_from(self, data: dict):
-        self.graphs = list()
-        for g in data['graphs']:
-            n = GraphNode()
-            n.load_from(g)
-            self.graphs.append(n)
+        self.graphs: typing.List[GraphNode] = NodeList(GraphNode)
 
 
 class GraphWriter:
