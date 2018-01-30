@@ -10,6 +10,7 @@ import ssl
 import typing
 import urllib.parse
 import urllib.request
+from xml.etree import ElementTree
 
 from dewi.utils.xml import create_dict_from_xml_string
 
@@ -167,6 +168,55 @@ class Connection:
                                          data=self._prepare_parameters(params).encode('UTF-8'))
         with self._urlopen(request) as response:
             return response.read()
+
+
+class TicketStatus:
+    def __init__(self, ts_dict: dict):
+        self.id = int(ts_dict['id'])
+        self.title = ts_dict['title']
+
+    @property
+    def name(self) -> str:
+        return self.title
+
+    @property
+    def closed(self) -> bool:
+        return 'closed' in self.title.lower()
+
+    def __repr__(self):
+        return self.__class__.__name__ + "[" + str(self.__dict__) + "]"
+
+
+class TicketStatuses:
+    def __init__(self, host_or_conn: typing.Union[Host, Connection]):
+        self._connection = ensure_connection(host_or_conn)
+        self._ticket_statuses = list()
+        self._processed = False
+
+    def __getitem__(self, item) -> TicketStatus:
+        self._fetch()
+        for p in self._ticket_statuses:
+            if p.id == item:
+                return p
+        raise KeyError(item)
+
+    def _fetch(self):
+        if self._processed:
+            return
+
+        result = self._connection.fetch('/Tickets/TicketStatus')
+        root = ElementTree.fromstring(result.decode('UTF-8'))
+        for elem in list(root):
+            self._process(elem)
+
+        self._processed = True
+
+    def _process(self, elem):
+        status = {}
+        for e in list(elem):
+            status[e.tag] = e.text
+
+        self._ticket_statuses.append(TicketStatus(status))
 
 
 def ensure_connection(host_or_connection: typing.Union[Host, Connection]) -> Connection:
