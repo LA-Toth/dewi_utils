@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
+import typing
 
 import yaml
 from yaml.dumper import Dumper
@@ -46,15 +47,37 @@ class Node(collections.MutableMapping):
         load_node(self, data)
 
 
+class NodeList(list):
+    def __init__(self, member_type: typing.Type[Node]):
+        super().__init__()
+        self.type_: typing.Type[Node] = member_type
+
+    def load_from(self, data: list):
+        self.clear()
+        for item in data:
+            if isinstance(item, Node):
+                self.append(item)
+            else:
+                n = self.type_()
+                n.load_from(item)
+                self.append(n)
+
+
 def load_node(node: Node, d: dict):
     for key, value in d.items():
-        if key in node and isinstance(node[key], Node):
+        if key in node and isinstance(node[key], (Node, NodeList)):
             node[key].load_from(value)
         else:
             node[key] = value
+
 
 def represent_node(dumper: Dumper, data: Node):
     return dumper.represent_dict(data)
 
 
+def represent_node_list(dumper: Dumper, data: NodeList):
+    return dumper.represent_list(data)
+
+
 yaml.add_multi_representer(Node, represent_node)
+yaml.add_multi_representer(NodeList, represent_node_list)
