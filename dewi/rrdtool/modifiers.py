@@ -63,14 +63,19 @@ class SeparateDiskstatsPluginsPerDevice(ConfigModifier):
         self._modify_hosts(config)
 
     def _modify_host(self, host: Host):
-        for p in host.plugins:
-            plugin = host.plugins[p]
+        plugin_names = list(host.plugins.keys())
+        idx = -1
+
+        while idx < len(plugin_names) - 1:
+            idx += 1
+            plugin = host.plugins[plugin_names[idx]]
+
             if plugin.category != 'disk' or plugin.name not in self.PLUGIN_NAMES:
                 continue
 
             new_plugins = self._rewrite_plugin(plugin)
 
-            del host.plugins[p]
+            del host.plugins[plugin_names[idx]]
 
             for new_plugin in new_plugins:
                 host.plugins[new_plugin.name] = new_plugin
