@@ -16,10 +16,12 @@ class NetworkCardVendors:
     def __init__(self, file_name: str, prefix_to_vendor_map: typing.Optional[dict] = None,
                  *,
                  enable_debug: bool = False,
-                 debug_prefix: typing.Optional[str] = None):
+                 debug_prefix: typing.Optional[str] = None,
+                 without_network: typing.Optional[bool] = None):
         self._file_name_base = file_name
         self._vendor_map = prefix_to_vendor_map or dict()
         self._loaded = False
+        self._without_network = without_network or False
 
         if self._file_name_base.endswith('.yml'):
             self._file_name_base = self._file_name_base[:-4]
@@ -41,6 +43,10 @@ class NetworkCardVendors:
             return self._vendor_map.get(prefix, self.UNKNOWN_VENDOR)
 
     def _update_vendor_map(self):
+        if self._without_network:
+            self._loaded = True
+            return
+
         if not os.path.exists(self._file_name):
             macs = self._update_file_cache()
         else:
