@@ -27,8 +27,9 @@ class _Pattern:
     def __init__(self, config: typing.Dict[str, typing.Union[str, callable]]):
         self.program = config.get('program', '')
         self.message_substring = config.get('message_substring', '')
-        self.callback = config['callback']
+        self.callback: typing.Union[callable, typing.List[callable]] = config['callback']
         regex = config.get('message_regex', '')
+        self.single_callback = True
 
         if regex:
             self.message_regex: typing.Pattern[str] = re.compile(regex)
@@ -49,6 +50,34 @@ class _Pattern:
     def process_substring(self, time, program, pid, msg):
         if self.message_substring in msg:
             self.callback(time, program, pid, msg)
+
+    def process_regex_multiple_times(self, time, program, pid, msg):
+        m = self.message_regex.match(msg)
+
+        if m:
+            self.callback(time, program, pid, msg)
+
+    def process_substring_multiple_times(self, time, program, pid, msg):
+        if self.message_substring in msg:
+            self.callback(time, program, pid, msg)
+
+    def call_multiple_callbacks(self, time, program, pid, msg):
+        for cb in self.callback:
+            cb(time, program, pid, msg)
+
+    def add_another_callback(self, callback: typing.Callable):
+        # Checking state as originally it was optimized
+        if self.single_callback:
+            if self.process == self.process_regex:
+                self.process = self.process_regex_multiple_times
+            elif self.process == self.process_substring:
+                self.process = self.process_substring_multiple_times
+            else:
+                self.process = self.call_multiple_callbacks
+            self.callback = [self.callback]
+            self.single_callback = False
+
+        self.callback.append(callback)
 
 
 class LogFileDefinition:
@@ -79,6 +108,7 @@ class LogHandlerModule(Module):
         self.modules = list()
         self._program_parsers = dict()
         self._other_parsers = set()
+        self._patterns: typing.Dict[typing.Tuple, _Pattern] = dict()
 
     def provide(self):
         return 'log'
@@ -96,11 +126,22 @@ class LogHandlerModule(Module):
         for module in self.modules:
             registrations = module.get_registration()
             for reg in registrations:
-                if 'program' in reg:
-                    self._add_to_map(self._program_parsers, reg['program'], _Pattern(reg))
-                else:
-                    self._other_parsers.add(_Pattern(reg))
+                self._process_registration(reg)
             module.start()
+
+    def _process_registration(self, req: dict):
+        key = (req.get('program', ''), req.get('message_substring', ''), req.get('message_regex', ''))
+
+        if key in self._patterns:
+            self._patterns[key].add_another_callback(req['callback'])
+        else:
+            pattern = _Pattern(req)
+            self._patterns[key] = pattern
+
+            if 'program' in req:
+                self._add_to_map(self._program_parsers, req['program'], pattern)
+            else:
+                self._other_parsers.add(pattern)
 
     @staticmethod
     def _add_to_map(dictionary, key, value):
