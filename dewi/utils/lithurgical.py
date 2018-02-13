@@ -5,7 +5,23 @@
 # Checked against https://www.staff.science.uu.nl/~gent0113/easter/easter_text2c.htm
 # Christian Feast Days, names used by Hungarian Lutheran Chuch - Magyarországi Evangélikus Egyház
 
+import datetime
 import enum
+import typing
+
+
+def easter_sunday(year: int):
+    # Original http://code.activestate.com/recipes/576517-calculate-easter-western-given-a-year/
+    # The code is a somewhat simplified version of  https://en.wikipedia.org/wiki/Computus
+    a = year % 19
+    b = year // 100
+    c = year % 100
+    d = (19 * a + b - b // 4 - ((b - (b + 8) // 25 + 1) // 3) + 15) % 30
+    e = (32 + 2 * (b % 4) + 2 * (c // 4) - d - (c % 4)) % 7
+    f = d + e - 7 * ((a + 11 * d + 22 * e) // 451) + 114
+    month = f // 31
+    day = f % 31 + 1
+    return datetime.date(year, month, day)
 
 
 class SpecialEvents(enum.Enum):
@@ -14,6 +30,7 @@ class SpecialEvents(enum.Enum):
     baptism = 'b'
     easter = 'e'
     reformation = 'r'
+    next_new_year = 'nn'
 
 
 class Offset(enum.Enum):
@@ -24,18 +41,27 @@ class Offset(enum.Enum):
 special_events = {
     SpecialEvents.christmas: {
         'code': SpecialEvents.christmas.value,
+        'func': lambda year: datetime.date(year, 12, 25)
     },
     SpecialEvents.new_year: {
         'code': SpecialEvents.new_year.value,
+        'func': lambda year: datetime.date(year, 1, 1)
+    },
+    SpecialEvents.next_new_year: {
+        'code': SpecialEvents.next_new_year.value,
+        'func': lambda year: datetime.date(year + 1, 1, 1)
     },
     SpecialEvents.baptism: {
         'code': SpecialEvents.baptism.value,
+        'func': lambda year: datetime.date(year, 1, 6)
     },
     SpecialEvents.easter: {
         'code': SpecialEvents.easter.value,
+        'func': lambda year: easter_sunday(year)
     },
     SpecialEvents.reformation: {
         'code': SpecialEvents.reformation.value,
+        'func': lambda year: datetime.date(year, 10, 31)
     },
 }
 
@@ -79,11 +105,11 @@ events = [
         'name': 'Karácsony utáni vasárnap',
         'offset': [SpecialEvents.christmas, 1, Offset.sunday],
         'optional': True,
-        'skip_if_after': [SpecialEvents.new_year, -2, Offset.day]
+        'skip_if_after': [SpecialEvents.next_new_year, -2, Offset.day]
     },
     {
         'name': 'Óév este',
-        'offset': [SpecialEvents.new_year, -1, Offset.day],
+        'offset': [SpecialEvents.next_new_year, -1, Offset.day],
         'optional': False,
     },
     {
@@ -204,7 +230,7 @@ events = [
     },
     {
         'name': 'Húsvét 2. napja',
-        'offset': [SpecialEvents.easter, 0, Offset.day],
+        'offset': [SpecialEvents.easter, 1, Offset.day],
         'optional': False,
     },
     {
@@ -411,3 +437,55 @@ def print_id_name():
     for e in events:
         print("{:2d} - {}".format(i, e['name']))
         i += 1
+
+
+def get_special_events_of_year(year: int) -> typing.Dict[SpecialEvents, datetime.date]:
+    result = dict()
+    for s in special_events:
+        result[s] = special_events[s]['func'](year)
+
+    return result
+
+
+def _calculate_day(special_events_of_the_year: typing.Dict[SpecialEvents, datetime.date],
+                   base_event: SpecialEvents,
+                   offset: int,
+                   offset_type: Offset) -> datetime.date:
+    d: datetime.date = special_events_of_the_year[base_event]
+
+    if offset == 0:
+        return d
+
+    if offset_type == Offset.day:
+        return d + datetime.timedelta(offset)
+    else:  # Offset.sunday
+        wd = d.isoweekday() % 7
+        if wd:
+            # Current date is in Monday..Saturday range
+            # Go to previous Sunday
+            d = d - datetime.timedelta(wd)
+            # If offset is negative, we must remove one Sunday from the offset
+            if offset < 0:
+                offset += 1
+        return d + datetime.timedelta(offset * 7)
+
+
+def get_events_of_year(year: int) -> typing.List[typing.Tuple[str, datetime.date]]:
+    result = list()
+    specials = get_special_events_of_year(year)
+    for e in events:
+        d = _calculate_day(specials, *e['offset'])
+
+        if e['optional']:
+            other = _calculate_day(specials, *e['skip_if_after'])
+            if other >= d:
+                result.append((e['name'], d))
+        else:
+            result.append((e['name'], d))
+
+    return sorted(result, key=lambda x: x[1])
+
+
+def print_events_of_year(year: int):
+    for i in get_events_of_year(year):
+        print('{} - {}'.format(i[1].strftime('%Y-%m-%d'), i[0]))
