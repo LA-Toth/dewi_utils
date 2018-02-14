@@ -178,7 +178,7 @@ class LogHandlerModule(Module):
         start = time.clock()
         cnt = 0
         for fn in files:
-            with open(fn, encoding='UTF-8', errors='surrogateescape') as f:
+            with open(fn, encoding='UTF-8', errors='surrogateescape', newline='\n') as f:
                 cnt += self._process_file(f)
 
         end = time.clock()
