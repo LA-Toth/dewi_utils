@@ -1,3 +1,15 @@
+1.2
+  - add Connection class and ensure_connection() method to kayako module
+    to reuse calculated signature and provide an object for easier testing
+  - config/node: add NodeList and also test the module
+  - rrdtool: use NodeList & fix modifiers
+  - NetworkCardVendors: add option to prevent network usage
+  - logparsers: add support to add multiple callbacks to a pattern:
+    during log processing one pattern matching - multiple calls.
+    And ensure that '\n' (0x10) is handled only as log line separator
+  - add lithurical command to print events of a calendar year
+  - kayako: add TicketStatus and TicketStatuses classes
+
 1.1
   - add support of generating .PNG files from .rrd files in a munin directory
   - dewi.utils.yaml: add the module to save a dict to a YAML file
