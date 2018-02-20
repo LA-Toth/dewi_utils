@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os.path
 import sys
 
 if sys.hexversion < 0x03060000:
@@ -28,9 +27,6 @@ try:
 
 except ImportError:
     from distutils.core import setup
-
-with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
-    version = f.read().strip()
 
 setup(
     name="dewi",
@@ -54,7 +50,7 @@ setup(
     * logparser: parse log files by modules based on the generic modules and emit messages
     """,
     license="LGPLv3",
-    version=version,
+    version="1.2",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
