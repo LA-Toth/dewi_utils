@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 # DEWI: a developer tool and framework
-# Copyright (C) 2012-2015  Laszlo Attila Toth
+# Copyright (C) 2012-2018  Laszlo Attila Toth
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os.path
 import sys
+
 if sys.hexversion < 0x03060000:
     raise RuntimeError("Required python version: 3.6 or newer (current: %s)" % sys.version)
 
@@ -26,6 +28,9 @@ try:
 
 except ImportError:
     from distutils.core import setup
+
+with open(os.path.join(os.path.dirname(__file__), 'VERSION')) as f:
+    version = f.read().strip()
 
 setup(
     name="dewi",
@@ -49,7 +54,7 @@ setup(
     * logparser: parse log files by modules based on the generic modules and emit messages
     """,
     license="LGPLv3",
-    version="1.1",
+    version=version,
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
