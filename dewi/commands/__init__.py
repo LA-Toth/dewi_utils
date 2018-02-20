@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
@@ -33,6 +33,7 @@ class CommandsPlugin(Plugin):
             'dewi.commands.edit.edit.EditPlugin',
             'dewi.commands.filesync.FileSyncPlugin',
             'dewi.commands.license.LicensePlugin',
+            'dewi.commands.lithurgical.LithurgicalPlugin',
             'dewi.commands.split_zorp_log.SplitZorpLogPlugin',
             'dewi.commands.ssh_ubuntu_windows.SshToUbuntuOnWindowsPlugin',
         }
