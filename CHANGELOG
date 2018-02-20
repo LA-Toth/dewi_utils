@@ -1,3 +1,6 @@
+1.3
+  - fix setup.py
+
 1.2
   - add Connection class and ensure_connection() method to kayako module
     to reuse calculated signature and provide an object for easier testing
