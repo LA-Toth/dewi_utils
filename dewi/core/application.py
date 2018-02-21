@@ -26,8 +26,12 @@ class DewiPlugin(Plugin):
 
 
 def _list_comands(prog_name: str, command_registry: CommandRegistry, *, all_commands: bool = False):
-    max_length = 0
     commands = dict()
+    max_length = 0
+    max_name_length = 0
+    infix = '  - alias of '
+    infix_len = len(infix)
+
     for name in command_registry.get_command_names():
         desc = command_registry.get_command_class_descriptor(name)
         command = desc.get_class()
@@ -35,22 +39,30 @@ def _list_comands(prog_name: str, command_registry: CommandRegistry, *, all_comm
 
         if name == command_name:
             cmdname = name
+            current_length = len(name)
         else:
 
             if not all_commands:
                 continue
-            cmdname = '{0}      - alias of {1}'.format(name, command_name)
+            cmdname = (name, command_name)
+            current_length = len(name) + len(command_name) + infix_len
 
-        if len(cmdname) > max_length:
-            max_length = len(cmdname)
+        if len(name) > max_name_length:
+            max_name_length = len(name)
+
+        if current_length > max_length:
+            max_length = current_length
 
         commands[name] = (cmdname, command.description)
 
     format_str = "  {0:<" + str(max_length) + "}   -- {1}"
+    alias_format_str = "{0:<" + str(max_name_length) + "}" + infix + "{1}"
 
     print(f'Available {prog_name.capitalize()} Commands.')
     for name in sorted(commands):
         cmdname, description = commands[name]
+        if isinstance(cmdname, tuple):
+            cmdname = alias_format_str.format(*cmdname)
         print(format_str.format(cmdname, description))
 
 
