@@ -36,6 +36,8 @@ class GraphLoader:
         elif key == 'graph_category':
             self.config.domains[domain].hosts[host].plugins[name].category = value
         elif key.startswith('graph_'):
+            if key == 'graph_args':
+                value = value.rstrip(';')
             self.config.domains[domain].hosts[host].plugins[name].options[key] = value
         else:
             field, key = key.split('.', 1)
