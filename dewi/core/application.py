@@ -6,7 +6,6 @@ import collections
 import sys
 import traceback
 
-from dewi.core import CommandRegistrar
 from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
@@ -73,8 +72,7 @@ class ListAllCommand(Command):
 
     def run(self, args: argparse.Namespace):
         context: Context = args._context_
-        command_registry: CommandRegistry = context['commandregistry']
-        _list_comands(args._program_name_, command_registry, all_commands=True)
+        _list_comands(args._program_name_, context.command_registry, all_commands=True)
 
 
 class ListCommand(Command):
@@ -83,8 +81,7 @@ class ListCommand(Command):
 
     def run(self, args: argparse.Namespace):
         context: Context = args._context_
-        command_registry: CommandRegistry = context['commandregistry']
-        _list_comands(args._program_name_, command_registry)
+        _list_comands(args._program_name_, context.command_registry)
 
 
 class MainApplication:
@@ -122,15 +119,12 @@ class MainApplication:
             context = self.__loader.load(set(plugins))
             command_name = app_ns.command
 
-            command_registry: CommandRegistry = context['commandregistry']
-            command_registrar: CommandRegistrar = context['commands']
+            context.commands.register_class(ListAllCommand)
+            context.commands.register_class(ListCommand)
 
-            command_registrar.register_class(ListAllCommand)
-            command_registrar.register_class(ListCommand)
+            if command_name in context.command_registry:
 
-            if command_name in command_registry:
-
-                command_class = command_registry.get_command_class_descriptor(command_name).get_class()
+                command_class = context.command_registry.get_command_class_descriptor(command_name).get_class()
                 command = command_class()
                 parser = argparse.ArgumentParser(
                     description=command.description,
@@ -148,22 +142,22 @@ class MainApplication:
 
             else:
                 print(f"ERROR: The command '{command_name}' is not known.\n")
-                similar_names = get_similar_names_to(command_name, sorted(command_registry.get_command_names()))
+                similar_names = get_similar_names_to(command_name, sorted(context.command_registry.get_command_names()))
 
                 if similar_names:
                     print('Similar names - firstly based on command name length:')
                     for name in similar_names:
                         print('  {:30s}   -- {}'.format(
                             name,
-                            command_registry.get_command_class_descriptor(name).get_class().description))
+                            context.command_registry.get_command_class_descriptor(name).get_class().description))
                 else:
                     print('NO similar command name.')
 
                     print('Available commands with aliases:')
-                    for name in sorted(command_registry.get_command_names()):
+                    for name in sorted(context.command_registry.get_command_names()):
                         print('  {:30s}   -- {}'.format(
                             name,
-                            command_registry.get_command_class_descriptor(name).get_class().description))
+                            context.command_registry.get_command_class_descriptor(name).get_class().description))
                 sys.exit(1)
 
         except SystemExit:

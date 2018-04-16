@@ -1,3 +1,6 @@
+# Copyright 2015-2018 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
+
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin
 
@@ -10,4 +13,4 @@ class PluginTestPlugin(Plugin):
         return ('dewi.core.CorePlugin',)
 
     def load(self, c: Context):
-        c.register('test_result', 42 + c['commandregistry'].get_command_count())
+        c.register('test_result', 42 + c.command_registry.get_command_count())

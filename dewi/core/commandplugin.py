@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
@@ -20,7 +20,7 @@ class CommandPlugin(Plugin):
         return {'dewi.core.CorePlugin'}
 
     def load(self, c: Context):
-        c['commands'].register_class(self.command)
+        c.commands.register_class(self.command)
 
     @classmethod
     def create(cls, command: typing.Type[Command]) -> typing.Type[Plugin]:
