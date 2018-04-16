@@ -74,11 +74,11 @@ class TestMainApplication(dewi.tests.TestCase):
         self.assert_equal(set(), set(self.loader.loaded))
 
     def test_loading_plugins_requires_a_command_to_run(self):
-        redirect = self.__invoke_application_redirected(['-p', 'test'], expected_exit_value=2)
-        self.assert_equal('', redirect.stdout.getvalue())
-        self.assert_in('myprogram: error: the following arguments are required: command', redirect.stderr.getvalue())
+        redirect = self.__invoke_application_redirected(['-p', 'test'], expected_exit_value=None)
+        self.assert_equal('', redirect.stderr.getvalue())
+        self.assert_in('Available Myprogram Commands.\n', redirect.stdout.getvalue())
 
-        self.assert_equal(set(), set(self.loader.loaded))
+        self.assert_equal({'test', 'dewi.core.CorePlugin'}, set(self.loader.loaded))
 
     def test_command_run_method_is_called(self):
         redirect = self.__invoke_application_redirected(
@@ -117,8 +117,8 @@ class TestMainApplication(dewi.tests.TestCase):
 
         output = redirect.stdout.getvalue()
         self.assert_in("ERROR: The command 'unknown-name' is not known.\n", output)
-        self.assert_in("Available commands and aliases:\nfake ", output)
-        self.assert_in(" - A fake command for tests\n", output)
+        self.assert_in("Similar names - firstly based on command name length:\n", output)
+        self.assert_in(" list-all ", output)
 
     def test_run_help_of_command(self):
         redirect = self.__invoke_application_redirected(
