@@ -92,7 +92,7 @@ class MainApplication:
         self.__loader = loader
         self.__program_name = program_name
 
-    def __parse_app_args(self, args: collections.Iterable):
+    def __parse_app_args(self, args: collections.Sequence):
         parser = argparse.ArgumentParser(
             prog=self.__program_name,
             usage='%(prog)s [options] [command [command-args]]')
@@ -110,7 +110,7 @@ class MainApplication:
             default=[], )
         return parser.parse_args(args)
 
-    def run(self, args: collections.Iterable):
+    def run(self, args: collections.Sequence):
         app_ns = self.__parse_app_args(args)
         if app_ns.debug:
             app_ns.print_backtraces = True
