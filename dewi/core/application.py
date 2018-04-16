@@ -116,7 +116,7 @@ class MainApplication:
             app_ns.print_backtraces = True
 
         plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
-        plugins.append('dewi.core.commandregistry.CommandRegistryPlugin')
+        plugins.append('dewi.core.CorePlugin')
 
         try:
             context = self.__loader.load(set(plugins))

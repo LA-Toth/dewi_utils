@@ -1,4 +1,4 @@
-# Copyright 2012-2017 Laszlo Attila Toth
+# Copyright 2012-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
@@ -6,8 +6,6 @@ import sys
 import typing
 
 from dewi.core.command import Command
-from dewi.core.context import Context
-from dewi.loader.plugin import Plugin
 
 
 class CommandRegistryException(Exception):
@@ -148,12 +146,3 @@ class CommandRegistrar:
         self.__registry.register_command_class(command_class.name, desc)
         for alias in command_class.aliases:
             self.__registry.register_command_class(alias, desc)
-
-
-class CommandRegistryPlugin(Plugin):
-    def get_description(self):
-        return "Registers command-related entries into context"
-
-    def load(self, c: Context):
-        c.register('commandregistry', CommandRegistry())
-        c.register('commands', CommandRegistrar(c['commandregistry']))

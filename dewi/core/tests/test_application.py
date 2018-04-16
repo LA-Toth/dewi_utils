@@ -1,13 +1,11 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
 
 import dewi.tests
-
 from dewi.core.application import MainApplication
 from dewi.core.command import Command
-from dewi.core.commandregistry import CommandRegistry, CommandRegistrar
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader
 from dewi.tests import redirect_outputs
@@ -45,9 +43,7 @@ class FakePluginLoader(PluginLoader):
 
         self.loaded.extend(plugins)
 
-        context.register('commandregistry', CommandRegistry())
-        context.register('commands', CommandRegistrar(context['commandregistry']))
-        context['commands'].register_class(self.command)
+        context.commands.register_class(self.command)
 
         return context
 
@@ -91,7 +87,7 @@ class TestMainApplication(dewi.tests.TestCase):
         self.assert_equal('', redirect.stdout.getvalue())
         self.assert_equal('', redirect.stderr.getvalue())
         self.assert_equal(['something', 'another'], FakeCommand.arguments)
-        self.assert_equal({'dewi.core.commandregistry.CommandRegistryPlugin', 'test'}, set(self.loader.loaded))
+        self.assert_equal({'dewi.core.CorePlugin', 'test'}, set(self.loader.loaded))
 
     def test_command_run_method_exception_is_handled(self):
         redirect = self.__invoke_application_redirected(
@@ -130,4 +126,4 @@ class TestMainApplication(dewi.tests.TestCase):
             expected_exit_value=0)
         self.assert_in('myprogram fake [-h]', redirect.stdout.getvalue())
         self.assert_equal('', redirect.stderr.getvalue())
-        self.assert_equal({'dewi.core.commandregistry.CommandRegistryPlugin', 'test'}, set(self.loader.loaded))
+        self.assert_equal({'dewi.core.CorePlugin', 'test'}, set(self.loader.loaded))

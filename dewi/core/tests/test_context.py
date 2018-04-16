@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 from dewi.core.context import Context, ContextEntryNotFound, ContextEntryAlreadyRegistered
@@ -10,8 +10,8 @@ class ContextTest(dewi.tests.TestCase):
     def set_up(self):
         self.context = Context()
 
-    def test_that_context_is_empty_initially(self):
-        self.assert_equal(0, len(self.context))
+    def test_that_context_is_almost_empty_initially(self):
+        self.assert_equal(2, len(self.context))
 
     def test_register_an_element_and_can_be_queried(self):
         class Something:
@@ -19,7 +19,7 @@ class ContextTest(dewi.tests.TestCase):
 
         a_thing = Something()
         self.context.register('a.name', a_thing)
-        self.assert_equal(1, len(self.context))
+        self.assert_equal(3, len(self.context))
         self.assert_in('a.name', self.context)
         self.assert_equal(a_thing, self.context['a.name'])
 
@@ -38,7 +38,7 @@ class ContextTest(dewi.tests.TestCase):
         self.context.register('a.name', 42)
         self.assert_in('a.name', self.context)
         self.context.unregister('a.name')
-        self.assert_equal(0, len(self.context))
+        self.assert_equal(2, len(self.context))
         self.assert_not_in('a.name', self.context)
 
     def test_that_unregistering_unknown_entry_raises_exception(self):
@@ -48,8 +48,8 @@ class ContextTest(dewi.tests.TestCase):
         self.context.register('a', 42)
         self.context.register('b', 43)
 
-        value = ''
+        value = set()
         for i in self.context:
-            value += i
+            value.add(i)
 
-        self.assert_equal({'a', 'b'}, set(value))
+        self.assert_equal({'a', 'b', 'commands', 'commandregistry'}, value)

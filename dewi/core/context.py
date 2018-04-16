@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 import collections
 
+from dewi.core import CommandRegistry, CommandRegistrar
+
 
 class ContextError(Exception):
     pass
@@ -24,8 +26,21 @@ class Context(collections.Mapping):
 
     An example: a CommandRegistry object can be registered into this context.
     """
+
     def __init__(self):
-        self.__entries = {}
+        c = CommandRegistry()
+        self.__entries = {
+            'commands': CommandRegistrar(c),
+            'commandregistry': c,
+        }
+
+    @property
+    def command_registry(self) -> CommandRegistry:
+        return self.__entries['commandregistry']
+
+    @property
+    def commands(self) -> CommandRegistrar:
+        return self.__entries['commands']
 
     def register(self, name: str, value):
         """
