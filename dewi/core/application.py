@@ -1,4 +1,4 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
@@ -12,6 +12,7 @@ from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader
 from dewi.loader.plugin import Plugin
+from dewi.utils.levenstein import get_similar_names_to
 
 
 class DewiPlugin(Plugin):
@@ -147,11 +148,22 @@ class MainApplication:
 
             else:
                 print(f"ERROR: The command '{command_name}' is not known.\n")
-                print('Available commands with aliases:')
-                for name in sorted(command_registry.get_command_names()):
-                    print('  {:30s}   -- {}'.format(
-                        name,
-                        command_registry.get_command_class_descriptor(name).get_class().description))
+                similar_names = get_similar_names_to(command_name, sorted(command_registry.get_command_names()))
+
+                if similar_names:
+                    print('Similar names - firstly based on command name length:')
+                    for name in similar_names:
+                        print('  {:30s}   -- {}'.format(
+                            name,
+                            command_registry.get_command_class_descriptor(name).get_class().description))
+                else:
+                    print('NO similar command name.')
+
+                    print('Available commands with aliases:')
+                    for name in sorted(command_registry.get_command_names()):
+                        print('  {:30s}   -- {}'.format(
+                            name,
+                            command_registry.get_command_class_descriptor(name).get_class().description))
                 sys.exit(1)
 
         except SystemExit:
