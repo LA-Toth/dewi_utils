@@ -155,6 +155,15 @@ As you can see, DEWI can be used as library, and it can contain slightly differe
 solutions of the same problem.
 
 
+NOTE: As DEWI uses logging since v1.4, any program that depends on it must either use
+the ``MainApplication`` as an entry point or run at least the following statements::
+
+    from dewi.core.logger import create_logger, LoggerType
+
+    create_logger('anything', LoggerType.None, 'info')
+
+
+
 Current features
 ----------------
 

@@ -9,6 +9,7 @@ import traceback
 from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
+from dewi.core.logger import create_logger, LoggerType, LogLevel
 from dewi.loader.loader import PluginLoader
 from dewi.loader.plugin import Plugin
 from dewi.utils.levenstein import get_similar_names_to
@@ -101,6 +102,21 @@ class MainApplication:
             '--print-backtraces', action='store_true',
             help='Print backtraces of the exceptions')
         parser.add_argument('--debug', '-d', action='store_true', help='Enable print/log debug messages')
+
+        logging = parser.add_argument_group('Logging')
+        logging.add_argument('-v', '--log-level', dest='log_level', help='Set log level, default: warning',
+                             choices=[i.name.lower() for i in LogLevel], default='warning')
+        logging.add_argument('--log-syslog', dest='log_syslog', action='store_true',
+                             help='Log to syslog. Can be combined with other log targets')
+        logging.add_argument('--log-console', '--log-stdout', dest='log_console', action='store_true',
+                             help='Log to STDOUT, the console. Can be combined with other targets.'
+                                  'If no target is specified, this is used as default.')
+        logging.add_argument('--log-file', dest='log_file', action='append',
+                             help='Log to a file. Can be specified multiple times and '
+                                  'can be combined with other options.')
+        logging.add_argument('--no-log', '-l', dest='log_none', action='store_true',
+                             help='Disable logging. If this is set, other targets are invalid.')
+
         parser.add_argument('command', nargs='?', help='Command to be run', default='list')
         parser.add_argument(
             'commandargs', nargs=argparse.REMAINDER, help='Additonal options and arguments of the specified command',
@@ -111,6 +127,9 @@ class MainApplication:
         app_ns = self.__parse_app_args(args)
         if app_ns.debug:
             app_ns.print_backtraces = True
+
+        if self._process_logging_options(app_ns):
+            sys.exit(1)
 
         plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
         plugins.append('dewi.core.CorePlugin')
@@ -175,6 +194,28 @@ class MainApplication:
             print(exc, file=sys.stderr)
             self.__wait_for_termination_if_needed(app_ns)
             sys.exit(1)
+
+    def _process_logging_options(self, args: argparse.Namespace):
+        if args.log_none:
+            if args.log_syslog or args.log_file or args.log_console:
+                print('ERROR: --log-none cannot be used any other log target,')
+                print('ERROR: none of: --log-file, --log-console, --log-syslog')
+                return 1
+            create_logger(self.__program_name, LoggerType.NONE, args.log_level, filenames=[])
+        else:
+            logger_types = []
+            if args.log_console:
+                logger_types.append(LoggerType.CONSOLE)
+            if args.log_file:
+                logger_types .append(LoggerType.FILE)
+            if args.log_syslog:
+                logger_types .append( LoggerType.SYSLOG)
+
+            if not logger_types:
+                # Using default logger
+                logger_types = LoggerType.CONSOLE
+
+            create_logger(self.__program_name, logger_types, args.log_level,  filenames=args.log_file)
 
     def __wait_for_termination_if_needed(self, app_ns):
         if app_ns.wait:
