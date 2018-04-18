@@ -42,6 +42,15 @@ To print its help::
 
         dewi -h
 
+To print commands with their descriptions::
+
+        dewi
+        dewi list
+
+To print commands with their aliases and descriptions::
+
+        dewi list-all
+
 An example: I want to open ~/.ssh/known_hosts at line 123, and it's
 listed on the console as ~/.ssh/known_hosts:123. After copy-paste::
 
@@ -158,10 +167,15 @@ Current features
 * Log file processing class, ``LogHandlerModule`` also in ``dewi.logparser.loghandler``
 * Realtime sync framework in ``dewi.realtime_sync`` with ``filesync`` command
 * Commands for collecting and sorting images (photos)
+* Generating Munin graphs from a ``munin`` directory (e.g. copied ``/var/lib/munin/``)
+  in ``dewi.rrdtool.rrdtool``
 * Modules for
+   * Unpack archives - currently only .zip files - in ``dewi.utils.archives``
    * Kayako REST API in ``dewi.utils.kayako_rest``
+   * Calculating Levenstein distance and filter a list based on it in ``dewi.utils.levenstein``
    * network card vendor lookup in ``dewi.utils.network``
    * Converting XML to a dict in ``dewi.utils.xml``
    * Looking up of executable binaries in ``dewi.utils.process``
    * enhancing dicts in ``dewi.utils.dictionaries``
    * Events in a lithurgical year (Hungarian Lutheran) in ``dewi.utils.lithurgical``
+   * Write a dict into an output file or stdout in ``dewi.utils.yaml``
