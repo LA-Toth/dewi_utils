@@ -1,4 +1,4 @@
-# Copyright 2017 Tóth, László Attila
+# Copyright 2017-2018 Tóth, László Attila
 # Distributed under the terms of the GNU Lesser General Public License v3
 # The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
@@ -56,6 +56,11 @@ class FileDatabase:
     def commit(self):
         if self._changed:
             self._conn.commit()
+            self._changed = False
+
+    def rollback(self):
+        if self._changed:
+            self._conn.rollback()
             self._changed = False
 
     def insert(self, file_entry: FileEntry, checksum: typing.Optional[str] = None):
