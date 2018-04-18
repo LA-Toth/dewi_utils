@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 #
@@ -6,10 +6,10 @@
 #
 
 import os
+import time
 import typing
 
-import time
-
+from dewi.core.logger import log_debug, log_info
 from dewi.realtime_sync.filesync_data import FileSyncEntryManager
 from dewi.realtime_sync.syncers import FileSynchronizer
 
@@ -67,6 +67,7 @@ class SkippableChangeWatcher(ChangeWatcher):
 
     def _process_change(self, changed_file: str) -> bool:
         if self._skip_based_on_basename(os.path.basename(changed_file)):
+            log_debug(f'{self.__class__.__name__}: skip file by basename', filename=changed_file)
             return True
 
         for directory in self.directories:
@@ -76,6 +77,7 @@ class SkippableChangeWatcher(ChangeWatcher):
             path = changed_file[len(directory) + 1:]
 
             if self._skip_based_on_path(path):
+                log_debug(f'{self.__class__.__name__}: skip file by path', filename=changed_file)
                 return True
 
         return False
@@ -141,6 +143,7 @@ class FileSystemChangeWatcher:
         self._watchers = list()
 
     def register_watcher(self, watcher: ChangeWatcher):
+        log_debug('Registering change watcher', {'class': type(watcher).__name__})
         self._watchers.append(watcher)
 
     def created(self, path: str):
@@ -153,6 +156,7 @@ class FileSystemChangeWatcher:
         self._process_change(path, 'deleted', 'removed')
 
     def _process_change(self, path: str, change_type: str, callback: str):
+        log_info('Process change', change_type=change_type, method=callback, path=path)
         print(" * [{}] File system changed: {}: {}".
               format(time.strftime("%Y-%m-%d %H:%M:%S"), change_type.capitalize(), path))
         for watcher in self._watchers:
