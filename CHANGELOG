@@ -1,3 +1,15 @@
+1.4
+  - pretty-print output command list (e.g. 'list-all')
+  - add dewi.utils.archive, which contains an UnZip class to (partially) unzip
+    .zip files
+  - if a command is mistyped or non-existing, print at most 6 similar command
+    names, or list all of them
+  - dewi.images.filedb: add rollback() method to FileDatabase
+  - dewi.core.context: Context got 'commands' and 'command_registry'
+    properties, and always contains the corresponding 'commands' and
+    'commandregistry' fields
+  - introduce dewi.core.logger module, log_debug, log_info, etc. can be used
+
 1.3
   - fix setup.py
 
