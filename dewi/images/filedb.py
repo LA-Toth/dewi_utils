@@ -107,3 +107,7 @@ class FileDatabase:
         c = self._conn.cursor()
         t = (item,)
         return c.execute('SELECT orig_filename FROM photo_file_info WHERE orig_filename=?', t).fetchone() is not None
+
+    def count(self):
+        c = self._conn.cursor()
+        return c.execute('SELECT count(*) FROM photo_file_info').fetchone()[0]
