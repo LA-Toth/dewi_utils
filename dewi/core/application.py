@@ -127,6 +127,7 @@ class MainApplication:
         app_ns = self.__parse_app_args(args)
         if app_ns.debug:
             app_ns.print_backtraces = True
+            app_ns.log_level = 'debug'
 
         if self._process_logging_options(app_ns):
             sys.exit(1)
