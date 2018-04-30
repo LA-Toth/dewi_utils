@@ -139,7 +139,12 @@ class SafeEraser:
             if self.config.dry_run or os.path.exists(path):
                 print(f'DELETE {path}', file=self.log)
                 if not self.config.dry_run:
-                    os.unlink(path)
+                    try:
+                        os.unlink(path)
+                    except Exception as e:
+                        print(f'Exception occurred; class={e.__class__.__name__}, msg={e}, path={path}')
+                        print(f'Exception occurred; class={e.__class__.__name__}, msg={e}, path={path}', file=self.log)
+
                 count += 1
             else:
                 print(f'ALREADY DELETED {path}', file=self.log)
