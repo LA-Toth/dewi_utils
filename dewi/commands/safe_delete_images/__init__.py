@@ -18,7 +18,7 @@ class SafeEraserConfig:
         self.sqlite_filename: str = None
         self.log_file: str = None
         self.dry_run = False
-        self.exiftool = 'exiftool-5.24'
+        self.exiftool = 'exiftool-5.26'
 
 
 class Step:

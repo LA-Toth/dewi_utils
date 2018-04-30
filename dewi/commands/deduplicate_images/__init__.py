@@ -30,7 +30,7 @@ class DeduplicatorConfig:
         self.mount_points_parent_directory: str = '/Volumes'
 
         self.dry_run = False
-        self.exiftool = 'exiftool-5.24'
+        self.exiftool = 'exiftool-5.26'
 
 
 class Step:
