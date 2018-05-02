@@ -126,7 +126,7 @@ class CommandRegistry(object):
     def get_command_count(self) -> int:
         return len(self.__registry)
 
-    def get_command_names(self) -> collections.Sequence:
+    def get_command_names(self) -> typing.List[str]:
         return list(self.__registry.keys())
 
     def __contains__(self, command_name: str) -> bool:

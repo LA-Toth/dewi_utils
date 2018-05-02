@@ -213,15 +213,15 @@ class MainApplication:
             if args.log_console:
                 logger_types.append(LoggerType.CONSOLE)
             if args.log_file:
-                logger_types .append(LoggerType.FILE)
+                logger_types.append(LoggerType.FILE)
             if args.log_syslog:
-                logger_types .append( LoggerType.SYSLOG)
+                logger_types.append(LoggerType.SYSLOG)
 
             if not logger_types:
                 # Using default logger
                 logger_types = LoggerType.CONSOLE
 
-            create_logger(self.__program_name, logger_types, args.log_level,  filenames=args.log_file)
+            create_logger(self.__program_name, logger_types, args.log_level, filenames=args.log_file)
 
     def __wait_for_termination_if_needed(self, app_ns):
         if app_ns.wait:
