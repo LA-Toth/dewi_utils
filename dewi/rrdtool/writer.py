@@ -8,6 +8,7 @@ import subprocess
 import typing
 
 from dewi.config.node import Node, NodeList
+from dewi.core.logger import log_info
 from dewi.rrdtool import config
 from dewi.rrdtool.interval import GraphInterval, GraphIntervalType
 
@@ -102,6 +103,7 @@ class GraphWriter:
                 sign = '-' if offset > 0 else '-'
                 offset = int(abs(offset)) // 60
                 h, m = offset // 60, offset % 60
+                log_info(f'{self.__class__.__name__}: Set TZ', tz=f'UTC{sign}{h:02d}:{m:02d}')
                 env['TZ'] = f'UTC{sign}{h:02d}:{m:02d}'
 
         return env
@@ -190,6 +192,7 @@ class GraphWriter:
         args.append(
             f"COMMENT:Last update\\: {last_updated}\\r"
         )
+
         result.image = subprocess.check_output(['rrdtool'] + [str(x) for x in args], env=self._env)
         self._output.graphs.append(result)
 

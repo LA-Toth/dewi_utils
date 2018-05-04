@@ -157,8 +157,6 @@ class FileSystemChangeWatcher:
 
     def _process_change(self, path: str, change_type: str, callback: str):
         log_info('Process change', change_type=change_type, method=callback, path=path)
-        print(" * [{}] File system changed: {}: {}".
-              format(time.strftime("%Y-%m-%d %H:%M:%S"), change_type.capitalize(), path))
         for watcher in self._watchers:
             processed = getattr(watcher, callback)(path)
 

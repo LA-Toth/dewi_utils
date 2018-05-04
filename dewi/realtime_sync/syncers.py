@@ -3,6 +3,7 @@
 
 import os
 
+from dewi.core.logger import log_debug
 from dewi.realtime_sync.filesync_data import DetailedEntry, FileSyncFlags
 from dewi.realtime_sync.filesystem import Filesystem
 
@@ -14,6 +15,7 @@ class FileSynchronizer:
         self.fs = filesystem
 
     def sync(self, path: str, entry: DetailedEntry):
+        log_debug('Sync entry', path=path)
         remote_name = os.path.join(self.remote_root_directory, entry.remote_name)
 
         if self.fs.exists(path):

@@ -4,6 +4,7 @@
 import os.path
 import re
 
+from dewi.core.logger import log_info
 from dewi.rrdtool.config import GraphConfig
 
 
@@ -14,6 +15,7 @@ class GraphLoader:
         self.config = GraphConfig()
 
     def load(self):
+        log_info('Loading Munin datafile', path=self._data_file_path)
         self._load_file()
         self._postprocess()
 
