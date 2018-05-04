@@ -105,7 +105,7 @@ class MainApplication:
 
         logging = parser.add_argument_group('Logging')
         logging.add_argument('-v', '--log-level', dest='log_level', help='Set log level, default: warning',
-                             choices=[i.name.lower() for i in LogLevel], default='warning')
+                             choices=[i.name.lower() for i in LogLevel], default='info')
         logging.add_argument('--log-syslog', dest='log_syslog', action='store_true',
                              help='Log to syslog. Can be combined with other log targets')
         logging.add_argument('--log-console', '--log-stdout', dest='log_console', action='store_true',
