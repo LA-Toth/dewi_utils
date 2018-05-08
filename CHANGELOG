@@ -1,3 +1,11 @@
+1.5
+  - MainApplication: --debug implies --log-level debug
+    default log level: info
+  - images/filedb: add count() to count entries in photo_file_info table
+  - images related commands: use exiftool-5.26 as MacPorts updated it
+  - safe_delete_images: handle Exceptions at unlink(), mainly PermissionErrors
+  - add further log_*() calls into dewi.rrdtool & realtime_sync
+
 1.4
   - pretty-print output command list (e.g. 'list-all')
   - add dewi.utils.archive, which contains an UnZip class to (partially) unzip
