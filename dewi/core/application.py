@@ -9,7 +9,7 @@ import traceback
 from dewi.core.command import Command
 from dewi.core.commandregistry import CommandRegistry
 from dewi.core.context import Context
-from dewi.core.logger import create_logger, LoggerType, LogLevel, log_info, log_debug
+from dewi.core.logger import create_logger, LoggerType, LogLevel, log_debug
 from dewi.loader.loader import PluginLoader
 from dewi.loader.plugin import Plugin
 from dewi.utils.levenstein import get_similar_names_to
@@ -131,8 +131,6 @@ class MainApplication:
 
         if self._process_logging_options(app_ns):
             sys.exit(1)
-
-        log_info('Start logging')
 
         plugins = app_ns.plugin or ['dewi.core.application.DewiPlugin']
         plugins.append('dewi.core.CorePlugin')
