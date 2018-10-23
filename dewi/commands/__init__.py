@@ -17,6 +17,7 @@ class ImageHandlerCommandsPlugin(Plugin):
             'dewi.commands.deduplicate_images.ImageDeduplicatorPlugin',
             'dewi.commands.safe_delete_images.SafeEraserPlugin',
             'dewi.commands.select_images.ImageSelectorPlugin',
+            'dewi.commands.sort_photos.PhotoSorterPlugin',
         }
 
     def load(self, c: Context):
