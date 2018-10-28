@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [[ -z $PYTHONPATH ]]; then
-    export PYTHONPATH=$(dirname "$0")
-else
-  export PYTHONPATH=$(dirname "$0"):$PYTHONPATH
-fi
-
-exec python3 -m dewi "$@"
