@@ -2,6 +2,9 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
+import typing
+
+from dewi.core.command import Command
 from dewi.core.context import Context
 
 
@@ -18,3 +21,10 @@ class Plugin:
 
     def load(self, c: Context):
         raise NotImplementedError
+
+    @staticmethod
+    def _r(c: Context, t: typing.Type[Command]):
+        """
+        Usage: self._r(c, PrimesCommand) and so on
+        """
+        c['commands'].register_class(t)
