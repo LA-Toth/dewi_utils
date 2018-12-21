@@ -32,8 +32,8 @@ class EditCommand(Command):
     def register_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument('file_list', nargs=argparse.REMAINDER, help='List of files for editing')
 
-    def run(self, ns: argparse.Namespace):
-        args = ['vim'] + convert_to_vim_args(ns.file_list)
+    def run(self, args: argparse.Namespace):
+        args = ['vim'] + convert_to_vim_args(args.file_list)
         pipe = subprocess.Popen(args)
         pipe.communicate()
 

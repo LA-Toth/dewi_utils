@@ -66,8 +66,8 @@ class Http:
 
             if suffix not in cls.SUFFIXES:
                 return False, value
-            else:
-                return True, value * cls.SUFFIXES[suffix]
+
+            return True, value * cls.SUFFIXES[suffix]
 
     def run(self):
         print(self.__dict__)

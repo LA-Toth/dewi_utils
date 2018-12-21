@@ -3,7 +3,7 @@
 
 import collections
 
-from dewi.core import CommandRegistry, CommandRegistrar
+from dewi.core.commandregistry import CommandRegistry, CommandRegistrar
 
 
 class ContextError(Exception):

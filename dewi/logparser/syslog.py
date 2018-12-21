@@ -39,23 +39,23 @@ class ISO8601Parser(Parser):
         if not parsed:
             print(line)
             return None
-        else:
-            return parsed
+
+        return parsed
 
     def parse(self, line: str) -> typing.Optional[typing.Match[str]]:
         parsed = self._pattern.match(line)
 
         if not parsed:
             return None
-        else:
-            return parsed
+
+        return parsed
 
     @classmethod
     def to_timestamp(cls, date_time: str) -> float:
         return cls.to_datetime(date_time).timestamp()
 
     @classmethod
-    def to_datetime(self, date_time: str) -> datetime.datetime:
+    def to_datetime(cls, date_time: str) -> datetime.datetime:
         if date_time[-3] == ':':
             date_time = date_time[:-3] + date_time[-2:]
         return datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S%z")
@@ -75,3 +75,6 @@ class GenericParser(Parser):
         time_struct = time.strptime(matched.group(1) + time.strftime('%Y'), '%b %d %Y')
 
         return f'{time_struct.tm_year}-{time_struct.tm_mon:02d}-{time_struct.tm_mday:02d}'
+
+    def parse(self, line: str) -> typing.Optional[typing.Match[str]]:
+        pass

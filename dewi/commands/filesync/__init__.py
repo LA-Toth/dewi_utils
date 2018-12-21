@@ -1,3 +1,4 @@
+
 # Copyright 2017 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
@@ -80,19 +81,19 @@ class FileSyncCommand(Command):
         loader = EntryListLoader()
         entries = loader.load_from_string_list(args.entry, args.skip_chmod)
         if args.mode == 'local':
-            self._local_sync(args, entries)
+            return self._local_sync(args, entries)
         else:
-            self._remote_sync(args, entries)
+            return self._remote_sync(args, entries)
 
     def _local_sync(self, args: argparse.Namespace, entries: typing.List[FileSyncEntry]):
         app = LocalSyncApp(args.directory, args.target_directory, entries)
-        app.run()
+        return app.run()
 
     def _remote_sync(self, args: argparse.Namespace, entries: typing.List[FileSyncEntry]):
         app = SyncOverSshApp(args.directory, args.target_directory, entries,
                              user=args.user, host=args.host, port=args.port,
                              check_host_key=not args.skip_host_key_check)
-        app.run()
+        return app.run()
 
 
 FileSyncPlugin = CommandPlugin.create(FileSyncCommand)

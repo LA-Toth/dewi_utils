@@ -83,16 +83,16 @@ class FileDatabase:
         return c.fetchone()
 
     def insert(self, file_entry: FileEntry, checksum: typing.Optional[str] = None):
-        x = self._conn.execute('INSERT INTO photo_file_info'
-                               ' VALUES (?,?,?, ?,?,?)',
-                               [
-                                   file_entry.orig_path,
-                                   file_entry.target_dir_part,
-                                   file_entry.uppercase_basename,
-                                   file_entry.size,
-                                   file_entry.mod_date,
-                                   checksum or '',
-                               ])
+        self._conn.execute('INSERT INTO photo_file_info'
+                           ' VALUES (?,?,?, ?,?,?)',
+                           [
+                               file_entry.orig_path,
+                               file_entry.target_dir_part,
+                               file_entry.uppercase_basename,
+                               file_entry.size,
+                               file_entry.mod_date,
+                               checksum or '',
+                           ])
 
     def add_checksum(self, rowid: int, checksum: str):
         self._conn.execute('UPDATE photo_file_info SET checksum = ? WHERE rowid=?', [checksum, rowid])
@@ -130,7 +130,7 @@ class PhotoSorter:
         return 0
 
     def _walk(self) -> typing.Iterable[FileEntry]:
-        for root, dirs, files in os.walk(self.source_dir):
+        for root, _, files in os.walk(self.source_dir):
             for name in files:
                 full_path = os.path.join(root, name)
 

@@ -32,7 +32,7 @@ class KernelModule(LogParserModule):
 
     def finish(self):
         self.set('system.blocked_processes.count', len(self._blocked_process_list))
-        if len(self._blocked_process_list):
+        if self._blocked_process_list:
             self.add_message(
                 Level.WARNING, 'System', 'Kernel',
                 "Blocked processes; count='{}'".format(len(self._blocked_process_list)))

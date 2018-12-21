@@ -20,7 +20,7 @@ class ClassIsNotSubclassOfCommand(Exception):
     pass
 
 
-class ClassDescriptor(object):
+class ClassDescriptor:
     """
     Describes how to create a class based on specific values in subclasses.
 
@@ -98,7 +98,7 @@ class ClassDescriptorWithConcreteClass(ClassDescriptor):
         return self.class_object.name
 
 
-class CommandRegistry(object):
+class CommandRegistry:
     '''
     Registry of command classes
     '''
