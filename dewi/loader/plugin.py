@@ -11,13 +11,14 @@ from dewi.core.context import Context
 class Plugin:
     """
     A plugin is an extension of DEWI.
+    By default it depends on CorePlugin, which has no dependency.
     """
 
     def get_description(self) -> str:
         raise NotImplementedError
 
     def get_dependencies(self) -> collections.Iterable:
-        return ()
+        return {'dewi.core.CorePlugin'}
 
     def load(self, c: Context):
         raise NotImplementedError
@@ -26,7 +27,6 @@ class Plugin:
     def _r(c: Context, t: typing.Type[Command]):
         """
         Registers a Command type into commommandregistry.
-        Requires ``dewi.core.CorePlugin``
 
         >> from dewi.commands.edit import EditCommand
         >> from dewi.core.context import Context
@@ -36,9 +36,6 @@ class Plugin:
         >>  class EditPlugin(Plugin):
         >>      def get_description(self) -> str:
         >>          return 'Provides "edit" command wrapping "vim"'
-        >>
-        >>      def get_dependencies(self) -> collections.Iterable:
-        >>          return {'dewi.core.CorePlugin'}
         >>
         >>      def load(self, c: Context):
         >>          self._r(c, EditCommand)

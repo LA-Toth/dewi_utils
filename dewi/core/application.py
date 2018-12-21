@@ -20,7 +20,7 @@ class DewiPlugin(Plugin):
         return "DEWI application plugin"
 
     def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin', 'dewi.commands.CommandsPlugin'}
+        return {'dewi.commands.CommandsPlugin'}
 
     def load(self, c: Context):
         pass

@@ -1,7 +1,6 @@
 # Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
-import collections
 import types
 import typing
 
@@ -15,9 +14,6 @@ class CommandPlugin(Plugin):
 
     def get_description(self) -> str:
         return 'Command plugin of: ' + self.command.description
-
-    def get_dependencies(self) -> collections.Iterable:
-        return {'dewi.core.CorePlugin'}
 
     def load(self, c: Context):
         c.commands.register_class(self.command)
