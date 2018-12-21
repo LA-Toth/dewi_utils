@@ -26,7 +26,7 @@ class DewiPlugin(Plugin):
         pass
 
 
-def _list_comands(prog_name: str, command_registry: CommandRegistry, *, all_commands: bool = False):
+def _list_commands(prog_name: str, command_registry: CommandRegistry, *, all_commands: bool = False):
     commands = dict()
     max_length = 0
     max_name_length = 0
@@ -73,7 +73,7 @@ class ListAllCommand(Command):
 
     def run(self, args: argparse.Namespace):
         context: Context = args._context_
-        _list_comands(args._program_name_, context.command_registry, all_commands=True)
+        _list_commands(args._program_name_, context.command_registry, all_commands=True)
 
 
 class ListCommand(Command):
@@ -82,7 +82,7 @@ class ListCommand(Command):
 
     def run(self, args: argparse.Namespace):
         context: Context = args._context_
-        _list_comands(args._program_name_, context.command_registry)
+        _list_commands(args._program_name_, context.command_registry)
 
 
 class MainApplication:
