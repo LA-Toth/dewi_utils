@@ -54,34 +54,34 @@ class TestMainApplication(dewi.tests.TestCase):
         self.loader = FakePluginLoader(FakeCommand)
         self.application = MainApplication(self.loader, 'myprogram')
 
-    def __invoke_application(self, args, *, expected_exit_value=1):
+    def _invoke_application(self, args, *, expected_exit_value=1):
         with self.assert_raises(SystemExit) as context:
             self.application.run(args)
 
         self.assert_equal(expected_exit_value, context.exception.code)
 
-    def __invoke_application_redirected(self, *args, **kwargs):
+    def _invoke_application_redirected(self, *args, **kwargs):
         with redirect_outputs() as redirection:
-            self.__invoke_application(*args, **kwargs)
+            self._invoke_application(*args, **kwargs)
 
         return redirection
 
     def test_help_option(self):
-        redirect = self.__invoke_application_redirected(['-h'], expected_exit_value=0)
+        redirect = self._invoke_application_redirected(['-h'], expected_exit_value=0)
         self.assert_in('myprogram [options] [command [command-args]]', redirect.stdout.getvalue())
         self.assert_equal('', redirect.stderr.getvalue())
 
         self.assert_equal(set(), set(self.loader.loaded))
 
     def test_loading_plugins_requires_a_command_to_run(self):
-        redirect = self.__invoke_application_redirected(['-p', 'test'], expected_exit_value=None)
+        redirect = self._invoke_application_redirected(['-p', 'test'], expected_exit_value=None)
         self.assert_equal('', redirect.stderr.getvalue())
         self.assert_in('Available Myprogram Commands.\n', redirect.stdout.getvalue())
 
         self.assert_equal({'test', 'dewi.core.CorePlugin'}, set(self.loader.loaded))
 
     def test_command_run_method_is_called(self):
-        redirect = self.__invoke_application_redirected(
+        redirect = self._invoke_application_redirected(
             ['-p', 'test', 'fake', 'something', 'another'],
             expected_exit_value=42)
         self.assert_equal('', redirect.stdout.getvalue())
@@ -90,7 +90,7 @@ class TestMainApplication(dewi.tests.TestCase):
         self.assert_equal({'dewi.core.CorePlugin', 'test'}, set(self.loader.loaded))
 
     def test_command_run_method_exception_is_handled(self):
-        redirect = self.__invoke_application_redirected(
+        redirect = self._invoke_application_redirected(
             ['-p', 'test', 'fake', 'ERROR'],
             expected_exit_value=1)
         self.assert_equal('', redirect.stdout.getvalue())
@@ -110,7 +110,7 @@ class TestMainApplication(dewi.tests.TestCase):
         --->8---
         """
 
-        redirect = self.__invoke_application_redirected(
+        redirect = self._invoke_application_redirected(
             ['-p', 'test', 'unknown-name'],
             expected_exit_value=1)
         self.assert_equal('', redirect.stderr.getvalue())
@@ -121,7 +121,7 @@ class TestMainApplication(dewi.tests.TestCase):
         self.assert_in(" list-all ", output)
 
     def test_run_help_of_command(self):
-        redirect = self.__invoke_application_redirected(
+        redirect = self._invoke_application_redirected(
             ['-p', 'test', 'fake', '-h'],
             expected_exit_value=0)
         self.assert_in('myprogram fake [-h]', redirect.stdout.getvalue())

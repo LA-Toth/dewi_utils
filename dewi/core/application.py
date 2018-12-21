@@ -87,12 +87,12 @@ class ListCommand(Command):
 
 class MainApplication:
     def __init__(self, loader: PluginLoader, program_name: str):
-        self.__loader = loader
-        self.__program_name = program_name
+        self._loader = loader
+        self._program_name = program_name
 
-    def __parse_app_args(self, args: collections.Sequence):
+    def _parse_app_args(self, args: collections.Sequence):
         parser = argparse.ArgumentParser(
-            prog=self.__program_name,
+            prog=self._program_name,
             usage='%(prog)s [options] [command [command-args]]')
         parser.add_argument(
             '-p', '--plugin', help='Load this plugin. This option can be specified more than once.',
@@ -124,7 +124,7 @@ class MainApplication:
         return parser.parse_args(args)
 
     def run(self, args: collections.Sequence):
-        app_ns = self.__parse_app_args(args)
+        app_ns = self._parse_app_args(args)
         if app_ns.debug:
             app_ns.print_backtraces = True
             app_ns.log_level = 'debug'
@@ -137,7 +137,7 @@ class MainApplication:
 
         try:
             log_debug('Loading plugins')
-            context = self.__loader.load(set(plugins))
+            context = self._loader.load(set(plugins))
             command_name = app_ns.command
 
             context.commands.register_class(ListAllCommand)
@@ -149,7 +149,7 @@ class MainApplication:
                 command = command_class()
                 parser = argparse.ArgumentParser(
                     description=command.description,
-                    prog='{} {}'.format(self.__program_name, command_name))
+                    prog='{} {}'.format(self._program_name, command_name))
 
                 command.register_arguments(parser)
                 ns = parser.parse_args(app_ns.commandargs)
@@ -158,7 +158,7 @@ class MainApplication:
                 ns.print_backtraces_ = app_ns.print_backtraces
                 ns.parser_ = parser
                 ns.context_ = context
-                ns.program_name_ = self.__program_name
+                ns.program_name_ = self._program_name
 
                 log_debug('Starting command', name=command_name)
                 sys.exit(command.run(ns))
@@ -184,7 +184,7 @@ class MainApplication:
                 sys.exit(1)
 
         except SystemExit:
-            self.__wait_for_termination_if_needed(app_ns)
+            self._wait_for_termination_if_needed(app_ns)
             raise
         except BaseException as exc:
             if app_ns.print_backtraces:
@@ -196,7 +196,7 @@ class MainApplication:
                     tb_str += '  File %s:%s in %s\n    %s\n' % (t.filename, t.lineno, t.name, t.line)
                 print(tb_str)
             print(exc, file=sys.stderr)
-            self.__wait_for_termination_if_needed(app_ns)
+            self._wait_for_termination_if_needed(app_ns)
             sys.exit(1)
 
     def _process_logging_options(self, args: argparse.Namespace):
@@ -205,7 +205,7 @@ class MainApplication:
                 print('ERROR: --log-none cannot be used any other log target,')
                 print('ERROR: none of: --log-file, --log-console, --log-syslog')
                 return 1
-            create_logger(self.__program_name, LoggerType.NONE, args.log_level, filenames=[])
+            create_logger(self._program_name, LoggerType.NONE, args.log_level, filenames=[])
         else:
             logger_types = []
             if args.log_console:
@@ -219,9 +219,9 @@ class MainApplication:
                 # Using default logger
                 logger_types = LoggerType.CONSOLE
 
-            create_logger(self.__program_name, logger_types, args.log_level, filenames=args.log_file)
+            create_logger(self._program_name, logger_types, args.log_level, filenames=args.log_file)
 
-    def __wait_for_termination_if_needed(self, app_ns):
+    def _wait_for_termination_if_needed(self, app_ns):
         if app_ns.wait:
             print("\nPress ENTER to continue")
             input("")

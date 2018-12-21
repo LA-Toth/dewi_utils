@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 
@@ -17,13 +17,13 @@ class SshToUbuntuOnWindows(Command):
     description = "Ssh to localhost, to ubuntu on windows, into current directory"
 
     def run(self, args: argparse.Namespace):
-        path = self.__prepare_path(os.getcwd())
+        path = self._prepare_path(os.getcwd())
         res = subprocess.run(
             ['ssh', '-oUserKnownHostsFile=/dev/null', '-oStrictHostKeyChecking=no', '127.0.0.1',
              '-t', 'cd {} && bash'.format(path)])
         return res.returncode
 
-    def __prepare_path(self, path: str):
+    def _prepare_path(self, path: str):
         return shlex.quote('/mnt/' + path[0].lower() + '/'.join(path[2:].split('\\')))
 
 

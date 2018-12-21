@@ -30,18 +30,18 @@ class Context(collections.Mapping):
 
     def __init__(self):
         c = CommandRegistry()
-        self.__entries = {
+        self._entries = {
             'commands': CommandRegistrar(c),
             'commandregistry': c,
         }
 
     @property
     def command_registry(self) -> CommandRegistry:
-        return self.__entries['commandregistry']
+        return self._entries['commandregistry']
 
     @property
     def commands(self) -> CommandRegistrar:
-        return self.__entries['commands']
+        return self._entries['commands']
 
     def register(self, name: str, value):
         """
@@ -51,33 +51,33 @@ class Context(collections.Mapping):
         :param name: the name of the new entry
         :param value: the value of the new entry
        """
-        if name in self.__entries:
+        if name in self._entries:
             raise ContextEntryAlreadyRegistered("Context entry {!r} already registered".format(name))
-        self.__entries[name] = value
+        self._entries[name] = value
 
     def unregister(self, name: str):
         """
         Unregisters an already registered entry
         :param name: The name of the entry to be unregistered
         """
-        self.__check_entry(name)
+        self._check_entry(name)
 
-        del self.__entries[name]
+        del self._entries[name]
 
-    def __check_entry(self, name: str):
-        if name not in self.__entries:
+    def _check_entry(self, name: str):
+        if name not in self._entries:
             raise ContextEntryNotFound("Requested context entry {!r} is not registered".format(name))
 
     def __len__(self):
-        return len(self.__entries)
+        return len(self._entries)
 
     def __getitem__(self, item):
-        self.__check_entry(item)
+        self._check_entry(item)
 
-        return self.__entries[item]
+        return self._entries[item]
 
     def __contains__(self, item):
-        return item in self.__entries
+        return item in self._entries
 
     def __iter__(self):
-        return iter(self.__entries)
+        return iter(self._entries)

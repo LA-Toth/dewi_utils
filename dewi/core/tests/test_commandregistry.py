@@ -1,4 +1,4 @@
-# Copyright 2012-2017 Laszlo Attila Toth
+# Copyright 2012-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
@@ -124,8 +124,8 @@ class CommandRegistryTest(dewi.tests.TestCase):
 class TestCommandRegistrar(dewi.tests.TestCase):
 
     def set_up(self):
-        self.__registry = CommandRegistry()
-        self.__registrar = CommandRegistrar(self.__registry)
+        self._registry = CommandRegistry()
+        self._registrar = CommandRegistrar(self._registry)
 
     def test_registration_of_a_simple_command(self):
         class LocalCommand(Command):
@@ -134,10 +134,10 @@ class TestCommandRegistrar(dewi.tests.TestCase):
             def run(self, args: argparse.Namespace):
                 pass
 
-        self.__registrar.register_class(LocalCommand)
-        self.assert_equal(1, self.__registry.get_command_count())
-        self.assert_equal(['local-command'], self.__registry.get_command_names())
-        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('local-command').get_class())
+        self._registrar.register_class(LocalCommand)
+        self.assert_equal(1, self._registry.get_command_count())
+        self.assert_equal(['local-command'], self._registry.get_command_names())
+        self.assert_equal(LocalCommand, self._registry.get_command_class_descriptor('local-command').get_class())
 
     def test_registration_of_a_command_with_aliases(self):
         class LocalCommand(Command):
@@ -147,11 +147,11 @@ class TestCommandRegistrar(dewi.tests.TestCase):
             def run(self, args: argparse.Namespace):
                 pass
 
-        self.__registrar.register_class(LocalCommand)
-        self.assert_equal(4, self.__registry.get_command_count())
-        self.assert_equal({'local-command', 'a', 'b42', 'lc'}, set(self.__registry.get_command_names()))
-        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('local-command').get_class())
-        self.assert_equal(LocalCommand, self.__registry.get_command_class_descriptor('b42').get_class())
+        self._registrar.register_class(LocalCommand)
+        self.assert_equal(4, self._registry.get_command_count())
+        self.assert_equal({'local-command', 'a', 'b42', 'lc'}, set(self._registry.get_command_names()))
+        self.assert_equal(LocalCommand, self._registry.get_command_class_descriptor('local-command').get_class())
+        self.assert_equal(LocalCommand, self._registry.get_command_class_descriptor('b42').get_class())
 
     def test_registration_fails_if_not_a_command_is_registered(self):
-        self.assert_raises(ClassIsNotSubclassOfCommand, self.__registrar.register_class, CommandRegistry)
+        self.assert_raises(ClassIsNotSubclassOfCommand, self._registrar.register_class, CommandRegistry)

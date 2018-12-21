@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
@@ -48,7 +48,7 @@ class ModuleRunner:
 
         dependency_graph = self._build_dependency_graph(provided, requirements, filter_tag)
         visited_list = []
-        self.__build_dependency_list(dependency_graph, visited_list, dependency_graph.keys())
+        self._build_dependency_list(dependency_graph, visited_list, dependency_graph.keys())
 
     def _collect_requirements_and_provided_values(self):
         requirements = {}
@@ -133,7 +133,7 @@ class ModuleRunner:
 
         return dependency_graph
 
-    def __build_dependency_list(
+    def _build_dependency_list(
             self,
             dependency_graph: dict,
             visited_nodes: list,
@@ -149,5 +149,5 @@ class ModuleRunner:
             visited_nodes.append(name)
 
             dependencies = [x['value'] for x in dependency_graph[name]]
-            self.__build_dependency_list(dependency_graph, visited_nodes, dependencies)
+            self._build_dependency_list(dependency_graph, visited_nodes, dependencies)
             self._ordered_modules.append(name)

@@ -104,10 +104,10 @@ class CommandRegistry(object):
     '''
 
     def __init__(self):
-        self.__registry = dict()
+        self._registry = dict()
 
-    def __validate_name_and_class_descriptor(self, name: str, class_descriptor: ClassDescriptor):
-        if name in self.__registry:
+    def _validate_name_and_class_descriptor(self, name: str, class_descriptor: ClassDescriptor):
+        if name in self._registry:
             raise CommandRegistryException("Command class name is already used; name='{0}'".format(name))
         if not isinstance(class_descriptor, ClassDescriptor):
             raise CommandRegistryException(
@@ -115,22 +115,22 @@ class CommandRegistry(object):
                 "type='{0}'".format(type(class_descriptor).__name__))
 
     def register_command_class(self, name: str, class_descriptor: ClassDescriptor):
-        self.__validate_name_and_class_descriptor(name, class_descriptor)
-        self.__registry[name] = class_descriptor
+        self._validate_name_and_class_descriptor(name, class_descriptor)
+        self._registry[name] = class_descriptor
 
     def get_command_class_descriptor(self, name: str) -> ClassDescriptor:
-        if name not in self.__registry:
+        if name not in self._registry:
             raise CommandRegistryException("Specified command class name is not found; name='{0}'".format(name))
-        return self.__registry[name]
+        return self._registry[name]
 
     def get_command_count(self) -> int:
-        return len(self.__registry)
+        return len(self._registry)
 
     def get_command_names(self) -> typing.List[str]:
-        return list(self.__registry.keys())
+        return list(self._registry.keys())
 
     def __contains__(self, command_name: str) -> bool:
-        return command_name in self.__registry
+        return command_name in self._registry
 
 
 class CommandRegistrar:
@@ -139,10 +139,10 @@ class CommandRegistrar:
     """
 
     def __init__(self, cr: CommandRegistry):
-        self.__registry = cr
+        self._registry = cr
 
     def register_class(self, command_class: typing.Type[Command]):
         desc = ClassDescriptorWithConcreteClass(command_class)
-        self.__registry.register_command_class(command_class.name, desc)
+        self._registry.register_command_class(command_class.name, desc)
         for alias in command_class.aliases:
-            self.__registry.register_command_class(alias, desc)
+            self._registry.register_command_class(alias, desc)

@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 
@@ -24,35 +24,35 @@ class Splitter:
         self._silent = silent
 
     def run(self):
-        if os.path.exists(self._target_dir) and not self.__is_directory_empty():
+        if os.path.exists(self._target_dir) and not self._is_directory_empty():
             print("Target directory '{0}' is not empty".format(self._target_dir))
             return 1
 
         if not os.path.exists(self._target_dir):
             os.mkdir(self._target_dir, 0o755)
-        self.__split_session()
+        self._split_session()
         return 0
 
-    def __is_directory_empty(self):
+    def _is_directory_empty(self):
         listing = os.listdir(self._target_dir)
         return len(listing) == 0
 
-    def __split_session(self):
+    def _split_session(self):
         if self._file_name == '-':
-            self.__split_session_opened(sys.stdin)
+            self._split_session_opened(sys.stdin)
         else:
             with open(self._file_name, encoding='UTF-8', errors='surrogateescape') as f:
-                self.__split_session_opened(f)
+                self._split_session_opened(f)
 
-        self.__close_files()
+        self._close_files()
 
-    def __split_session_opened(self, file):
+    def _split_session_opened(self, file):
         line = file.readline()
         line_number = 0
         while line:
-            file_id = self.__get_file_id_from_line(line)
+            file_id = self._get_file_id_from_line(line)
             if file_id:
-                fw = self.__open(*file_id)
+                fw = self._open(*file_id)
                 fw.write(line)
                 if self._reopen_files:
                     fw.close()
@@ -61,7 +61,7 @@ class Splitter:
             if not self._silent and (line_number % 10000) == 0:
                 print(line_number)
 
-    def __get_file_id_from_line(self, line):
+    def _get_file_id_from_line(self, line):
         parts = line.split(None, 7)
         if len(parts) < 6:
             return None
@@ -72,12 +72,12 @@ class Splitter:
             index = 4
         full_session_id = parts[index].split('/', 4)
         if len(full_session_id) >= 2 and full_session_id[0] == '(svc':
-            session_id = self.__strip_session_id(full_session_id)
+            session_id = self._strip_session_id(full_session_id)
             pid = re.sub(r'.*\[([0-9]+)\].*', r'\1', parts[2])
             return (pid, session_id)
         return None
 
-    def __strip_session_id(self, session_id_parts: list):
+    def _strip_session_id(self, session_id_parts: list):
         prefix = session_id_parts[1].split(':', 2)
         index = 1
         if len(prefix) == 1:
@@ -86,7 +86,7 @@ class Splitter:
 
         return session_id_parts[index].strip(':)')
 
-    def __open(self, pid, session_id):
+    def _open(self, pid, session_id):
         if self._delimiter != ':':
             session_id = session_id.replace(':', self._delimiter)
 
@@ -102,7 +102,7 @@ class Splitter:
             f = open(file_path, 'at', encoding='UTF-8', errors='surrogateescape')
         except IOError as e:
             if e.errno == errno.EMFILE:
-                self.__close_some_files()
+                self._close_some_files()
                 f = open(file_path, 'at')
             else:
                 raise
@@ -111,14 +111,14 @@ class Splitter:
             self.file_handles[(pid, session_id)] = f
         return f
 
-    def __close_some_files(self):
+    def _close_some_files(self):
         close_count = len(self.file_handles) / 2
         while close_count > 0:
             (_, fh) = self.file_handles.popitem(last=False)
             fh.close()
             close_count -= 1
 
-    def __close_files(self):
+    def _close_files(self):
         for handle in self.file_handles.values():
             handle.close()
         self.file_handles = dict()

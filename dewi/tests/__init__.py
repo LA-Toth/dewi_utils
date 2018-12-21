@@ -1,3 +1,6 @@
+# Copyright 2014-2018 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
+
 import io
 import unittest
 import sys
@@ -9,12 +12,12 @@ def redirect_outputs(stdout=None, stderr=None):
             self.stdout = stdout or io.StringIO()
             self.stderr = stderr or io.StringIO()
 
-            self.__saved_stdouts = []
-            self.__saved_stderrs = []
+            self._saved_stdouts = []
+            self._saved_stderrs = []
 
         def __enter__(self):
-            self.__saved_stdouts.append(sys.stdout)
-            self.__saved_stderrs.append(sys.stderr)
+            self._saved_stdouts.append(sys.stdout)
+            self._saved_stderrs.append(sys.stderr)
 
             sys.stdout = self.stdout
             sys.stderr = self.stderr
@@ -22,8 +25,8 @@ def redirect_outputs(stdout=None, stderr=None):
             return self
 
         def __exit__(self, *args):
-            sys.stdout = self.__saved_stdouts.pop()
-            sys.stderr = self.__saved_stderrs.pop()
+            sys.stdout = self._saved_stdouts.pop()
+            sys.stderr = self._saved_stderrs.pop()
 
     return Redirection()
 

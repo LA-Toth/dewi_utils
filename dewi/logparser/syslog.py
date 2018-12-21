@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import datetime
@@ -24,7 +24,7 @@ class ISO8601Parser(Parser):
     """
 
     def __init__(self):
-        self.__pattern = re.compile(
+        self._pattern = re.compile(
             r'^(?P<date>\d+-\d+-\d+)T(?P<time>\d\d:\d\d:\d\d)\+[0-9]+:[0-9]+ ' +
             r'(?P<host>[-_.0-9a-zA-Z]+) (?P<app>[-_./0-9a-zA-Z]+)(\[(?P<pid>[0-9]+)\])?: (?P<msg>.*)$'
         )
@@ -43,7 +43,7 @@ class ISO8601Parser(Parser):
             return parsed
 
     def parse(self, line: str) -> typing.Optional[typing.Match[str]]:
-        parsed = self.__pattern.match(line)
+        parsed = self._pattern.match(line)
 
         if not parsed:
             return None
