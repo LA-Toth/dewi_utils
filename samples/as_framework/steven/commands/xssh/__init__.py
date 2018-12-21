@@ -20,7 +20,7 @@ class XSshCommand(Command):
         parser.add_argument('server', help='The SSH server address to log in to')
 
     def run(self, args: argparse.Namespace):
-        cmd = 'chroot /srv/chroot/example' if args._running_command_.endswith('chroot') else 'bash'
+        cmd = 'chroot /srv/chroot/example' if args.running_command_.endswith('chroot') else 'bash'
         res = subprocess.run(
             ['ssh', '-oUserKnownHostsFile=/dev/null', '-oStrictHostKeyChecking=no',
              '-l', 'root', args.server, '-t', cmd])

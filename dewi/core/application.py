@@ -72,8 +72,8 @@ class ListAllCommand(Command):
     description = 'Lists all available command with aliases'
 
     def run(self, args: argparse.Namespace):
-        context: Context = args._context_
-        _list_commands(args._program_name_, context.command_registry, all_commands=True)
+        context: Context = args.context_
+        _list_commands(args.program_name_, context.command_registry, all_commands=True)
 
 
 class ListCommand(Command):
@@ -81,8 +81,8 @@ class ListCommand(Command):
     description = 'Lists all available command with their names only'
 
     def run(self, args: argparse.Namespace):
-        context: Context = args._context_
-        _list_commands(args._program_name_, context.command_registry)
+        context: Context = args.context_
+        _list_commands(args.program_name_, context.command_registry)
 
 
 class MainApplication:
@@ -153,12 +153,12 @@ class MainApplication:
 
                 command.register_arguments(parser)
                 ns = parser.parse_args(app_ns.commandargs)
-                ns._running_command_ = command_name
-                ns._debug_ = app_ns.debug
-                ns._print_backtraces_ = app_ns.print_backtraces
-                ns._parser = parser
-                ns._context_ = context
-                ns._program_name_ = self.__program_name
+                ns.running_command_ = command_name
+                ns.debug_ = app_ns.debug
+                ns.print_backtraces_ = app_ns.print_backtraces
+                ns.parser_ = parser
+                ns.context_ = context
+                ns.program_name_ = self.__program_name
 
                 log_debug('Starting command', name=command_name)
                 sys.exit(command.run(ns))
