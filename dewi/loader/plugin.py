@@ -25,6 +25,23 @@ class Plugin:
     @staticmethod
     def _r(c: Context, t: typing.Type[Command]):
         """
-        Usage: self._r(c, PrimesCommand) and so on
+        Registers a Command type into commommandregistry.
+        Requires ``dewi.core.CorePlugin``
+
+        >> from dewi.commands.edit import EditCommand
+        >> from dewi.core.context import Context
+        >> from dewi.loader.plugin import Plugin
+        >>
+        >>
+        >>  class EditPlugin(Plugin):
+        >>      def get_description(self) -> str:
+        >>          return 'Provides "edit" command wrapping "vim"'
+        >>
+        >>      def get_dependencies(self) -> collections.Iterable:
+        >>          return {'dewi.core.CorePlugin'}
+        >>
+        >>      def load(self, c: Context):
+        >>          self._r(c, EditCommand)
+        >>
         """
-        c['commands'].register_class(t)
+        c.commands.register_class(t)
