@@ -1,9 +1,8 @@
 # Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
-from dewi.core.context import Context, ContextEntryNotFound, ContextEntryAlreadyRegistered
-
 import dewi.tests
+from dewi.core.context import Context, ContextEntryNotFound, ContextEntryAlreadyRegistered
 
 
 class ContextTest(dewi.tests.TestCase):

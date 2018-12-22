@@ -1,11 +1,10 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
 import os
-import typing
-
 import time
+import typing
 
 from dewi.core.command import Command
 from dewi.core.commandplugin import CommandPlugin

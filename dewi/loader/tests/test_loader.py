@@ -1,12 +1,12 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import collections
 
+import dewi.tests
 from dewi.core.context import Context
 from dewi.loader.loader import PluginLoader, PluginLoaderError
 from dewi.loader.plugin import Plugin
-import dewi.tests
 
 
 class TestPlugin1(Plugin):

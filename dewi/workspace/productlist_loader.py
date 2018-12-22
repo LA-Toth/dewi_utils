@@ -1,12 +1,11 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import os
 import typing
 
-from yaml.parser import ParserError
-
 import yaml
+from yaml.parser import ParserError
 
 PRODUCT_LIST_FILE = 'product_list.yml'
 
@@ -19,7 +18,7 @@ class InvalidProductListVersion(ValueError):
     pass
 
 
-def _load(filename) ->typing.Dict:
+def _load(filename) -> typing.Dict:
     try:
         with open(filename) as f:
             loaded = yaml.load(f.read())

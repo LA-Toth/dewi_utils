@@ -1,11 +1,11 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
+# The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
 import io
 import sys
 
 import dewi.tests
-
 from dewi.tests import redirect_outputs
 
 

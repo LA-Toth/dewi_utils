@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
@@ -117,7 +117,7 @@ class SafeEraser:
                 date_new_ts = time.mktime(time.strptime(date_new, '%Y:%m:%d %H:%M:%S'))
 
                 if abs(date_new_ts - entry.mod_date) < self.MOD_DATE_MAX_DIFF or \
-                                abs(abs(date_new_ts - entry.mod_date) - 3600) < self.MOD_DATE_MAX_DIFF:
+                        abs(abs(date_new_ts - entry.mod_date) - 3600) < self.MOD_DATE_MAX_DIFF:
                     print(
                         f'. DUPLICATE found at {entry.orig_path}, original: ' + self.copied_hashes_without_date[
                             entry.key_without_date].orig_path + \

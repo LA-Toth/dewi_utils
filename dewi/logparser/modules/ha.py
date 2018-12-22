@@ -1,5 +1,6 @@
-# Copyright 2016-2017 Laszlo Attila Toth
+# Copyright 2016-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
+
 import typing
 
 from dewi.logparser.loghandler import LogParserModule
@@ -11,6 +12,7 @@ class HaModule(LogParserModule):
     An example module, which processes all log entries of HA (cl_status is a process that belongs to it)
     http://www.linux-ha.org/wiki/Heartbeat
     """
+
     def get_registration(self):
         """
         If the program name is cl_status, call process_entry.

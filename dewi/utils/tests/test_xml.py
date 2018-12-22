@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 # The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
@@ -40,9 +40,10 @@ class XmlTest(dewi.tests.TestCase):
                                     </root_node>''')
 
     def test_that_element_with_text_and_attrs_is_supported(self):
-        self.assert_xml_equals_dict({'parent': {'child': {'_attrs': {'an_attr': '42', 'public': 'true'}, 'text': 'The text'}}},
-                                    '<root_node><parent><child an_attr="42" public="true">The text</child>'
-                                    '</parent></root_node>')
+        self.assert_xml_equals_dict(
+            {'parent': {'child': {'_attrs': {'an_attr': '42', 'public': 'true'}, 'text': 'The text'}}},
+            '<root_node><parent><child an_attr="42" public="true">The text</child>'
+            '</parent></root_node>')
 
     def test_child_have_same_childs_such_as_posts(self):
         self.assert_xml_equals_dict({'posts': {'post': ['A', 'B']}},

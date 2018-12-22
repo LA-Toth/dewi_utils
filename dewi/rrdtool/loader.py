@@ -67,7 +67,7 @@ class GraphLoader:
             if 'type' not in field.options:
                 field.options['type'] = 'GAUGE'
             type_suffix = field.options['type'].lower()[0]
-            field.filename = os.path.join(domain, f'{host}-{ plugin.replace(".", "-")}-{field.name}-{type_suffix}.rrd')
+            field.filename = os.path.join(domain, f'{host}-{plugin.replace(".", "-")}-{field.name}-{type_suffix}.rrd')
             if 'draw' not in field.options:
                 field.options['draw'] = 'LINE1'
 

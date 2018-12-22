@@ -1,8 +1,8 @@
-# Copyright 2015-2017 Laszlo Attila Toth
+# Copyright 2015-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
-from dewi.loader.loader import PluginLoader, PluginLoaderError
 import dewi.tests
+from dewi.loader.loader import PluginLoader, PluginLoaderError
 
 
 class TestLoadable(dewi.tests.TestCase):

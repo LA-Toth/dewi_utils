@@ -1,7 +1,6 @@
 # Copyright 2012-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
-import collections
 import sys
 import typing
 

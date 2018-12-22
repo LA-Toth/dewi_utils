@@ -1,4 +1,4 @@
-# Copyright 2017 Laszlo Attila Toth
+# Copyright 2017-2018 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
@@ -153,7 +153,7 @@ class ImageDeduplicator:
                       file=self.log)
 
                 if date_old != self._target_entries[full_path].date_as_exif_data and abs(
-                                date_old_ts - self._target_entries[full_path].mod_date) > self.MOD_DATE_MAX_DIFF:
+                        date_old_ts - self._target_entries[full_path].mod_date) > self.MOD_DATE_MAX_DIFF:
                     try:
                         date_line = subprocess.check_output([self.config.exiftool, '-t', entry.orig_path]).decode(
                             'UTF-8')
@@ -172,7 +172,7 @@ class ImageDeduplicator:
                     print(f'(new) date in exif data of path \'{entry.orig_path}\' is {date_old}', file=self.log)
 
                     if date_new == entry.date_as_exif_data or abs(
-                                    date_new_ts - entry.mod_date) < self.MOD_DATE_MAX_DIFF:
+                            date_new_ts - entry.mod_date) < self.MOD_DATE_MAX_DIFF:
                         self._target_entries[full_path] = entry
                         print('Choosing NEW entry (almostmatching date and time)', file=self.log)
                     else:

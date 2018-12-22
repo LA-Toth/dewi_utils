@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import io
-import unittest
 import sys
+import unittest
 
 
 def redirect_outputs(stdout=None, stderr=None):

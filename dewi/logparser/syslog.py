@@ -3,9 +3,8 @@
 
 import datetime
 import re
-import typing
-
 import time
+import typing
 
 
 class Parser:

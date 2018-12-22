@@ -3,8 +3,8 @@
 
 import os
 import os.path
-
 import time
+
 from selenium import webdriver
 
 from dewi.core.logger import logger

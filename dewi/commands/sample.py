@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import argparse
-import collections
+
 from dewi.core.command import Command
 from dewi.core.context import Context
 from dewi.loader.plugin import Plugin

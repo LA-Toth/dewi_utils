@@ -3,10 +3,9 @@
 
 import argparse
 
-from dewi.core.command import Command
 from dewi.commands.packt.config import load_config
 from dewi.commands.packt.runner import run
-
+from dewi.core.command import Command
 from dewi.core.commandplugin import CommandPlugin
 
 

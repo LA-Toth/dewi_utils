@@ -6,7 +6,6 @@
 #
 
 import os
-import time
 import typing
 
 from dewi.core.logger import log_debug, log_info

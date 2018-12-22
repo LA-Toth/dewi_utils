@@ -3,14 +3,14 @@
 
 import argparse
 
+import dewi.tests
 from dewi.core.command import Command
-from dewi.core.commandregistry import CommandRegistry, CommandRegistryException, ClassDescriptor,\
-    ClassDescriptorWithModuleName,\
-    ClassDescriptorWithModuleNameAndCommandClassMember,\
-    ClassDescriptorWithModuleAndClassName, ClassDescriptorWithConcreteClass,\
+from dewi.core.commandregistry import CommandRegistry, CommandRegistryException, ClassDescriptor, \
+    ClassDescriptorWithModuleName, \
+    ClassDescriptorWithModuleNameAndCommandClassMember, \
+    ClassDescriptorWithModuleAndClassName, ClassDescriptorWithConcreteClass, \
     ClassNotFound, ClassIsNotSubclassOfCommand, CommandRegistrar
 
-import dewi.tests
 
 # disabling C0103 pylint error, because it is triggered due to limitation of the test,
 # the test tests real-world scenarios within itself...

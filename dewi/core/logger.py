@@ -146,9 +146,9 @@ class Logger:
 logger: Logger = None
 
 
-def create_logger(name: str, logger_types: typing.Union[LoggerType, typing.List[LoggerType]], log_level: str='info',
+def create_logger(name: str, logger_types: typing.Union[LoggerType, typing.List[LoggerType]], log_level: str = 'info',
                   *,
-                  filenames: typing.Optional[typing.List[str]]=None):
+                  filenames: typing.Optional[typing.List[str]] = None):
     global logger
 
     if isinstance(logger_types, LoggerType):
