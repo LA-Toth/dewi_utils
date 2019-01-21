@@ -1,3 +1,9 @@
+2.0.0
+  - !!! DEWI goes into multiple repositories and packages
+  - add ``csv`` module to load simple CSV files
+  - keep dewi.utils package as dewi_utils
+  - start using semantic versioning
+
 1.5
   - MainApplication: --debug implies --log-level debug
     default log level: info
