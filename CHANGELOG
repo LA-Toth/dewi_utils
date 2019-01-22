@@ -1,3 +1,6 @@
+2.1.0
+  - readd rrdtool into dewi_utils.rrdtool
+
 2.0.0
   - !!! DEWI goes into multiple repositories and packages
   - add ``csv`` module to load simple CSV files
