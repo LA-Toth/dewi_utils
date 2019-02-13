@@ -1,4 +1,4 @@
-# Copyright 2017-2018 Laszlo Attila Toth
+# Copyright 2017-2019 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import datetime
@@ -36,7 +36,8 @@ class RrdTool:
                  modifiers: typing.Optional[typing.List[ConfigModifier]] = None,
                  intervals: typing.Optional[typing.List[GraphInterval]] = None,
                  width: typing.Optional[int] = None,
-                 height: typing.Optional[int] = None
+                 height: typing.Optional[int] = None,
+                 parallel_run_count: int = 1,
                  ):
         self._munin_directory = munin_directory
         self._end_time: datetime.datetime = end_time
@@ -46,6 +47,7 @@ class RrdTool:
         self._width = width or 800
         self._height = height or 300
         self._graphs = GraphResult()
+        self._parallel_count = parallel_run_count
 
     def run(self):
         loader = GraphLoader(os.path.join(self._munin_directory, 'datafile'))
@@ -57,7 +59,8 @@ class RrdTool:
         if not self._end_time:
             self._calculate_end_time(config)
 
-        g = GraphWriter(self._munin_directory, config, self._graphs, self._end_time, self._width, self._height)
+        g = GraphWriter(self._munin_directory, config, self._graphs, self._end_time, self._width, self._height,
+                        self._parallel_count)
         g.generate(self._intervals)
 
     def _modify_config(self, config: GraphConfig):

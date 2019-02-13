@@ -1,3 +1,4 @@
 nose
 pycodestyle
 Jinja2
+threadpool

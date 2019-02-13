@@ -67,5 +67,6 @@ setup(
     install_requires=[
         'dewi_core>=2.0.1',
         'Jinja2',
+        'threadpool',
     ]
 )

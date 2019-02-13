@@ -7,6 +7,8 @@ import shlex
 import subprocess
 import typing
 
+from threadpool import ThreadPool, makeRequests
+
 from dewi_core.config.node import Node, NodeList
 from dewi_core.logger import log_info
 from dewi_utils.rrdtool import config
@@ -37,20 +39,15 @@ class GraphWriter:
     DEFAULT_WIDTH = 400
     DEFAULT_HEIGHT = 175
 
-    # Greens Blues   Oranges Dk yel  Dk blu  Purple  lime    Reds    Gray
-    COLORS = \
-        """00CC00 0066B3 FF8000 FFCC00 330099 990099 CCFF00 FF0000 808080
-        008F00 00487D B35A00 B38F00     6B006B 8FB300 B30000 BEBEBE
-        80FF80 80C9FF FFC080 FFE680 AA80FF EE00CC FF8080
-        666600 FFBFFF 00FFCC CC6699 999900""".split()
-
     def __init__(self,
                  munin_directory: str,
                  config: config.GraphConfig,
                  output: GraphResult,
                  last_update_date_time: typing.Optional[datetime.datetime],
                  width: typing.Optional[int] = None,
-                 height: typing.Optional[int] = None):
+                 height: typing.Optional[int] = None,
+                 parallel_count: int = 1
+                 ):
         self._munin_directory = munin_directory
         self._config = config
         self._output = output
@@ -58,6 +55,7 @@ class GraphWriter:
         self._last_update_timestamp = int(last_update_date_time.timestamp())
         self._width = width or self.DEFAULT_WIDTH
         self._height = height or self.DEFAULT_HEIGHT
+        self._parallel_count = parallel_count
 
         if self._width < 200 or self._height < 100:
             self._width = self.DEFAULT_WIDTH
@@ -78,7 +76,7 @@ class GraphWriter:
 
             '--border', '0',
 
-            '--watermark', "DEWI - dewi.rrdtool",
+            '--watermark', "DEWI - dewi_utils.rrdtool",
             '--slope-mode',
             '--disable-rrdtool-tag',
             '-',
@@ -87,13 +85,9 @@ class GraphWriter:
             '--imgformat', 'PNG',
         ]
 
-        self._env = self._prepare_env()
+        self._env_tz = self._prepare_env_tz()
 
-    def _prepare_env(self):
-        env = dict(os.environ)
-        env['LANG'] = 'en_US.UTF-8'
-        env['LC_LANG'] = 'en_US.UTF-8'
-
+    def _prepare_env_tz(self) -> typing.Optional[str]:
         if self._last_update_date_time is not None:
             offset = self._last_update_date_time.utcoffset()
 
@@ -104,17 +98,99 @@ class GraphWriter:
                 offset = int(abs(offset)) // 60
                 h, m = offset // 60, offset % 60
                 log_info(f'{self.__class__.__name__}: Set TZ', tz=f'UTC{sign}{h:02d}:{m:02d}')
-                env['TZ'] = f'UTC{sign}{h:02d}:{m:02d}'
+                return f'UTC{sign}{h:02d}:{m:02d}'
+
+        return None
+
+    def generate(self, intervals: typing.List[GraphInterval]):
+        log_info(f'Generating graphs in {self._parallel_count} thread(s)')
+        if self._parallel_count == 1:
+            job = GraphWriterJob(self._munin_directory, self._config, self._output, self._last_update_date_time,
+                                 self._last_update_timestamp,
+                                 self._width, self._height, self._header_args, self._env_tz)
+            job.generate_all(intervals)
+
+        else:
+            main = ThreadPool(self._parallel_count)
+            jobs = []
+
+            for domain, host, plugin in self._config.plugins:
+                for interval in intervals:
+                    job = GraphWriterJob(self._munin_directory, self._config, self._output, self._last_update_date_time,
+                                         self._last_update_timestamp,
+                                         self._width, self._height, self._header_args, self._env_tz,
+                                         self._config.domains[domain].hosts[host].plugins[plugin],
+                                         interval)
+                    jobs.append(job)
+                    [main.putRequest(req) for req in makeRequests(job.generate_single, [1])]
+
+            main.wait()
+
+            for job in jobs:
+                self._output.graphs.append(job.result_graph_node)
+
+
+class GraphWriterJob:
+    # Greens Blues   Oranges Dk yel  Dk blu  Purple  lime    Reds    Gray
+    COLORS = \
+        """00CC00 0066B3 FF8000 FFCC00 330099 990099 CCFF00 FF0000 808080
+        008F00 00487D B35A00 B38F00     6B006B 8FB300 B30000 BEBEBE
+        80FF80 80C9FF FFC080 FFE680 AA80FF EE00CC FF8080
+        666600 FFBFFF 00FFCC CC6699 999900""".split()
+
+    def __init__(self,
+                 munin_directory: str,
+                 config: config.GraphConfig,
+                 output: GraphResult,
+                 last_update_date_time: datetime.datetime,
+                 last_update_timestamp: int,
+                 width: int,
+                 height: int,
+                 header_args: typing.List[str],
+                 env_tz: typing.Optional[str],
+                 plugin: typing.Optional[config.Plugin] = None,
+                 interval: typing.Optional[GraphInterval] = None,
+                 ):
+        self._munin_directory = munin_directory
+        self._config = config
+        self._output = output
+        self._last_update_date_time: datetime.datetime = last_update_date_time
+        self._last_update_timestamp = last_update_timestamp
+        self._width = width
+        self._height = height
+        self._header_args = header_args
+        self._env_tz = env_tz
+
+        self._plugin = plugin
+        self._interval = interval
+
+        self._result_node: GraphNode = None
+
+        self._env = self._prepare_env()
+
+    def _prepare_env(self):
+        env = dict(os.environ)
+        env['LANG'] = 'en_US.UTF-8'
+        env['LC_LANG'] = 'en_US.UTF-8'
+
+        if self._env_tz:
+            env['TZ'] = self._env_tz
 
         return env
 
-    def generate(self, intervals: typing.List[GraphInterval]):
+    @property
+    def result_graph_node(self):
+        return self._result_node
+
+    def generate_all(self, intervals: typing.List[GraphInterval]):
         for domain, host, plugin in self._config.plugins:
             for interval in intervals:
-                self._generate_graph_of_interval(self._config.domains[domain].hosts[host].plugins[plugin], interval)
+                result = self._generate_graph_of_interval(self._config.domains[domain].hosts[host].plugins[plugin],
+                                                          interval)
+                self._output.graphs.append(result)
 
     def _generate_graph_of_interval(self, plugin: config.Plugin,
-                                    interval: GraphInterval):
+                                    interval: GraphInterval) -> GraphNode:
         result = GraphNode()
         result.interval_type = interval.interval_name
         result.title = plugin.title
@@ -194,7 +270,8 @@ class GraphWriter:
         )
 
         result.image = subprocess.check_output(['rrdtool'] + [str(x) for x in args], env=self._env)
-        self._output.graphs.append(result)
+
+        return result
 
     def _get_max_label_length(self, plugin: config.Plugin):
         result = 0
@@ -207,3 +284,6 @@ class GraphWriter:
                 if s > result:
                     result = s
         return result
+
+    def generate_single(self, _):
+        self._result_node = self._generate_graph_of_interval(self._plugin, self._interval)
