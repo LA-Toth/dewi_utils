@@ -1,5 +1,6 @@
 # Jetbrains stuff
 /.idea/
+/*.iml
 
 # Python cache files
 __pycache__
