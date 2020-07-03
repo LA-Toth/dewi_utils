@@ -1,3 +1,12 @@
+2.2.0
+  - add lock module for simple locking
+  - udate rrdtool to run partially
+  - add files module to find recursively like searching for .gitignore
+  - add screen module - currently adding frame of '#' chars around text
+  - add config module for managing gitconfig-like ini files
+     (like remote.master.merge: [remote "master"]\nmerge...)
+  - add ConfigPage for interactive config management
+
 2.1.0
   - readd rrdtool into dewi_utils.rrdtool
 
