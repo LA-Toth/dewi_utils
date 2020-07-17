@@ -1,4 +1,7 @@
+# Copyright 2009-2020 Laszlo Attila Toth
+# Distributed under the terms of the GNU Lesser General Public License v3
 # vim: sts=4 ts=8 et ai
+
 import collections
 import configparser
 import os
@@ -30,7 +33,7 @@ class IniConfig:
 
     def write(self):
         if self.config_file is None:
-            raise StewError("Unable to save config file because file name is unset")
+            raise IniConfigError("Unable to save config file because file name is unset")
         file_ = open(self.config_file, 'wt')
         self.parser.write(file_)
         file_.close()
@@ -243,6 +246,10 @@ class MissingKeys(InvalidMetaConfig):
 
 
 class InvalidConfigType(InvalidMetaConfig):
+    pass
+
+
+class IniConfigError(Exception):
     pass
 
 
