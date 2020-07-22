@@ -35,6 +35,59 @@ class Job:
     def next_job_param_list(self) -> typing.List[JobParam]:
         return []
 
+    def reducer_job_class(self) -> typing.Optional[typing.Type]:
+        return None
+
+    def reducer_job_params(self) -> typing.Optional[JobParam]:
+        return None
+
+
+class MapReduceConfig:
+    def __init__(self):
+        self._job_subjobs_map: typing.Dict[Job, typing.List[Job]] = dict()
+        self._job_to_parent_job_map: typing.Dict[Job] = dict()
+
+    def add_job(self, job: Job, parent: typing.Optional[Job]):
+        self._job_to_parent_job_map[job] = parent
+        self._job_subjobs_map[job] = list()
+
+        p = parent
+        while p:
+            self._job_subjobs_map[p].append(job)
+            p = self._job_to_parent_job_map[p]
+
+    def may_reduce_job(self, job: typing.Optional[Job]) -> typing.Optional[Job]:
+        if not job or self._job_subjobs_map[job]:
+            return None
+
+        del self._job_subjobs_map[job]
+
+        parent = self._job_to_parent_job_map[job]
+        del self._job_to_parent_job_map[job]
+        self._remove_job_starting_with_parent(job, parent)
+
+        reducer_job = self._get_reducer_job(job)
+        if reducer_job:
+            self.add_job(reducer_job, parent)
+            return reducer_job
+        else:
+            return self.may_reduce_job(parent)
+
+    def _get_reducer_job(self, job: Job) -> typing.Optional[Job]:
+        reducer_job_class = job.reducer_job_class()
+        if reducer_job_class:
+            params = job.reducer_job_params()
+            return reducer_job_class(self, *params.args, **params.kwargs)
+        else:
+            return None
+
+    def _remove_job_starting_with_parent(self, job: Job, parent: Job):
+        p = parent
+
+        while p:
+            self._job_subjobs_map[p].remove(job)
+            p = self._job_to_parent_job_map[p]
+
 
 class Pool:
     def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1):
@@ -43,6 +96,7 @@ class Pool:
         self.pool: typing.Optional[threadpool.ThreadPool] = None if thread_count == 1 else threadpool.ThreadPool(
             thread_count)
         self.lock: typing.Optional[threading.Lock] = None if thread_count == 1 else threading.Lock()
+        self.map_reduce = MapReduceConfig()
 
     def _acquire(self):
         if self.lock:
@@ -53,21 +107,34 @@ class Pool:
             self.lock.release()
 
     def job_completed(self, job: Job):
-        self.register_next_jobs(job)
-
-    def register_next_jobs(self, job: Job):
-        jobs = [job.next_job_class()()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
-
         self._acquire()
-        for j in jobs:
-            self._register_job(j)
+        self._register_next_jobs(job)
+        self._may_reduce(job)
         self._release()
 
-    def _register_job(self, job: Job):
+    def _register_next_jobs(self, job: Job):
+        jobs = [job.next_job_class()()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
+
+        for j in jobs:
+            self._register_job(j, job)
+
+    def _register_job(self, job: Job, parent: typing.Optional[Job] = None):
         if self.pool:
+            self.map_reduce.add_job(job, parent)
             [self.pool.putRequest(req) for req in threadpool.makeRequests(job.run, [1])]
         else:
             job.run()
+
+    def _may_reduce(self, job: Job):
+        if self.pool:
+            reducer_job = self.map_reduce.may_reduce_job(job)
+            if reducer_job:
+                [self.pool.putRequest(req) for req in threadpool.makeRequests(reducer_job.run, [1])]
+        else:
+            reducer_job_class = job.reducer_job_class()
+            if reducer_job_class:
+                params = job.reducer_job_params()
+                reducer_job_class(self, *params.args, **params.kwargs).run()
 
     def run(self, job_class: typing.Type, params_list: typing.List[JobParam]):
         for params in params_list:
