@@ -17,6 +17,25 @@ class JobParam:
         return [cls(*args, item) for item in lst]
 
 
+class Job:
+    def __init__(self, pool):
+        self.pool: Pool = pool
+
+    def run(self, _: typing.Optional[typing.Any] = None):
+        self._run()
+        self.pool.register_next_jobs(self)
+
+    def _run(self):
+        # optionally use self.pool.state (perhaps as observer, etc.)
+        raise NotImplementedError()
+
+    def next_job_class(self) -> typing.Optional[typing.Type]:
+        return None
+
+    def next_job_param_list(self) -> typing.List[JobParam]:
+        return []
+
+
 class Pool:
     def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1):
         self.state = state
@@ -33,16 +52,15 @@ class Pool:
         if self.lock:
             self.lock.release()
 
-    def register_next_jobs(self, job):
-        job1: Job = job
-        jobs = [job1.next_job_class()()(self, *params.args, **params.kwargs) for params in job1.next_job_param_list()]
+    def register_next_jobs(self, job: Job):
+        jobs = [job.next_job_class()()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
 
         self._acquire()
         for j in jobs:
             self._register_job(j)
         self._release()
 
-    def _register_job(self, job):
+    def _register_job(self, job: Job):
         if self.pool:
             [self.pool.putRequest(req) for req in threadpool.makeRequests(job.run, [1])]
         else:
@@ -53,22 +71,3 @@ class Pool:
             self._register_job(job_class(self, *params.args, **params.kwargs))
         if self.pool:
             self.pool.wait()
-
-
-class Job:
-    def __init__(self, pool: Pool):
-        self.pool = pool
-
-    def run(self, _: typing.Optional[typing.Any] = None):
-        self._run()
-        self.pool.register_next_jobs(self)
-
-    def _run(self):
-        # optionally use self.pool.state (perhaps as observer, etc.)
-        raise NotImplementedError()
-
-    def next_job_class(self) -> typing.Optional[typing.Type]:
-        return None
-
-    def next_job_param_list(self) -> typing.List[JobParam]:
-        return []
