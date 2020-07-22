@@ -23,7 +23,7 @@ class Job:
 
     def run(self, _: typing.Optional[typing.Any] = None):
         self._run()
-        self.pool.register_next_jobs(self)
+        self.pool.job_completed(self)
 
     def _run(self):
         # optionally use self.pool.state (perhaps as observer, etc.)
@@ -51,6 +51,9 @@ class Pool:
     def _release(self):
         if self.lock:
             self.lock.release()
+
+    def job_completed(self, job: Job):
+        self.register_next_jobs(job)
 
     def register_next_jobs(self, job: Job):
         jobs = [job.next_job_class()()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
