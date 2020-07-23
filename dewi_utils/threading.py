@@ -16,6 +16,9 @@ class JobParam:
     def from_list(cls, lst, *args):
         return [cls(*args, item) for item in lst]
 
+    def __repr__(self):
+        return f'JobParam({self.args}, {self.kwargs})'
+
 
 class Job:
     def __init__(self, pool):
@@ -56,7 +59,7 @@ class MapReduceConfig:
             self._job_subjobs_map[p].append(job)
             p = self._job_to_parent_job_map[p]
 
-    def may_reduce_job(self, job: typing.Optional[Job]) -> typing.Optional[Job]:
+    def may_reduce_job(self, pool, job: typing.Optional[Job]) -> typing.Optional[Job]:
         if not job or self._job_subjobs_map[job]:
             return None
 
@@ -66,18 +69,18 @@ class MapReduceConfig:
         del self._job_to_parent_job_map[job]
         self._remove_job_starting_with_parent(job, parent)
 
-        reducer_job = self._get_reducer_job(job)
+        reducer_job = self._get_reducer_job(pool, job)
         if reducer_job:
             self.add_job(reducer_job, parent)
             return reducer_job
         else:
-            return self.may_reduce_job(parent)
+            return self.may_reduce_job(pool, parent)
 
-    def _get_reducer_job(self, job: Job) -> typing.Optional[Job]:
+    def _get_reducer_job(self, pool, job: Job) -> typing.Optional[Job]:
         reducer_job_class = job.reducer_job_class()
         if reducer_job_class:
             params = job.reducer_job_params()
-            return reducer_job_class(self, *params.args, **params.kwargs)
+            return reducer_job_class(pool, *params.args, **params.kwargs)
         else:
             return None
 
@@ -113,7 +116,7 @@ class Pool:
         self._release()
 
     def _register_next_jobs(self, job: Job):
-        jobs = [job.next_job_class()()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
+        jobs = [job.next_job_class()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
 
         for j in jobs:
             self._register_job(j, job)
@@ -127,7 +130,7 @@ class Pool:
 
     def _may_reduce(self, job: Job):
         if self.pool:
-            reducer_job = self.map_reduce.may_reduce_job(job)
+            reducer_job = self.map_reduce.may_reduce_job(self, job)
             if reducer_job:
                 [self.pool.putRequest(req) for req in threadpool.makeRequests(reducer_job.run, [1])]
         else:
