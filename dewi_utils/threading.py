@@ -3,6 +3,7 @@
 
 import threading
 import typing
+from abc import ABC
 
 import threadpool
 
@@ -20,7 +21,7 @@ class JobParam:
         return f'JobParam({self.args}, {self.kwargs})'
 
 
-class Job:
+class Job(ABC):
     def __init__(self, pool):
         self.pool: Pool = pool
 
@@ -90,6 +91,20 @@ class MapReduceConfig:
         while p:
             self._job_subjobs_map[p].remove(job)
             p = self._job_to_parent_job_map[p]
+
+
+class LockableJob(Job, ABC):
+    def __init__(self, pool):
+        super().__init__(pool)
+        self.lock: typing.Optional[threading.Lock] = None if pool.thread_count == 1 else threading.Lock()
+
+    def _acquire(self):
+        if self.lock:
+            self.lock.acquire()
+
+    def _release(self):
+        if self.lock:
+            self.lock.release()
 
 
 class Pool:
