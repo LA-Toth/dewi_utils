@@ -1,6 +1,7 @@
 # Copyright 2020 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
+import multiprocessing
 import threading
 import typing
 from abc import ABC
@@ -39,10 +40,10 @@ class Job(ABC):
     def next_job_param_list(self) -> typing.List[JobParam]:
         return []
 
-    def reducer_job_class(self) -> typing.Optional[typing.Type]:
+    def post_processor_job_class(self) -> typing.Optional[typing.Type]:
         return None
 
-    def reducer_job_params(self) -> typing.Optional[JobParam]:
+    def post_processor_job_params(self) -> typing.Optional[JobParam]:
         return None
 
 
@@ -78,9 +79,9 @@ class MapReduceConfig:
             return self.may_reduce_job(pool, parent)
 
     def _get_reducer_job(self, pool, job: Job) -> typing.Optional[Job]:
-        reducer_job_class = job.reducer_job_class()
+        reducer_job_class = job.post_processor_job_class()
         if reducer_job_class:
-            params = job.reducer_job_params()
+            params = job.post_processor_job_params()
             return reducer_job_class(pool, *params.args, **params.kwargs)
         else:
             return None
@@ -110,6 +111,8 @@ class LockableJob(Job, ABC):
 class Pool:
     def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1):
         self.state = state
+        if thread_count == 0:
+            thread_count = max(1, multiprocessing.cpu_count() - 1)
         self.thread_count = thread_count
         self.pool: typing.Optional[threadpool.ThreadPool] = None if thread_count == 1 else threadpool.ThreadPool(
             thread_count)
@@ -149,9 +152,9 @@ class Pool:
             if reducer_job:
                 [self.pool.putRequest(req) for req in threadpool.makeRequests(reducer_job.run, [1])]
         else:
-            reducer_job_class = job.reducer_job_class()
+            reducer_job_class = job.post_processor_job_class()
             if reducer_job_class:
-                params = job.reducer_job_params()
+                params = job.post_processor_job_params()
                 reducer_job_class(self, *params.args, **params.kwargs).run()
 
     def run(self, job_class: typing.Type, params_list: typing.List[JobParam]):
