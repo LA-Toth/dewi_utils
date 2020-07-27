@@ -23,14 +23,14 @@ class IniConfig:
         self.config_file = None
         self.parser = DictConfigParser()
 
-    def __section_from_dotted(self, section):
+    def _section_from_dotted(self, section):
         s = section.split('.', 1)
         if len(s) == 2:
             return '%s "%s"' % tuple(s)
         else:
             return section
 
-    def __section_to_dotted(self, section):
+    def _section_to_dotted(self, section):
         s = section.split('"')
         if len(s) == 3:
             return '%s.%s' % (s[0][:-1], s[1])
@@ -52,17 +52,17 @@ class IniConfig:
         pass
 
     def has(self, section, option):
-        section = self.__section_from_dotted(section)
+        section = self._section_from_dotted(section)
         return self.parser.has_option(section, option)
 
     def set(self, section, option, value):
-        section = self.__section_from_dotted(section)
+        section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             self.parser.add_section(section)
         self.parser.set(section, option, value)
 
     def get(self, section, option):
-        section = self.__section_from_dotted(section)
+        section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return None
         try:
@@ -75,7 +75,7 @@ class IniConfig:
         return res if res is not None else default_value
 
     def remove(self, section, option):
-        section = self.__section_from_dotted(section)
+        section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return
         if not self.parser.has_option(section, option):
@@ -83,14 +83,14 @@ class IniConfig:
         self.parser.remove_option(section, option)
 
     def get_options(self, section):
-        section = self.__section_from_dotted(section)
+        section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return []
         else:
             return self.parser.options(section)
 
     def get_sections(self):
-        return [self.__section_to_dotted(s) for s in self.parser.sections()]
+        return [self._section_to_dotted(s) for s in self.parser.sections()]
 
     def as_dict(self) -> typing.Dict[str, typing.Dict[str, str]]:
         return self.parser.as_dict()
