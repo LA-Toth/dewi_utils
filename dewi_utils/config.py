@@ -23,21 +23,21 @@ class IniConfig:
         self.config_file = None
         self.parser = DictConfigParser()
 
-    def _section_from_dotted(self, section):
+    def _section_from_dotted(self, section: str) -> str:
         s = section.split('.', 1)
         if len(s) == 2:
             return '%s "%s"' % tuple(s)
         else:
             return section
 
-    def _section_to_dotted(self, section):
+    def _section_to_dotted(self, section: str) -> str:
         s = section.split('"')
         if len(s) == 3:
             return '%s.%s' % (s[0][:-1], s[1])
         else:
             return section
 
-    def open(self, cfgfile):
+    def open(self, cfgfile: str):
         self.config_file = cfgfile
         self.parser.read(self.config_file, encoding='UTF-8')
 
@@ -51,17 +51,17 @@ class IniConfig:
     def close(self):
         pass
 
-    def has(self, section, option):
+    def has(self, section: str, option: str) -> bool:
         section = self._section_from_dotted(section)
         return self.parser.has_option(section, option)
 
-    def set(self, section, option, value):
+    def set(self, section: str, option: str, value):
         section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             self.parser.add_section(section)
         self.parser.set(section, option, value)
 
-    def get(self, section, option):
+    def get(self, section: str, option: str) -> typing.Optional[str]:
         section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return None
@@ -70,11 +70,11 @@ class IniConfig:
         except configparser.NoOptionError:
             return None
 
-    def get_or_default_value(self, section, option, default_value):
+    def get_or_default_value(self, section: str, option: str, default_value: str) -> str:
         res = self.get(section, option)
         return res if res is not None else default_value
 
-    def remove(self, section, option):
+    def remove(self, section: str, option: str):
         section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return
@@ -82,14 +82,14 @@ class IniConfig:
             return
         self.parser.remove_option(section, option)
 
-    def get_options(self, section):
+    def get_options(self, section: str) -> typing.List[str]:
         section = self._section_from_dotted(section)
         if not self.parser.has_section(section):
             return []
         else:
             return self.parser.options(section)
 
-    def get_sections(self):
+    def get_sections(self) -> typing.List[str]:
         return [self._section_to_dotted(s) for s in self.parser.sections()]
 
     def as_dict(self) -> typing.Dict[str, typing.Dict[str, str]]:
