@@ -4,14 +4,24 @@
 
 import collections
 import configparser
-import os
+import typing
+
+
+class DictConfigParser(configparser.RawConfigParser):
+
+    def as_dict(self) -> typing.Dict[str, typing.Dict[str, str]]:
+        d = dict(self._sections)
+        for k in d:
+            d[k] = dict(self._defaults, **d[k])
+            d[k].pop('__name__', None)
+        return d
 
 
 class IniConfig:
 
     def __init__(self):
         self.config_file = None
-        self.parser = configparser.RawConfigParser()
+        self.parser = DictConfigParser()
 
     def __section_from_dotted(self, section):
         s = section.split('.', 1)
@@ -81,6 +91,9 @@ class IniConfig:
 
     def get_sections(self):
         return [self.__section_to_dotted(s) for s in self.parser.sections()]
+
+    def as_dict(self) -> typing.Dict[str, typing.Dict[str, str]]:
+        return self.parser.as_dict()
 
 
 class _ConfigLoaderWriter:
