@@ -2,7 +2,6 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 # vim: sts=4 ts=8 et ai
 
-import collections
 import configparser
 import typing
 
@@ -97,26 +96,26 @@ class IniConfig:
 
 
 class _ConfigLoaderWriter:
-    def __init__(self, callbacks: collections.Mapping, meta_config: (collections.Mapping, None) = None):
+    def __init__(self, callbacks: typing.Dict, meta_config: typing.Optional[typing.Dict] = None):
         self._meta_config = meta_config or dict()
         self._callbacks = callbacks
 
-    def set_meta_config(self, meta_config: collections.Mapping):
+    def set_meta_config(self, meta_config: typing.Dict):
         self.__check_config(meta_config)
         self._meta_config = meta_config
 
-    def __check_config(self, meta_config: collections.Mapping):
+    def __check_config(self, meta_config: typing.Dict):
         for key in meta_config:
             self.__check_item_entry_with_type(meta_config, key)
 
     def __check_item_entry_with_type(self, meta_config_entry, key):
         if not isinstance(key, str):
             raise InvalidMetaConfig()
-        if not isinstance(meta_config_entry[key], collections.Mapping):
+        if not isinstance(meta_config_entry[key], typing.Dict):
             raise InvalidMetaConfig()
         self.__check_item_entry(meta_config_entry[key])
 
-    def __check_item_entry(self, meta_config_entry: collections.Mapping):
+    def __check_item_entry(self, meta_config_entry: typing.Dict):
         if 'type' not in meta_config_entry:
             raise MissingKeys({'type'})
         if meta_config_entry['type'] == 'node':
@@ -141,7 +140,7 @@ class _ConfigLoaderWriter:
             raise ExtraKeys(keys - expected_keys)
 
     @property
-    def meta_config(self) -> collections.Mapping:
+    def meta_config(self) -> typing.Dict:
         return self._meta_config
 
     def _get_section_option(self, meta_config_entry):
@@ -150,7 +149,7 @@ class _ConfigLoaderWriter:
 
 
 class ConfigLoader(_ConfigLoaderWriter):
-    def __init__(self, meta_config: (collections.Mapping, None) = None):
+    def __init__(self, meta_config: (typing.Dict, None) = None):
         super().__init__(
             {
                 'string': self.__load_string_item,
@@ -162,32 +161,32 @@ class ConfigLoader(_ConfigLoaderWriter):
             meta_config
         )
 
-    def load(self, config: IniConfig) -> collections.Mapping:
+    def load(self, config: IniConfig) -> typing.Dict:
         result = dict()
         for key, value in self.meta_config.items():
             result[key] = self.__load_item(value, config)
 
         return result
 
-    def __load_item(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         return self._callbacks[meta_config_entry['type']](meta_config_entry, config)
 
-    def __load_string_item(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_string_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         value = config.get_or_default_value(section, option, meta_config_entry['default'])
         return str(value)
 
-    def __load_int_item(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_int_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         value = config.get_or_default_value(section, option, meta_config_entry['default'])
         return int(value)
 
-    def __load_bool_item(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_bool_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         value = config.get_or_default_value(section, option, meta_config_entry['default'])
         return _convert_to_bool(value)
 
-    def __load_inverse_bool_item(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_inverse_bool_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         if not config.has(section, option):
             return meta_config_entry['default']
@@ -195,7 +194,7 @@ class ConfigLoader(_ConfigLoaderWriter):
             value = config.get(section, option)
             return not _convert_to_bool(value)
 
-    def __load_node(self, meta_config_entry: collections.Mapping, config: IniConfig):
+    def __load_node(self, meta_config_entry: typing.Dict, config: IniConfig):
         keys = set(meta_config_entry.keys()) - {'type'}
         node = dict()
         for key in keys:
@@ -204,7 +203,7 @@ class ConfigLoader(_ConfigLoaderWriter):
 
 
 class ConfigWriter(_ConfigLoaderWriter):
-    def __init__(self, meta_config: (collections.Mapping, None) = None):
+    def __init__(self, meta_config: (typing.Dict, None) = None):
         super().__init__(
             {
                 'string': self.__write_string_entry,
@@ -216,31 +215,31 @@ class ConfigWriter(_ConfigLoaderWriter):
             meta_config
         )
 
-    def write(self, new_config: collections.Mapping, config: IniConfig):
+    def write(self, new_config: typing.Dict, config: IniConfig):
         for key, value in self.meta_config.items():
             if key in new_config:
                 self.__write_item(value, new_config[key], config)
 
-    def __write_item(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_item(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         return self._callbacks[meta_config_entry['type']](meta_config_entry, new_config, config)
 
-    def __write_string_entry(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_string_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         config.set(section, option, new_config)
 
-    def __write_int_entry(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_int_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         config.set(section, option, str(new_config))
 
-    def __write_bool_entry(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_bool_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         config.set(section, option, _convert_from_bool(new_config))
 
-    def __write_inverse_bool_entry(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_inverse_bool_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         config.set(section, option, _convert_from_bool(not new_config))
 
-    def __write_node(self, meta_config_entry: collections.Mapping, new_config, config: IniConfig):
+    def __write_node(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         for key, value in meta_config_entry.items():
             if key in new_config:
                 self.__write_item(value, new_config[key], config)
