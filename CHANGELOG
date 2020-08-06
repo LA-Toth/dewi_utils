@@ -1,3 +1,7 @@
+2.3.0
+  - add threading module for threadpool and jobs
+  - config.IniConfig uses new DictConfigParser, add as_dict() method
+
 2.2.0
   - add lock module for simple locking
   - udate rrdtool to run partially

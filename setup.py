@@ -32,7 +32,7 @@ setup(
     name="dewi_utils",
     description="A toolchain and framework for everyday tasks",
     license="LGPLv3",
-    version="2.2.0",
+    version="2.3.0",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
