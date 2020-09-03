@@ -24,7 +24,7 @@ def find_file_recursively(filename: str, directory_name: typing.Optional[str] = 
         else:
             return None
 
-    directory_name = os.path.abspath(directory_name)
+    directory_name = os.path.abspath(directory_name) if directory_name else os.getcwd()
     fname = maybe_file(filename, directory_name)
     while fname is None and directory_name and directory_name != os.path.sep:
         directory_name = os.path.dirname(directory_name)

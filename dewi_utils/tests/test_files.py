@@ -26,3 +26,10 @@ class RecursiveFileSearchTest(dewi_core.testcase.TestCase):
 
     def test_multi_level(self):
         self.assert_recursive_file_equal(['multi_level'], ['multi_level', 'sub_directory', 'innermost'])
+
+    def test_from_current_directory(self):
+        try:
+            find_file_recursively('something')
+            self.assert_true(True)
+        except:
+            self.assert_false(True, "find_file_recursively must not raise any exception")
