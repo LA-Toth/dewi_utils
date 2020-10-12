@@ -1,4 +1,4 @@
-# Copyright 2016-2017 Tóth, László Attila
+# Copyright 2016-2020 Tóth, László Attila
 # Distributed under the terms of the GNU Lesser General Public License v3
 # The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
@@ -179,27 +179,27 @@ events = [
         'optional': False,
     },
     {
-        'name': 'Böjt 1. vasránapja (invocativ)',
+        'name': 'Böjt 1. vasárnapja (invocativ)',
         'offset': [SpecialEvents.easter, -6, Offset.sunday],
         'optional': False,
     },
     {
-        'name': 'Böjt 2. vasránapja (reminscere)',
+        'name': 'Böjt 2. vasárnapja (reminscere)',
         'offset': [SpecialEvents.easter, -5, Offset.sunday],
         'optional': False,
     },
     {
-        'name': 'Böjt 3. vasránapja (oculi)',
+        'name': 'Böjt 3. vasárnapja (oculi)',
         'offset': [SpecialEvents.easter, -4, Offset.sunday],
         'optional': False,
     },
     {
-        'name': 'Böjt 4. vasránapja (laetare)',
+        'name': 'Böjt 4. vasárnapja (laetare)',
         'offset': [SpecialEvents.easter, -3, Offset.sunday],
         'optional': False,
     },
     {
-        'name': 'Böjt 5. vasránapja (judica)',
+        'name': 'Böjt 5. vasárnapja (judica)',
         'offset': [SpecialEvents.easter, -2, Offset.sunday],
         'optional': False,
     },
