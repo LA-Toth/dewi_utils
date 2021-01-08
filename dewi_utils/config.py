@@ -1,4 +1,4 @@
-# Copyright 2009-2020 Laszlo Attila Toth
+# Copyright 2009-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 # vim: sts=4 ts=8 et ai
 
@@ -184,7 +184,7 @@ class ConfigLoader(_ConfigLoaderWriter):
     def __load_bool_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
         value = config.get_or_default_value(section, option, meta_config_entry['default'])
-        return _convert_to_bool(value)
+        return convert_to_bool(value)
 
     def __load_inverse_bool_item(self, meta_config_entry: typing.Dict, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
@@ -192,7 +192,7 @@ class ConfigLoader(_ConfigLoaderWriter):
             return meta_config_entry['default']
         else:
             value = config.get(section, option)
-            return not _convert_to_bool(value)
+            return not convert_to_bool(value)
 
     def __load_node(self, meta_config_entry: typing.Dict, config: IniConfig):
         keys = set(meta_config_entry.keys()) - {'type'}
@@ -233,11 +233,11 @@ class ConfigWriter(_ConfigLoaderWriter):
 
     def __write_bool_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
-        config.set(section, option, _convert_from_bool(new_config))
+        config.set(section, option, convert_from_bool(new_config))
 
     def __write_inverse_bool_entry(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         section, option = self._get_section_option(meta_config_entry)
-        config.set(section, option, _convert_from_bool(not new_config))
+        config.set(section, option, convert_from_bool(not new_config))
 
     def __write_node(self, meta_config_entry: typing.Dict, new_config, config: IniConfig):
         for key, value in meta_config_entry.items():
@@ -265,7 +265,7 @@ class IniConfigError(Exception):
     pass
 
 
-def _convert_to_bool(val):
+def convert_to_bool(val):
     if not val:
         return False
     if isinstance(val, bool):
@@ -274,5 +274,5 @@ def _convert_to_bool(val):
     return lowered == 'y' or lowered == 'yes' or lowered == 't' or lowered == 'true'
 
 
-def _convert_from_bool(val):
+def convert_from_bool(val):
     return 'yes' if val else 'no'
