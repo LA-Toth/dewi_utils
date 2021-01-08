@@ -1,7 +1,8 @@
-# Copyright 2009-2019 Laszlo Attila Toth
+# Copyright 2009-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 # The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
+import getpass
 import sys
 import textwrap
 import typing
@@ -60,7 +61,8 @@ class ConfigPage:
                     self._print_help()
         return answer == 'y'
 
-    def input(self, default_val: typing.Optional[str] = None, print_only: bool = False):
+    def input(self, default_val: typing.Optional[str] = None, print_only: bool = False,
+              password: bool = False):
         if self.help:
             sel = ' / ?:'
         else:
@@ -69,15 +71,20 @@ class ConfigPage:
         answer = None
 
         defval_str = default_val if default_val is not None else ''
+        if password:
+            defval_str = '(hidden/password)'
 
         if print_only:
             answer = default_val
-            self._print(f'{self.prompt}  [{defval_str}]{sel} {answer}')
+            self._print(f'{self.prompt}  [{defval_str}]{sel} {defval_str}')
 
         while answer is None:
-            self._print(f'{self.prompt}  [{defval_str}]{sel}', end=' ')
-            sys.stdout.flush()
-            ans = self._get_line()
+            if password:
+                ans = getpass.getpass(f'{self.prompt}  [{defval_str}]{sel} ')
+            else:
+                self._print(f'{self.prompt}  [{defval_str}]{sel}', end=' ')
+                sys.stdout.flush()
+                ans = self._get_line()
             if self.help and ans == '?':
                 self._print_help()
             elif ans:
