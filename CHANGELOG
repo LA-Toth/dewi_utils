@@ -1,3 +1,10 @@
+2.4.0
+  - fix files.find_file_recursively to work without specified directory
+  - fix typos in lithurgical module
+  - config's convert_to_bool and convert_from_bool methods are public
+  - add support of passwords in ConfigPage.input()
+  - works with Python 3.9
+
 2.3.0
   - add threading module for threadpool and jobs
   - config.IniConfig uses new DictConfigParser, add as_dict() method
