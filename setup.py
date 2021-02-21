@@ -7,8 +7,8 @@
 
 import sys
 
-if sys.hexversion < 0x03060000:
-    raise RuntimeError("Required python version: 3.6 or newer (current: %s)" % sys.version)
+if sys.hexversion < 0x03080000:
+    raise RuntimeError("Required python version: 3.8 or newer (current: %s)" % sys.version)
 
 try:
     from setuptools import setup, find_packages
@@ -20,7 +20,7 @@ setup(
     name="dewi_utils",
     description="A toolchain and framework for everyday tasks",
     license="LGPLv3",
-    version="2.4.0",
+    version="2.5.0",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -39,8 +39,6 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Topic :: System :: Filesystems',
@@ -52,10 +50,10 @@ setup(
     ],
     zip_safe=True,
     use_2to3=False,
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
-        'dewi_core>=2.0.1',
+        'dewi_core>=3.0.0',
         'Jinja2',
         'threadpool',
     ]

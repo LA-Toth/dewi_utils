@@ -1,3 +1,9 @@
+2.5.0
+  - add git.py (Git) with several helper methods, including
+    context manager wrapping git stash and git stash apply
+  - fix setup.py's license header
+  - Python 3.8+ only
+
 2.4.0
   - fix files.find_file_recursively to work without specified directory
   - fix typos in lithurgical module
