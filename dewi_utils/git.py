@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import os
+import re
 import subprocess
 import typing
 from contextlib import contextmanager
@@ -86,3 +87,11 @@ class Git:
             -> typing.List[str]:
         return self.run_output(['branch', '--format', '%(refname)', '--all', '--contains', commit_id],
                                cwd=cwd, env=env).splitlines()
+
+    def is_existing_remote(self, name: str, /, *,
+                           cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                           ):
+        for line in self.run_output(['remote', '-v'], cwd=cwd, env=env).splitlines(keepends=False):
+            if re.match(r'^' + name + r'\t', line):
+                return True
+        return False
