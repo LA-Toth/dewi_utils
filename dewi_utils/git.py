@@ -1,17 +1,44 @@
 # Copyright 2020-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
+import datetime
 import os
 import re
 import subprocess
 import typing
 from contextlib import contextmanager
 
+from dewi_core.config.node import Node
 from dewi_core.logger import log_debug
 
 
 class GitError(Exception):
     pass
+
+
+class Commit(Node):
+    def __init__(self):
+        self.commit_id: str = ''
+        self.author: str = ''
+        self.date: datetime.datetime = datetime.datetime.now()
+        self.commit_date: datetime.datetime = datetime.datetime.now()
+        self.committer: str = ''
+        self.subject: str = ''
+        self.distance: int = -1
+
+    @classmethod
+    def create(cls, commit_id: str, /, author: str, date: datetime.datetime,
+               commit_date: datetime.datetime, committer: str,
+               subject: str, distance: int):
+        commit = cls()
+        commit.commit_id = commit_id
+        commit.author = author
+        commit.date = date
+        commit.commit_date = commit_date
+        commit.committer = committer
+        commit.subject = subject
+        commit.distance = distance
+        return commit
 
 
 class Git:
@@ -95,3 +122,34 @@ class Git:
             if re.match(r'^' + name + r'\t', line):
                 return True
         return False
+
+    def collect_commit_details(self, commit_id: str, /, *,
+                               subject: typing.Optional[str] = None,
+                               cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                               ) -> Commit:
+        timestamp = int(self.run_output(['show', '-s', '--format=%at', commit_id], cwd=cwd, env=env))
+        date = datetime.datetime.fromtimestamp(timestamp)
+        timestamp = int(self.run_output(['show', '-s', '--format=%ct', commit_id], cwd=cwd, env=env))
+        commit_date = datetime.datetime.fromtimestamp(timestamp)
+        return Commit.create(commit_id,
+                             author=self.run_output(['show', '-s', '--format=%an <%ae>', commit_id], cwd=cwd, env=env),
+                             date=date,
+                             commit_date=commit_date,
+                             committer=self.run_output(['show', '-s', '--format=%cn <%ce>', commit_id], cwd=cwd,
+                                                       env=env),
+                             subject=subject or self.run_output(['show', '-s', '--format=%s', commit_id]),
+                             distance=int(
+                                 self.run_output(['rev-list', '--count', commit_id, '^HEAD'], cwd=cwd, env=env)))
+
+    def find_commits_containing(self, text: str, /, *,
+                                cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                                ) -> typing.List[str]:
+        return self.run_output(
+            ['-c', 'log.decorate=', 'log', '--pretty=%H %s', '--all', '--grep', text],
+            cwd=cwd, env=env).splitlines()
+
+    def refs_of_commits(self, commit_id: str, /, *,
+                        cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                        ) -> typing.List[str]:
+        return self.run_output(
+            ['branch', '--format', '%(refname)', '--all', '--contains', commit_id], cwd=cwd, env=env).splitlines()
