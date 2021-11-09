@@ -2,9 +2,8 @@
 # Distributed under the terms of the GNU Lesser General Public License v3
 # The license can be found in COPYING file or on http://www.gnu.org/licenses/
 
-
 import dewi_core.testcase
-from dewi_utils.string import rjust, ljust, center
+from dewi_utils.string import center, ljust, rjust
 
 
 class StringTest(dewi_core.testcase.TestCase):
