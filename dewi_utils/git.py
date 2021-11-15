@@ -48,10 +48,12 @@ class Git:
         subprocess.run(['git'] + args, check=True, cwd=cwd, env=env)
 
     def run_output(self, args: typing.List[str], /, *,
-                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None,
+                   strip: bool = True,
                    ) -> str:
         log_debug(f'Running git command with output: {args}; cwd={cwd if cwd else "current dir"}')
-        return subprocess.check_output(['git'] + args, cwd=cwd, env=env).decode('UTF-8').strip()
+        result = subprocess.check_output(['git'] + args, cwd=cwd, env=env).decode('UTF-8')
+        return result.strip() if strip else result
 
     def cd_to_repo_root(self, *,
                         cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
