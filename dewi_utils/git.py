@@ -1,6 +1,7 @@
 # Copyright 2020-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
+import copy
 import datetime
 import os
 import re
@@ -8,7 +9,8 @@ import subprocess
 import typing
 from contextlib import contextmanager
 
-from dewi_core.config.node import Node
+from dewi_core.config.appconfig import get_config
+from dewi_core.config.node import Node, NodeList
 from dewi_core.logger import log_debug
 
 
@@ -155,3 +157,86 @@ class Git:
                         ) -> typing.List[str]:
         return self.run_output(
             ['branch', '--format', '%(refname)', '--all', '--contains', commit_id], cwd=cwd, env=env).splitlines()
+
+
+class RepoClonerRemoteConfig(Node):
+    def __init__(self):
+        self.name: str = ''
+        self.username_cfg_entry: str = ''
+        self.host_cfg_entry: str = ''
+        self.prefix: str = ''
+        self.url_template: str = ''
+        self.excluded: typing.List[str] = []
+        self.name_map: typing.Dict[str, str] = dict()
+        self.custom_prefix_map: typing.Dict[str, str] = dict()
+
+
+class RepoClonerConfig(Node):
+    def __init__(self):
+        self.primary_remote: str = ''
+        self.primary_only: typing.List[str] = []
+        self.remotes = NodeList(RepoClonerRemoteConfig)
+
+    def load_from(self, data: dict):
+        super().load_from(data)
+        for remote in self.remotes:
+            if remote.name == self.primary_remote:
+                continue
+
+            remote.excluded += self.primary_only
+
+
+class RepoCloner:
+    def __init__(self, config: RepoClonerConfig, base_dir: str, *, bare: bool):
+        self._config = copy.deepcopy(config)
+        self._basedir = base_dir
+        self._bare_repos = bare
+        self._primary_repo_config = [x for x in self._config.remotes if x.name == self._config.primary_remote][0]
+        self._other_repo_configs = [x for x in self._config.remotes if x != self._primary_repo_config]
+        self._git = Git()
+
+    def clone(self, repo: str, *, require_fetch: bool = True, only_remotes: typing.Optional[typing.List[str]] = None):
+        repo_directory = f'{self._basedir}/{repo}'
+        existing = os.path.exists(repo_directory)
+        if not existing:
+            os.makedirs(repo_directory)
+            self._git.run(['init'] + (['--bare'] if self._bare_repos else []), cwd=repo_directory)
+
+        self._add_remote(repo, repo_directory, self._primary_repo_config, [])
+        for cfg in self._other_repo_configs:
+            self._add_remote(repo, repo_directory, cfg, only_remotes)
+
+        if existing and require_fetch:
+            self._git.run(['fetch', '--all'], cwd=repo_directory)
+
+    def _add_remote(self, repo: str, repo_directory: str, remote: RepoClonerRemoteConfig,
+                    remotes: typing.Optional[typing.List[str]] = None):
+        if repo not in remote.excluded and (
+                not remotes or remote.name in remotes) and not self._git.is_existing_remote(remote.name,
+                                                                                            cwd=repo_directory):
+            log_debug(f'Fetching remote: {remote.name} @ {repo}')
+            self._git.run(['remote', 'add', '-f', remote.name, self._get_repo_url(repo, remote)], cwd=repo_directory)
+        else:
+            log_debug(f'Ignoring remote: {remote.name} @ {repo}')
+
+    def _get_repo_url(self, repo: str, remote: RepoClonerRemoteConfig):
+        username = host = prefix = ''
+        if remote.username_cfg_entry:
+            username = get_config().get(*remote.username_cfg_entry.rsplit('.', 1))
+            if not username:
+                raise Exception(f'Missing username for {remote.name} (config: core.{remote.username_cfg_entry})')
+        if remote.host_cfg_entry:
+            host = get_config().get(*remote.host_cfg_entry.rsplit('.', 1))
+            if not host:
+                raise Exception(f'Missing username  for {remote.name}(config: core.{remote.host_cfg_entry})')
+        if remote.prefix:
+            prefix = remote.prefix
+            for r, v in remote.custom_prefix_map.items():
+                if r == repo:
+                    prefix = v
+                    break
+        if not remote.url_template:
+            raise Exception(f'Missing URL template  for {remote.name} in clone-repo.yaml')
+        url = remote.url_template.format(username=username, host=host, prefix=prefix, repo=repo)
+        log_debug('Prepared URL', repo=repo, remote=remote.name, url=url)
+        return url
