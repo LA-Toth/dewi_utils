@@ -11,7 +11,8 @@ from contextlib import contextmanager
 
 from dewi_core.config.appconfig import get_config
 from dewi_core.config.node import Node, NodeList
-from dewi_core.logger import log_debug
+from dewi_core.logger import log_debug, log_error
+from dewi_core.projects import Project
 
 
 class GitError(Exception):
@@ -127,6 +128,11 @@ class Git:
                 return True
         return False
 
+    def is_existing_local_branch(self, name: str, /, *,
+                                 cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                                 ):
+        return self.run_output(['branch', '--list', name], cwd=cwd, env=env) != ''
+
     def collect_commit_details(self, commit_id: str, /, *,
                                subject: typing.Optional[str] = None,
                                cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
@@ -240,3 +246,104 @@ class RepoCloner:
         url = remote.url_template.format(username=username, host=host, prefix=prefix, repo=repo)
         log_debug('Prepared URL', repo=repo, remote=remote.name, url=url)
         return url
+
+
+class BranchCreator:
+    def __init__(self, project: Project, repo_base_dir: str, *,
+                 require_fetch: bool = True,
+                 use_worktrees: bool = False,
+                 print_repo_path: bool = False,
+                 ):
+        """
+        Create a branch based on the provided Project object for one or more repositories.
+
+        The parameters are common for every repository. The optional rebase for existing branches
+        can be specified per-call
+        :param project: the current Project providing branch details
+        :param repo_base_dir: A directory containing the repositories in the branch should be created
+                              (or the worktree belongs to)
+        :param require_fetch: Defines if the project's upstream remote is fetched initially
+        :param use_worktrees: Set True if git worktrees are used, or False otherwise
+        :param print_repo_path: Set True to print the project repo path for each repo
+        """
+        self._project = project
+        self._repo_base_dir = repo_base_dir
+        self._require_fetch = require_fetch
+        self._use_work_trees = use_worktrees
+        self._print_repo_path = print_repo_path
+
+        self._git = Git()
+        self._remote_branch = f'{self._project.remote}/{self._project.upstream_branch}'
+
+    def create(self, repo: str):
+        self.create_or_rebase_branch(repo, disable_rebase=True)
+
+    def rebase(self, repo: str):
+        project_repo_dir = self._project.repo_dir(repo)
+        if not os.path.exists(project_repo_dir):
+            log_error('The git repo directory is missing, clone it first', repo_dir=project_repo_dir)
+            raise GitError('Missing git repo: ' + project_repo_dir)
+
+        self._git.run(['rebase', self._remote_branch], cwd=project_repo_dir)
+
+    def create_or_rebase_branch(self, repo: str, *, disable_rebase: bool = False):
+        project_repo_dir = self._project.repo_dir(repo)
+        repo_dir = f'{self._repo_base_dir}/{repo}'
+
+        self._check_dirs(project_repo_dir, repo_dir)
+
+        if self._print_repo_path:
+            self._print_directory_path(repo)
+
+        if self._require_fetch:
+            self._git.run(['fetch', self._project.remote], cwd=repo_dir)
+
+        self._create_or_rebase_internal(project_repo_dir, repo_dir, disable_rebase)
+
+    def _check_dirs(self, project_repo_dir: str, repo_dir: str):
+        if not self._use_work_trees and repo_dir != project_repo_dir:
+            log_error('Repo directory mismatch with worktrees', repo_dir=repo_dir, repo_dir_in_project=project_repo_dir,
+                      use_worktrees=self._use_work_trees)
+            raise GitError('Cannot create branch without worktrees and with different repo dirs')
+
+        if not os.path.exists(repo_dir):
+            log_error('The git repo directory is missing, clone it first', repo_dir=repo_dir)
+            raise GitError('Missing git repo: ' + repo_dir)
+
+    def _create_or_rebase_internal(self, project_repo_dir: str, repo_dir: str, disable_rebase: bool):
+        if self._requires_checkout_or_worktree(project_repo_dir):
+            self._ensure_git_branch(repo_dir)
+
+            if self._use_work_trees:
+                self._git.run(['worktree', 'add', project_repo_dir, self._project.branch], cwd=repo_dir)
+            else:
+                self._git.run(['checkout', self._project.branch], cwd=repo_dir)
+
+        elif not disable_rebase:
+            self._git.run(['rebase', self._remote_branch], cwd=project_repo_dir)
+
+    def _requires_checkout_or_worktree(self, project_repo_dir: str) -> bool:
+        return not os.path.exists(project_repo_dir) or (
+                not self._use_work_trees and self._git.current_branch(cwd=project_repo_dir) != self._project.branch)
+
+    def _ensure_git_branch(self, repo_dir: str):
+        if not self._git.is_existing_local_branch(self._project.branch, cwd=repo_dir):
+            try:
+                self._git.run(['branch', self._project.branch, self._remote_branch], cwd=repo_dir)
+            except subprocess.CalledProcessError:
+                if self._require_fetch:
+                    log_error('Required remote branch is missing after fetch', required_branch=self._remote_branch)
+                    raise
+
+                self._git.run(['fetch', self._project.remote], cwd=repo_dir)
+                try:
+                    self._git.run(['branch', self._project.branch, self._remote_branch], cwd=repo_dir)
+                except subprocess.CalledProcessError:
+                    log_error('Required remote branch is missing after fetch', required_branch=self._remote_branch)
+                    raise
+
+    def _print_directory_path(self, repo: str):
+        print('--')
+        print('Directory:')
+        print(f' {self._project.repo_dir(repo)}')
+        print('--')
