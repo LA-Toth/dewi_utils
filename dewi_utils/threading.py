@@ -1,12 +1,12 @@
-# Copyright 2020 Laszlo Attila Toth
+# Copyright 2020-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import multiprocessing
 import threading
+import time
 import typing
 from abc import ABC
-
-import threadpool
+from concurrent.futures import Future, ThreadPoolExecutor
 
 
 class JobParam:
@@ -25,6 +25,7 @@ class JobParam:
 class Job(ABC):
     def __init__(self, pool):
         self.pool: Pool = pool
+        self.internal_future: Future = None
 
     def run(self, _: typing.Optional[typing.Any] = None):
         self._run()
@@ -109,14 +110,15 @@ class LockableJob(Job, ABC):
 
 
 class Pool:
-    def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1):
+    def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1, wait_interval: float = 0.1):
         self.state = state
         if thread_count == 0:
             thread_count = max(1, multiprocessing.cpu_count() - 1)
         self.thread_count = thread_count
-        self.pool: typing.Optional[threadpool.ThreadPool] = None if thread_count == 1 else threadpool.ThreadPool(
-            thread_count)
+        self.wait_interval = wait_interval
+        self.pool: typing.Optional[ThreadPoolExecutor] = None if thread_count == 1 else ThreadPoolExecutor(thread_count)
         self.lock: typing.Optional[threading.Lock] = None if thread_count == 1 else threading.Lock()
+        self.futures: typing.Set[Future] = set()
         self.map_reduce = MapReduceConfig()
 
     def _acquire(self):
@@ -129,20 +131,29 @@ class Pool:
 
     def job_completed(self, job: Job):
         self._acquire()
-        self._register_next_jobs(job)
-        self._may_reduce(job)
-        self._release()
+        try:
+            self._register_next_jobs(job)
+            self._may_reduce(job)
+            self._remove_job_future(job)
+        finally:
+            self._release()
+
+    def _remove_job_future(self, job: Job):
+        if self.pool:
+            # job.internal_future.result()
+            self.futures.remove(job.internal_future)
 
     def _register_next_jobs(self, job: Job):
         jobs = [job.next_job_class()(self, *params.args, **params.kwargs) for params in job.next_job_param_list()]
 
         for j in jobs:
-            self._register_job(j, job)
+            self._register_job(j, job, lock=False)
 
-    def _register_job(self, job: Job, parent: typing.Optional[Job] = None):
+    def _register_job(self, job: Job, parent: typing.Optional[Job] = None, lock=True):
         if self.pool:
             self.map_reduce.add_job(job, parent)
-            [self.pool.putRequest(req) for req in threadpool.makeRequests(job.run, [1])]
+            job.internal_future = self.pool.submit(job.run)
+            self.futures.add(job.internal_future)
         else:
             job.run()
 
@@ -150,7 +161,8 @@ class Pool:
         if self.pool:
             reducer_job = self.map_reduce.may_reduce_job(self, job)
             if reducer_job:
-                [self.pool.putRequest(req) for req in threadpool.makeRequests(reducer_job.run, [1])]
+                reducer_job.internal_future = self.pool.submit(reducer_job.run)
+                self.futures.add(reducer_job.internal_future)
         else:
             reducer_job_class = job.post_processor_job_class()
             if reducer_job_class:
@@ -161,4 +173,12 @@ class Pool:
         for params in params_list:
             self._register_job(job_class(self, *params.args, **params.kwargs))
         if self.pool:
-            self.pool.wait()
+            self._wait_for_pool()
+
+    def _wait_for_pool(self):
+        while True:
+            if len(self.futures):
+                time.sleep(self.wait_interval)
+                continue
+            self.pool.shutdown()
+            break
