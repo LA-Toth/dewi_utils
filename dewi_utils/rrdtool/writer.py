@@ -1,4 +1,4 @@
-# Copyright 2017-2019 Laszlo Attila Toth
+# Copyright 2017-2021 Laszlo Attila Toth
 # Distributed under the terms of the GNU Lesser General Public License v3
 
 import datetime
@@ -7,12 +7,11 @@ import shlex
 import subprocess
 import typing
 
-from threadpool import ThreadPool, makeRequests
-
 from dewi_core.config.node import Node, NodeList
 from dewi_core.logger import log_info
 from dewi_utils.rrdtool import config
 from dewi_utils.rrdtool.interval import GraphInterval, GraphIntervalType
+from ..threading import Job, JobParam, Pool
 
 
 class GraphNode(Node):
@@ -111,26 +110,23 @@ class GraphWriter:
             job.generate_all(intervals)
 
         else:
-            main = ThreadPool(self._parallel_count)
-            jobs = []
+            pool = Pool(state=self, thread_count=self._parallel_count)
+            job_params: typing.List[JobParam] = []
 
             for domain, host, plugin in self._config.plugins:
                 for interval in intervals:
-                    job = GraphWriterJob(self._munin_directory, self._config, self._output, self._last_update_date_time,
-                                         self._last_update_timestamp,
-                                         self._width, self._height, self._header_args, self._env_tz,
-                                         self._config.domains[domain].hosts[host].plugins[plugin],
-                                         interval)
-                    jobs.append(job)
-                    [main.putRequest(req) for req in makeRequests(job.generate_single, [1])]
+                    job_params.append(JobParam(
+                        self,
+                        self._munin_directory, self._config, self._output, self._last_update_date_time,
+                        self._last_update_timestamp,
+                        self._width, self._height, self._header_args, self._env_tz,
+                        self._config.domains[domain].hosts[host].plugins[plugin],
+                        interval))
 
-            main.wait()
-
-            for job in jobs:
-                self._output.graphs.append(job.result_graph_node)
+            pool.run(GraphWriterJob, job_params)
 
 
-class GraphWriterJob:
+class GraphWriterJob(Job):
     # Greens Blues   Oranges Dk yel  Dk blu  Purple  lime    Reds    Gray
     COLORS = \
         """00CC00 0066B3 FF8000 FFCC00 330099 990099 CCFF00 FF0000 808080
@@ -164,8 +160,6 @@ class GraphWriterJob:
         self._plugin = plugin
         self._interval = interval
 
-        self._result_node: GraphNode = None
-
         self._env = self._prepare_env()
 
     def _prepare_env(self):
@@ -177,10 +171,6 @@ class GraphWriterJob:
             env['TZ'] = self._env_tz
 
         return env
-
-    @property
-    def result_graph_node(self):
-        return self._result_node
 
     def generate_all(self, intervals: typing.List[GraphInterval]):
         for domain, host, plugin in self._config.plugins:
@@ -285,5 +275,10 @@ class GraphWriterJob:
                     result = s
         return result
 
-    def generate_single(self, _):
-        self._result_node = self._generate_graph_of_interval(self._plugin, self._interval)
+    def generate_single(self):
+        self._output.graphs.append(
+            self._generate_graph_of_interval(self._plugin, self._interval)
+        )
+
+    def _run(self):
+        self.generate_single()
