@@ -1,6 +1,5 @@
-# Copyright 2020 Laszlo Attila Toth
-# Distributed under the terms of the GNU Lesser General Public License v3
-# The license can be found in COPYING file or on http://www.gnu.org/licenses/
+# Copyright 2020-2021 Laszlo Attila Toth
+# Distributed under the terms of the Apache License, Version 2.0
 
 import multiprocessing
 import threading

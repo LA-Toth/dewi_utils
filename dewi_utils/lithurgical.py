@@ -1,6 +1,5 @@
-# Copyright 2016-2020 Tóth, László Attila
-# Distributed under the terms of the GNU Lesser General Public License v3
-# The license can be found in COPYING file or on http://www.gnu.org/licenses/
+# Copyright 2016-2021 Tóth, László Attila
+# Distributed under the terms of the Apache License, Version 2.0
 
 # Checked against https://www.staff.science.uu.nl/~gent0113/easter/easter_text2c.htm
 # Christian Feast Days, names used by Hungarian Lutheran Chuch - Magyarországi Evangélikus Egyház

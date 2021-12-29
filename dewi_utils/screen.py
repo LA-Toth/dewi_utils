@@ -1,5 +1,5 @@
-# Copyright 2019 Laszlo Attila Toth
-# Distributed under the terms of the GNU Lesser General Public License v3
+# Copyright 2019-2021 Laszlo Attila Toth
+# Distributed under the terms of the Apache License, Version 2.0
 
 
 def add_frame(s: str):

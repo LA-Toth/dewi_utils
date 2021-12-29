@@ -1,6 +1,5 @@
-# Copyright 2019 Tóth, László Attila
-# Distributed under the terms of the GNU Lesser General Public License v3
-# The license can be found in COPYING file or on http://www.gnu.org/licenses/
+# Copyright 2019-2021 Tóth, László Attila
+# Distributed under the terms of the Apache License, Version 2.0
 
 import fcntl
 import os

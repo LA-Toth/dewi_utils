@@ -1,5 +1,5 @@
 # Copyright 2009-2021 Laszlo Attila Toth
-# Distributed under the terms of the GNU Lesser General Public License v3
+# Distributed under the terms of the Apache License, Version 2.0
 # vim: sts=4 ts=8 et ai
 
 import typing

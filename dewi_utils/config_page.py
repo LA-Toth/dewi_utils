@@ -1,6 +1,5 @@
 # Copyright 2009-2021 Laszlo Attila Toth
-# Distributed under the terms of the GNU Lesser General Public License v3
-# The license can be found in COPYING file or on http://www.gnu.org/licenses/
+# Distributed under the terms of the Apache License, Version 2.0
 
 import getpass
 import sys
