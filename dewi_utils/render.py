@@ -11,7 +11,7 @@ class TemplateRenderer:
         environment = jinja2.Environment(loader=loader)
         self._environment = environment
 
-    def render(self, template_file_path: str, template_variables: collections.Mapping) -> str:
+    def render(self, template_file_path: str, template_variables: collections.abc.Mapping) -> str:
         template = self._environment.get_template(template_file_path)
 
         return template.render(**template_variables)
