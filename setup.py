@@ -19,7 +19,7 @@ setup(
     name="dewi_utils",
     description="A toolchain and framework for everyday tasks",
     license="LGPLv3",
-    version="2.5.0",
+    version="3.0.0",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -40,11 +40,10 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: System :: Filesystems',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'Topic :: Documentation :: Sphinx',
         'Topic :: Utilities',
     ],
     zip_safe=True,
@@ -52,7 +51,7 @@ setup(
     python_requires='>=3.8',
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
-        'dewi_core>=3.0.0',
+        'dewi_core >=5.0.0, <6',
         'Jinja2',
     ]
 )

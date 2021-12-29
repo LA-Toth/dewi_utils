@@ -1,3 +1,16 @@
+3.0.0
+ - git:
+     * add is_existing_remote()
+     * add methods to collect commit details
+     * run_output has 'strip' param, default True, for one-line outputs
+     * add RepoCloner and BranchCreator classes (related to dewi-core's projects,
+       but the code is independent from it)
+ - add files.python_repo_hash_md5 to have an a checksum
+ - threading: drop usage of old, obsolete threadpool module, use ThreadPoolExecutor
+   (under the hood: no interface change)
+ - rrdtool.writer: use the own threading module instead of threadpool
+ - relicensed under the terms of Apache License v2.0 similar to dewi_core
+
 2.5.0
   - add git.py (Git) with several helper methods, including
     context manager wrapping git stash and git stash apply
