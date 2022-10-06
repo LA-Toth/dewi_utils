@@ -8,6 +8,8 @@ import typing
 from abc import ABC
 from concurrent.futures import Future, ThreadPoolExecutor
 
+from dewi_core.logger import log_error
+
 
 class JobParam:
     def __init__(self, *args, **kwargs):
@@ -28,7 +30,10 @@ class Job(ABC):
         self.internal_future: Future = None
 
     def run(self, _: typing.Optional[typing.Any] = None):
-        self._run()
+        try:
+            self._run()
+        except Exception as e:
+            log_error("Unhandled exception in job", class_name=e.__class__.__name__, exception=str(e), repr=repr(e))
         self.pool.job_completed(self)
 
     def _run(self):
