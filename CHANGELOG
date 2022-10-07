@@ -1,3 +1,7 @@
+3.0.1
+  - fix for Python 3.10
+  - threading: ensure that job_completed() is called even if exception is thrown
+
 3.0.0
  - git:
      * add is_existing_remote()

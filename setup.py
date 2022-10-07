@@ -18,8 +18,9 @@ except ImportError:
 setup(
     name="dewi_utils",
     description="A toolchain and framework for everyday tasks",
-    license="LGPLv3",
-    version="3.0.0",
+    license="Apache License, Version 2.0",
+    license_files=('COPYING',),
+    version="3.0.1",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -30,7 +31,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+        'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: POSIX',
         'Operating System :: POSIX :: Linux',
@@ -51,7 +52,7 @@ setup(
     python_requires='>=3.8',
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
-        'dewi_core >=5.0.0, <6',
+        'dewi_core >=5.0.2, <6',
         'Jinja2',
     ]
 )
