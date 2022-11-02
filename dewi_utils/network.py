@@ -1,9 +1,8 @@
-# Copyright 2016-2021 Laszlo Attila Toth
+# Copyright 2016-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import os
 import re
-import typing
 from urllib.request import urlopen
 
 import yaml
@@ -13,11 +12,11 @@ class NetworkCardVendors:
     URL = 'http://standards-oui.ieee.org/oui/oui.txt'
     UNKNOWN_VENDOR = 'UNKNOWN Vendor'
 
-    def __init__(self, file_name: str, prefix_to_vendor_map: typing.Optional[dict] = None,
+    def __init__(self, file_name: str, prefix_to_vendor_map: dict | None = None,
                  *,
                  enable_debug: bool = False,
-                 debug_prefix: typing.Optional[str] = None,
-                 without_network: typing.Optional[bool] = None):
+                 debug_prefix: str | None = None,
+                 without_network: bool | None = None):
         self._file_name_base = file_name
         self._vendor_map = prefix_to_vendor_map or dict()
         self._loaded = False

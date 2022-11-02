@@ -1,4 +1,4 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 
@@ -7,7 +7,6 @@ import hashlib
 import hmac
 import random
 import ssl
-import typing
 import urllib.parse
 import urllib.request
 from xml.etree import ElementTree
@@ -28,7 +27,7 @@ class Host:
 
 
 class Request:
-    def __init__(self, host: Host, endpoint: str, params: typing.Optional[dict] = None):
+    def __init__(self, host: Host, endpoint: str, params: dict | None = None):
         self.api_host = host
         self.salt = str(random.getrandbits(32))
         self.signature = self._generate_signature()
@@ -49,7 +48,7 @@ class Request:
     def _generate_url(self):
         self.url += '&' + self._prepare_parameters(self.params)
 
-    def _prepare_parameters(self, params: typing.Optional[dict]):
+    def _prepare_parameters(self, params: dict | None):
         if not params:
             return dict()
 
@@ -123,10 +122,10 @@ class Connection:
     def _generate_url(self, endpoint: str):
         return f'{self._host.api_url}?e={endpoint}'
 
-    def _generate_fetch_url(self, endpoint: str, params: typing.Optional[dict] = None):
+    def _generate_fetch_url(self, endpoint: str, params: dict | None = None):
         return f'{self._host.api_url}?e={endpoint}&' + self._prepare_parameters(params)
 
-    def _prepare_parameters(self, params: typing.Optional[dict]) -> str:
+    def _prepare_parameters(self, params: dict | None) -> str:
         params_ = dict(params) if params else dict()
         params_.update(self._params)
 
@@ -150,19 +149,19 @@ class Connection:
 
         return urllib.request.urlopen(*args, **kwargs)
 
-    def fetch(self, endpoint: str, params: typing.Optional[dict] = None):
+    def fetch(self, endpoint: str, params: dict | None = None):
         url = self._generate_fetch_url(endpoint, params)
         with self._urlopen(url) as response:
             return response.read()
 
-    def put(self, endpoint: str, params: typing.Optional[dict]):
+    def put(self, endpoint: str, params: dict | None):
         url = self._generate_url(endpoint)
         request = urllib.request.Request(url, method='PUT',
                                          data=self._prepare_parameters(params).encode('UTF-8'))
         with self._urlopen(request) as response:
             return response.read()
 
-    def post(self, endpoint: str, params: typing.Optional[dict]):
+    def post(self, endpoint: str, params: dict | None):
         url = self._generate_url(endpoint)
         request = urllib.request.Request(url, method='POST',
                                          data=self._prepare_parameters(params).encode('UTF-8'))
@@ -188,7 +187,7 @@ class TicketStatus:
 
 
 class TicketStatuses:
-    def __init__(self, host_or_conn: typing.Union[Host, Connection]):
+    def __init__(self, host_or_conn: Host | Connection):
         self._connection = ensure_connection(host_or_conn)
         self._ticket_statuses = list()
         self._processed = False
@@ -219,13 +218,13 @@ class TicketStatuses:
         self._ticket_statuses.append(TicketStatus(status))
 
 
-def ensure_connection(host_or_connection: typing.Union[Host, Connection]) -> Connection:
+def ensure_connection(host_or_connection: Host | Connection) -> Connection:
     if isinstance(host_or_connection, Connection):
         return host_or_connection
     else:
         return Connection(host_or_connection)
 
 
-def get_response_as_dict(h: Host, endpoint: str, params: typing.Optional[dict] = None):
+def get_response_as_dict(h: Host, endpoint: str, params: dict | None = None):
     r = Request(h, endpoint, params)
     return create_dict_from_xml_string(r.fetch().decode('UTF-8'))

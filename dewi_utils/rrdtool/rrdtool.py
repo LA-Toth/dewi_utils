@@ -1,11 +1,10 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import datetime
 import os
 import os.path
 import subprocess
-import typing
 
 import dewi_core.utils.yaml as _yaml
 from dewi_utils.rrdtool.config import GraphConfig
@@ -30,13 +29,13 @@ class RrdTool:
 
     def __init__(self,
                  munin_directory: str,
-                 end_time: typing.Optional[datetime.datetime],
+                 end_time: datetime.datetime | None,
                  *,
-                 reference_datetime: typing.Optional[datetime.datetime] = None,
-                 modifiers: typing.Optional[typing.List[ConfigModifier]] = None,
-                 intervals: typing.Optional[typing.List[GraphInterval]] = None,
-                 width: typing.Optional[int] = None,
-                 height: typing.Optional[int] = None,
+                 reference_datetime: datetime.datetime | None = None,
+                 modifiers: list[ConfigModifier] | None = None,
+                 intervals: list[GraphInterval] | None = None,
+                 width: int | None = None,
+                 height: int | None = None,
                  parallel_run_count: int = 1,
                  ):
         self._munin_directory = munin_directory

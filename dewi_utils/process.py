@@ -1,12 +1,11 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import os
 import sys
-import typing
 
 
-def find_binary(binary: str, *, exact: bool = False) -> typing.Optional[str]:
+def find_binary(binary: str, *, exact: bool = False) -> str | None:
     """
     Find binary in PATH.
 
@@ -42,5 +41,5 @@ def find_binary(binary: str, *, exact: bool = False) -> typing.Optional[str]:
     return None
 
 
-def which(binary: str, *, exact: bool = False) -> typing.Optional[str]:
+def which(binary: str, *, exact: bool = False) -> str | None:
     return find_binary(binary, exact=exact)

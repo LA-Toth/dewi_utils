@@ -1,11 +1,10 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import datetime
 import os.path
 import shlex
 import subprocess
-import typing
 
 from dewi_core.config.node import Node, NodeList
 from dewi_core.logger import log_info
@@ -28,7 +27,7 @@ class GraphNode(Node):
 
 class GraphResult(Node):
     def __init__(self):
-        self.graphs: typing.List[GraphNode] = NodeList(GraphNode)
+        self.graphs: list[GraphNode] = NodeList(GraphNode)
 
 
 class GraphWriter:
@@ -42,9 +41,9 @@ class GraphWriter:
                  munin_directory: str,
                  config: config.GraphConfig,
                  output: GraphResult,
-                 last_update_date_time: typing.Optional[datetime.datetime],
-                 width: typing.Optional[int] = None,
-                 height: typing.Optional[int] = None,
+                 last_update_date_time: datetime.datetime | None,
+                 width: int | None = None,
+                 height: int | None = None,
                  parallel_count: int = 1
                  ):
         self._munin_directory = munin_directory
@@ -86,7 +85,7 @@ class GraphWriter:
 
         self._env_tz = self._prepare_env_tz()
 
-    def _prepare_env_tz(self) -> typing.Optional[str]:
+    def _prepare_env_tz(self) -> str | None:
         if self._last_update_date_time is not None:
             offset = self._last_update_date_time.utcoffset()
 
@@ -101,7 +100,7 @@ class GraphWriter:
 
         return None
 
-    def generate(self, intervals: typing.List[GraphInterval]):
+    def generate(self, intervals: list[GraphInterval]):
         log_info(f'Generating graphs in {self._parallel_count} thread(s)')
         if self._parallel_count == 1:
             job = GraphWriterJob(self._munin_directory, self._config, self._output, self._last_update_date_time,
@@ -111,7 +110,7 @@ class GraphWriter:
 
         else:
             pool = Pool(state=self, thread_count=self._parallel_count)
-            job_params: typing.List[JobParam] = []
+            job_params: list[JobParam] = []
 
             for domain, host, plugin in self._config.plugins:
                 for interval in intervals:
@@ -142,10 +141,10 @@ class GraphWriterJob(Job):
                  last_update_timestamp: int,
                  width: int,
                  height: int,
-                 header_args: typing.List[str],
-                 env_tz: typing.Optional[str],
-                 plugin: typing.Optional[config.Plugin] = None,
-                 interval: typing.Optional[GraphInterval] = None,
+                 header_args: list[str],
+                 env_tz: str | None,
+                 plugin: config.Plugin | None = None,
+                 interval: GraphInterval | None = None,
                  ):
         self._munin_directory = munin_directory
         self._config = config
@@ -172,7 +171,7 @@ class GraphWriterJob(Job):
 
         return env
 
-    def generate_all(self, intervals: typing.List[GraphInterval]):
+    def generate_all(self, intervals: list[GraphInterval]):
         for domain, host, plugin in self._config.plugins:
             for interval in intervals:
                 result = self._generate_graph_of_interval(self._config.domains[domain].hosts[host].plugins[plugin],

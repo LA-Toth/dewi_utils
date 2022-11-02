@@ -1,12 +1,14 @@
-import collections
+# Copyright 2016-2022 Laszlo Attila Toth
+# Distributed under the terms of the Apache License, Version 2.0
+
+import collections.abc
 import sys
-import typing
 
 import jinja2
 
 
 class TemplateRenderer:
-    def __init__(self, base_path: typing.Union[str, typing.List[str]]):
+    def __init__(self, base_path: str | list[str]):
         loader = jinja2.FileSystemLoader(base_path or sys.path)
         environment = jinja2.Environment(loader=loader)
         self._environment = environment

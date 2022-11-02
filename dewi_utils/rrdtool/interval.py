@@ -1,9 +1,8 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import enum
 import time
-import typing
 
 
 class GraphIntervalType(enum.Enum):
@@ -18,8 +17,8 @@ class GraphIntervalType(enum.Enum):
 class GraphInterval:
     def __init__(self,
                  interval_type: GraphIntervalType,
-                 start_time: typing.Optional[int] = None,
-                 end_time: typing.Optional[int] = None
+                 start_time: int | None = None,
+                 end_time: int | None = None
                  ):
         self.interval_type = interval_type
         self.interval_name = interval_type.name.lower()
@@ -33,7 +32,7 @@ class GraphInterval:
             self._start_time = self._end_time = None
             self.title_suffix = f'by {self.interval_title}'
 
-    def range(self, end_time_maybe: int) -> typing.Tuple[int, int]:
+    def range(self, end_time_maybe: int) -> tuple[int, int]:
         """
         Return start and end time as UNIX timestamps based on `end_time_maybe` as end time.
 

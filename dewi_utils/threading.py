@@ -4,9 +4,9 @@
 import multiprocessing
 import threading
 import time
-import typing
 from abc import ABC
 from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Optional
 
 from dewi_core.logger import log_error
 
@@ -29,7 +29,7 @@ class Job(ABC):
         self.pool: Pool = pool
         self.internal_future: Future = None
 
-    def run(self, _: typing.Optional[typing.Any] = None):
+    def run(self, _=None):
         try:
             self._run()
         except Exception as e:
@@ -40,25 +40,25 @@ class Job(ABC):
         # optionally use self.pool.state (perhaps as observer, etc.)
         raise NotImplementedError()
 
-    def next_job_class(self) -> typing.Optional[typing.Type]:
+    def next_job_class(self) -> type | None:
         return None
 
-    def next_job_param_list(self) -> typing.List[JobParam]:
+    def next_job_param_list(self) -> list[JobParam]:
         return []
 
-    def post_processor_job_class(self) -> typing.Optional[typing.Type]:
+    def post_processor_job_class(self) -> type | None:
         return None
 
-    def post_processor_job_params(self) -> typing.Optional[JobParam]:
+    def post_processor_job_params(self) -> JobParam | None:
         return None
 
 
 class MapReduceConfig:
     def __init__(self):
-        self._job_subjobs_map: typing.Dict[Job, typing.List[Job]] = dict()
-        self._job_to_parent_job_map: typing.Dict[Job] = dict()
+        self._job_subjobs_map: dict[Job, list[Job]] = dict()
+        self._job_to_parent_job_map: dict[Job] = dict()
 
-    def add_job(self, job: Job, parent: typing.Optional[Job]):
+    def add_job(self, job: Job, parent: Job | None):
         self._job_to_parent_job_map[job] = parent
         self._job_subjobs_map[job] = list()
 
@@ -67,7 +67,7 @@ class MapReduceConfig:
             self._job_subjobs_map[p].append(job)
             p = self._job_to_parent_job_map[p]
 
-    def may_reduce_job(self, pool, job: typing.Optional[Job]) -> typing.Optional[Job]:
+    def may_reduce_job(self, pool, job: Job | None) -> Job | None:
         if not job or self._job_subjobs_map[job]:
             return None
 
@@ -84,7 +84,7 @@ class MapReduceConfig:
         else:
             return self.may_reduce_job(pool, parent)
 
-    def _get_reducer_job(self, pool, job: Job) -> typing.Optional[Job]:
+    def _get_reducer_job(self, pool, job: Job) -> Job | None:
         reducer_job_class = job.post_processor_job_class()
         if reducer_job_class:
             params = job.post_processor_job_params()
@@ -101,9 +101,11 @@ class MapReduceConfig:
 
 
 class LockableJob(Job, ABC):
+    lock: Optional[threading.Lock]
+
     def __init__(self, pool):
         super().__init__(pool)
-        self.lock: typing.Optional[threading.Lock] = None if pool.thread_count == 1 else threading.Lock()
+        self.lock = None if pool.thread_count == 1 else threading.Lock()
 
     def _acquire(self):
         if self.lock:
@@ -115,15 +117,19 @@ class LockableJob(Job, ABC):
 
 
 class Pool:
-    def __init__(self, *, state: typing.Optional[typing.Any] = None, thread_count: int = 1, wait_interval: float = 0.1):
+    pool: ThreadPoolExecutor | None
+    lock: Optional[threading.Lock]
+    futures: set[Future]
+
+    def __init__(self, *, state=None, thread_count: int = 1, wait_interval: float = 0.1):
         self.state = state
         if thread_count == 0:
             thread_count = max(1, multiprocessing.cpu_count() - 1)
         self.thread_count = thread_count
         self.wait_interval = wait_interval
-        self.pool: typing.Optional[ThreadPoolExecutor] = None if thread_count == 1 else ThreadPoolExecutor(thread_count)
-        self.lock: typing.Optional[threading.Lock] = None if thread_count == 1 else threading.Lock()
-        self.futures: typing.Set[Future] = set()
+        self.pool = None if thread_count == 1 else ThreadPoolExecutor(thread_count)
+        self.lock = None if thread_count == 1 else threading.Lock()
+        self.futures = set()
         self.map_reduce = MapReduceConfig()
 
     def _acquire(self):
@@ -154,7 +160,7 @@ class Pool:
         for j in jobs:
             self._register_job(j, job, lock=False)
 
-    def _register_job(self, job: Job, parent: typing.Optional[Job] = None, lock=True):
+    def _register_job(self, job: Job, parent: Job | None = None, lock=True):
         if self.pool:
             self.map_reduce.add_job(job, parent)
             job.internal_future = self.pool.submit(job.run)
@@ -174,7 +180,7 @@ class Pool:
                 params = job.post_processor_job_params()
                 reducer_job_class(self, *params.args, **params.kwargs).run()
 
-    def run(self, job_class: typing.Type, params_list: typing.List[JobParam]):
+    def run(self, job_class: type, params_list: list[JobParam]):
         for params in params_list:
             self._register_job(job_class(self, *params.args, **params.kwargs))
         if self.pool:

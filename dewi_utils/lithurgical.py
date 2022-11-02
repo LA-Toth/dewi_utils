@@ -1,4 +1,4 @@
-# Copyright 2016-2021 Tóth, László Attila
+# Copyright 2016-2022 Tóth, László Attila
 # Distributed under the terms of the Apache License, Version 2.0
 
 # Checked against https://www.staff.science.uu.nl/~gent0113/easter/easter_text2c.htm
@@ -6,7 +6,6 @@
 
 import datetime
 import enum
-import typing
 
 
 def easter_sunday(year: int):
@@ -438,7 +437,7 @@ def print_id_name():
         i += 1
 
 
-def get_special_events_of_year(year: int) -> typing.Dict[SpecialEvents, datetime.date]:
+def get_special_events_of_year(year: int) -> dict[SpecialEvents, datetime.date]:
     result = dict()
     for s in special_events:
         result[s] = special_events[s]['func'](year)
@@ -446,7 +445,7 @@ def get_special_events_of_year(year: int) -> typing.Dict[SpecialEvents, datetime
     return result
 
 
-def _calculate_day(special_events_of_the_year: typing.Dict[SpecialEvents, datetime.date],
+def _calculate_day(special_events_of_the_year: dict[SpecialEvents, datetime.date],
                    base_event: SpecialEvents,
                    offset: int,
                    offset_type: Offset) -> datetime.date:
@@ -469,7 +468,7 @@ def _calculate_day(special_events_of_the_year: typing.Dict[SpecialEvents, dateti
         return d + datetime.timedelta(offset * 7)
 
 
-def get_events_of_year(year: int) -> typing.List[typing.Tuple[str, datetime.date]]:
+def get_events_of_year(year: int) -> list[tuple[str, datetime.date]]:
     result = list()
     specials = get_special_events_of_year(year)
     for e in events:

@@ -1,7 +1,7 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
+
 import re
-import typing
 
 from dewi_utils.rrdtool.config import GraphConfig, Host, Plugin
 
@@ -80,7 +80,7 @@ class SeparateDiskstatsPluginsPerDevice(ConfigModifier):
             for new_plugin in new_plugins:
                 host.plugins[new_plugin.name] = new_plugin
 
-    def _rewrite_plugin(self, plugin: Plugin) -> typing.List[Plugin]:
+    def _rewrite_plugin(self, plugin: Plugin) -> list[Plugin]:
         result = list()
 
         graph_type = 'IO' if plugin.name.endswith('iops') else 'Bytes'

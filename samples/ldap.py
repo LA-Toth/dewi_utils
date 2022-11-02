@@ -1,5 +1,3 @@
-import typing
-
 from ldap3 import Server, Connection
 
 
@@ -12,6 +10,6 @@ class LDAP:
         if result:
             return result[0]
 
-    def _search(self, query: str, attributes: typing.List[str]):
-        self._conn.search('dc=balabit', query, attributes=attributes)
+    def _search(self, query: str, attributes: list[str]):
+        self._conn.search('dc=foobar', query, attributes=attributes)
         return self._conn.entries

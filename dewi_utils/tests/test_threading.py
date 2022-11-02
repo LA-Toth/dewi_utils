@@ -1,25 +1,23 @@
-# Copyright 2020-2021 Laszlo Attila Toth
+# Copyright 2020-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import multiprocessing
+import random
 import threading
 import time
-import typing
-
-import random
 
 import dewi_core.testcase
-from dewi_utils.threading import JobParam, Job, Pool, LockableJob
+from dewi_utils.threading import Job, JobParam, LockableJob, Pool
 
 random.seed()
 
 
 class JobParamTest(dewi_core.testcase.TestCase):
-    def assert_job_param(self, job_param: JobParam, args: typing.List, kwargs: typing.Dict):
+    def assert_job_param(self, job_param: JobParam, args: list, kwargs: dict):
         self.assert_equal(args, list(job_param.args))
         self.assert_equal(kwargs, job_param.kwargs)
 
-    def assert_jl_equal(self, expected_list: typing.List[JobParam], actual_list: typing.List):
+    def assert_jl_equal(self, expected_list: list[JobParam], actual_list: list):
         self.assert_equal(len(expected_list), len(actual_list), 'Length mismatch')
         for i in range(len(expected_list)):
             expected = expected_list[i]
@@ -66,9 +64,9 @@ class State:
 class TestJob(Job):
     def __init__(self, pool: Pool, state: State, value: int,
                  *,
-                 next_job_class: typing.Optional[typing.Type[Job]] = None,
+                 next_job_class: type[Job] | None = None,
                  next_job_count: int = 0,
-                 postprocessor_job_class: typing.Optional[typing.Type[Job]] = None):
+                 postprocessor_job_class: type[Job] | None = None):
         super().__init__(pool)
         self._state = state
         self._value = value
@@ -80,16 +78,16 @@ class TestJob(Job):
         time.sleep(random.randint(10, 200) / 1000)
         self._state.store(self._value)
 
-    def next_job_class(self) -> typing.Optional[typing.Type]:
+    def next_job_class(self) -> type | None:
         return self._next_job_class
 
-    def next_job_param_list(self) -> typing.List[JobParam]:
+    def next_job_param_list(self) -> list[JobParam]:
         return JobParam.from_list(list(range(1, self._next_job_count + 1)), self._state)
 
-    def post_processor_job_class(self) -> typing.Optional[typing.Type]:
+    def post_processor_job_class(self) -> type | None:
         return self._postprocessor_job_class
 
-    def post_processor_job_params(self) -> typing.Optional[JobParam]:
+    def post_processor_job_params(self) -> JobParam | None:
         return JobParam(self._state)
 
 
@@ -124,16 +122,16 @@ class Job5(TestJob):
 
 
 class PoolTest(dewi_core.testcase.TestCase):
-    def assert_state_result(self, thread_count: int, job_class: typing.Type[Job], job_count: int,
-                            expected_list: typing.List[int]):
+    def assert_state_result(self, thread_count: int, job_class: type[Job], job_count: int,
+                            expected_list: list[int]):
         state = State()
         pool = Pool(thread_count=thread_count)
         pool.run(job_class, [JobParam(state)] * job_count)
         self.assert_equal(expected_list, state.result)
 
-    def assert_sorted_state_result(self, thread_count: int, job_class: typing.Type[Job],
+    def assert_sorted_state_result(self, thread_count: int, job_class: type[Job],
                                    job_count: int,
-                                   expected_list: typing.List[int]):
+                                   expected_list: list[int]):
         state = State()
         pool = Pool(thread_count=thread_count)
         pool.run(job_class, [JobParam(state)] * job_count)

@@ -1,10 +1,8 @@
-# Copyright 2018-2021 Laszlo Attila Toth
+# Copyright 2018-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
-import typing
 
-
-def rjust(s: str, width: int, fillchars: typing.Optional[str] = None):
+def rjust(s: str, width: int, fillchars: str | None = None):
     if fillchars is None:
         return s.rjust(width)
     elif len(fillchars) == 1:
@@ -22,7 +20,7 @@ def rjust(s: str, width: int, fillchars: typing.Optional[str] = None):
         return padding_ + s
 
 
-def ljust(s: str, width: int, fillchars: typing.Optional[str] = None):
+def ljust(s: str, width: int, fillchars: str | None = None):
     if fillchars is None:
         return s.ljust(width)
     elif len(fillchars) == 1:
@@ -40,7 +38,7 @@ def ljust(s: str, width: int, fillchars: typing.Optional[str] = None):
         return s + padding_
 
 
-def center(s: str, width: int, fillchars: typing.Optional[str] = None):
+def center(s: str, width: int, fillchars: str | None = None):
     if fillchars is None:
         return s.center(width)
     elif len(fillchars) == 1:

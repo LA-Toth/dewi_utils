@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 #
 # DEWI utils: Small utilities
-# Copyright 2012-2021  Laszlo Attila Toth
+# Copyright 2012-2022  Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import sys
 
-if sys.hexversion < 0x03080000:
-    raise RuntimeError("Required python version: 3.8 or newer (current: %s)" % sys.version)
+if sys.hexversion < 0x030a0000:
+    raise RuntimeError("Required python version: 3.10 or newer (current: %s)" % sys.version)
 
 try:
     from setuptools import setup, find_packages
@@ -39,9 +39,8 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: System :: Filesystems',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries',
@@ -49,7 +48,7 @@ setup(
     ],
     zip_safe=True,
     use_2to3=False,
-    python_requires='>=3.8',
+    python_requires='>=3.10',
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
         'dewi_core >=5.0.2, <6',

@@ -1,7 +1,6 @@
 # Copyright 2017-2021 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
-import typing
 from xml.etree import ElementTree
 
 
@@ -32,7 +31,7 @@ def _add_as_list(elem: ElementTree):
     return result
 
 
-def _add_as_dict(elem: ElementTree) -> typing.Union[dict, str]:
+def _add_as_dict(elem: ElementTree) -> dict | str:
     value = dict()
     if len(list(elem)):
         for child_item in list(elem):

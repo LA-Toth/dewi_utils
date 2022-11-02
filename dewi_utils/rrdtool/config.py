@@ -1,7 +1,7 @@
-# Copyright 2017-2021 Laszlo Attila Toth
+# Copyright 2017-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
-import typing
+import collections.abc
 from collections import defaultdict
 
 import yaml
@@ -11,12 +11,14 @@ from dewi_core.config.node import Node
 
 
 class NodeWithName(Node):
+    name: str
+
     def __init__(self):
-        self.name: str = None
+        self.name = None
 
 
 class DefaultDict(defaultdict):
-    def __init__(self, default_factory: typing.Type[NodeWithName]):
+    def __init__(self, default_factory: type[NodeWithName]):
         super().__init__(default_factory)
 
     def __missing__(self, key):
@@ -29,55 +31,68 @@ class Field(NodeWithName):
     """
     Represents a line or field in a munin Graph
     """
+    options: dict[str, str]
+    filename: str
 
     def __init__(self):
         super().__init__()
-        self.options: typing.Dict[str, str] = dict()
-        self.filename: str = None
+        self.options = dict()
+        self.filename = None
 
 
 class Plugin(NodeWithName):
+    category: str
+    title: str
+    period: str
+    options: dict[str, str]
+    fields: dict[str, Field]
+    field_order: list[str]
+
     def __init__(self):
         super().__init__()
-        self.category: str = None
-        self.title: str = None
-        self.period: str = None
-        self.options: typing.Dict[str, str] = dict()
-        self.fields: typing.Dict[str, Field] = DefaultDict(Field)
-        self.field_order: typing.List[str] = list()
+        self.category = None
+        self.title = None
+        self.period = None
+        self.options = dict()
+        self.fields = DefaultDict(Field)
+        self.field_order = list()
 
 
 class Host(NodeWithName):
+    plugins: dict[str, Plugin]
+
     def __init__(self):
         super().__init__()
-        self.plugins: typing.Dict[str, Plugin] = DefaultDict(Plugin)
+        self.plugins: dict[str, Plugin] = DefaultDict(Plugin)
 
 
 class Domain(NodeWithName):
     def __init__(self):
         super().__init__()
-        self.hosts: typing.Dict[str, Host] = DefaultDict(Host)
+        self.hosts = DefaultDict(Host)
 
 
 class GraphConfig(Node):
+    domains: dict[str, Domain]
+
     def __init__(self):
-        self.domains: typing.Dict[str, Domain] = DefaultDict(Domain)
+        self.domains = DefaultDict(Domain)
 
     @property
-    def hosts(self) -> typing.Iterator[typing.Tuple[str, str, str]]:
+    def hosts(self) -> collections.abc.Iterator[tuple[str, str, str]]:
         for domain in self.domains:
             for host in self.domains[domain].hosts:
                 yield domain, host
 
     @property
-    def plugins(self) -> typing.Iterator[typing.Tuple[str, str, str]]:
+    def plugins(self) -> collections.abc.Iterator[tuple[str, str, str]]:
         for domain in self.domains:
             for host in self.domains[domain].hosts:
                 for plugin in self.domains[domain].hosts[host].plugins:
                     yield domain, host, plugin
 
     @property
-    def fields(self) -> typing.Iterator[typing.Tuple[str, str, str, str]]:
+    def fields(self) -> collections.abc.Iterator[tuple[str, str, str, str]]:
         for domain in self.domains:
             for host in self.domains[domain].hosts:
                 for plugin in self.domains[domain].hosts[host].plugins:

@@ -1,14 +1,13 @@
-# Copyright 2009-2021 Laszlo Attila Toth
+# Copyright 2009-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import getpass
 import sys
 import textwrap
-import typing
 
 
 class ConfigPage:
-    def __init__(self, prompt: str, help: typing.Optional[str] = None):
+    def __init__(self, prompt: str, help: str | None = None):
         self.prompt = prompt
         self.help = help
 
@@ -60,7 +59,7 @@ class ConfigPage:
                     self._print_help()
         return answer == 'y'
 
-    def input(self, default_val: typing.Optional[str] = None, print_only: bool = False,
+    def input(self, default_val: str | None = None, print_only: bool = False,
               password: bool = False):
         if self.help:
             sel = ' / ?:'

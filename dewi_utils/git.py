@@ -1,4 +1,4 @@
-# Copyright 2020-2021 Laszlo Attila Toth
+# Copyright 2020-2022 Laszlo Attila Toth
 # Distributed under the terms of the Apache License, Version 2.0
 
 import copy
@@ -6,7 +6,6 @@ import datetime
 import os
 import re
 import subprocess
-import typing
 from contextlib import contextmanager
 
 from dewi_core.config.appconfig import get_config
@@ -45,13 +44,13 @@ class Commit(Node):
 
 
 class Git:
-    def run(self, args: typing.List[str], /, *,
-            cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None):
+    def run(self, args: list[str], /, *,
+            cwd: str | None = None, env: dict | None = None):
         log_debug(f'Running git command: {args}; cwd={cwd if cwd else "current dir"}')
         subprocess.run(['git'] + args, check=True, cwd=cwd, env=env)
 
-    def run_output(self, args: typing.List[str], /, *,
-                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None,
+    def run_output(self, args: list[str], /, *,
+                   cwd: str | None = None, env: dict | None = None,
                    strip: bool = True,
                    ) -> str:
         log_debug(f'Running git command with output: {args}; cwd={cwd if cwd else "current dir"}')
@@ -59,35 +58,35 @@ class Git:
         return result.strip() if strip else result
 
     def cd_to_repo_root(self, *,
-                        cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                        cwd: str | None = None, env: dict | None = None
                         ):
         os.chdir(self.repo_root(cwd=cwd, env=env))
 
     def repo_root(self, *,
-                  cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) -> str:
+                  cwd: str | None = None, env: dict | None = None) -> str:
         return self.run_output(['rev-parse', '--show-toplevel'], cwd=cwd, env=env)
 
     def repo_name(self, *,
-                  cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None):
+                  cwd: str | None = None, env: dict | None = None):
         return os.path.basename(self.repo_root(cwd=cwd, env=env))
 
     def current_branch(self, *,
-                       cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) -> str:
+                       cwd: str | None = None, env: dict | None = None) -> str:
         return self.run_output(['branch', '--show-current'], cwd=cwd, env=env)
 
     def current_head(self, *,
                      enable_detached_head=True,
-                     cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) -> str:
+                     cwd: str | None = None, env: dict | None = None) -> str:
         if not enable_detached_head and not self.current_branch(cwd=cwd, env=env):
             raise GitError(f"Detached head, directory='{cwd or os.getcwd()}'")
         return self.run_output(['rev-list', '--max-count=1', 'HEAD'], cwd=cwd, env=env)
 
     def merge_base(self, branch1: str, branch2: str, /, *,
-                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None):
+                   cwd: str | None = None, env: dict | None = None):
         return self.run_output(['merge-base', branch1, branch2], cwd=cwd, env=env)
 
     def stash(self, *,
-              cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) -> bool:
+              cwd: str | None = None, env: dict | None = None) -> bool:
         status = self.run_output(['status', '--porcelain'], cwd=cwd, env=env).splitlines()
 
         for i in status:
@@ -98,30 +97,30 @@ class Git:
         return False
 
     def stash_apply(self, stashed: bool, /, *,
-                    cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None):
+                    cwd: str | None = None, env: dict | None = None):
         if stashed:
             self.run(['stash', 'apply'], cwd=cwd, env=env)
 
     @contextmanager
     def with_stash(self, *,
-                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None):
+                   cwd: str | None = None, env: dict | None = None):
         stashed = self.stash(cwd=cwd, env=env)
         yield
         self.stash_apply(stashed, cwd=cwd, env=env)
 
     def grep_in_commit_msg(self, text: str, /, *,
-                           cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) -> typing.List[str]:
+                           cwd: str | None = None, env: dict | None = None) -> list[str]:
         return self.run_output(['-c', 'log.decorate=', 'log', '--pretty=%H %s', '--all', '--grep', text],
                                cwd=cwd, env=env).splitlines()
 
     def branches_containing_commit(self, commit_id: str, /, *,
-                                   cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None) \
-            -> typing.List[str]:
+                                   cwd: str | None = None, env: dict | None = None) \
+            -> list[str]:
         return self.run_output(['branch', '--format', '%(refname)', '--all', '--contains', commit_id],
                                cwd=cwd, env=env).splitlines()
 
     def is_existing_remote(self, name: str, /, *,
-                           cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                           cwd: str | None = None, env: dict | None = None
                            ):
         for line in self.run_output(['remote', '-v'], cwd=cwd, env=env).splitlines(keepends=False):
             if re.match(r'^' + name + r'\t', line):
@@ -129,13 +128,13 @@ class Git:
         return False
 
     def is_existing_local_branch(self, name: str, /, *,
-                                 cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                                 cwd: str | None = None, env: dict | None = None
                                  ):
         return self.run_output(['branch', '--list', name], cwd=cwd, env=env) != ''
 
     def collect_commit_details(self, commit_id: str, /, *,
-                               subject: typing.Optional[str] = None,
-                               cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
+                               subject: str | None = None,
+                               cwd: str | None = None, env: dict | None = None
                                ) -> Commit:
         timestamp = int(self.run_output(['show', '-s', '--format=%at', commit_id], cwd=cwd, env=env))
         date = datetime.datetime.fromtimestamp(timestamp)
@@ -152,39 +151,52 @@ class Git:
                                  self.run_output(['rev-list', '--count', commit_id, '^HEAD'], cwd=cwd, env=env)))
 
     def find_commits_containing(self, text: str, /, *,
-                                cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
-                                ) -> typing.List[str]:
+                                cwd: str | None = None, env: dict | None = None
+                                ) -> list[str]:
         return self.run_output(
             ['-c', 'log.decorate=', 'log', '--pretty=%H %s', '--all', '--grep', text],
             cwd=cwd, env=env).splitlines()
 
     def refs_of_commits(self, commit_id: str, /, *,
-                        cwd: typing.Optional[str] = None, env: typing.Optional[dict] = None
-                        ) -> typing.List[str]:
+                        cwd: str | None = None, env: dict | None = None
+                        ) -> list[str]:
         return self.run_output(
             ['branch', '--format', '%(refname)', '--all', '--contains', commit_id], cwd=cwd, env=env).splitlines()
 
 
 class RepoClonerRemoteConfig(Node):
+    name: str
+    username_cfg_entry: str
+    host_cfg_entry: str
+    prefix: str
+    url_template: str
+    excluded: list[str]
+    name_map: dict[str, str]
+    custom_prefix_map: dict[str, str]
+
     def __init__(self):
-        self.name: str = ''
-        self.username_cfg_entry: str = ''
-        self.host_cfg_entry: str = ''
-        self.prefix: str = ''
-        self.url_template: str = ''
-        self.excluded: typing.List[str] = []
-        self.name_map: typing.Dict[str, str] = dict()
-        self.custom_prefix_map: typing.Dict[str, str] = dict()
+        self.name = ''
+        self.username_cfg_entry = ''
+        self.host_cfg_entry = ''
+        self.prefix = ''
+        self.url_template = ''
+        self.excluded = []
+        self.name_map = dict()
+        self.custom_prefix_map = dict()
 
 
 class RepoClonerConfig(Node):
+    primary_remote: str
+    primary_only: list[str]
+    remotes: list[RepoClonerRemoteConfig]
+
     def __init__(self):
-        self.primary_remote: str = ''
-        self.primary_only: typing.List[str] = []
+        self.primary_remote = ''
+        self.primary_only = []
         self.remotes = NodeList(RepoClonerRemoteConfig)
 
-    def load_from(self, data: dict):
-        super().load_from(data)
+    def load_from(self, data: dict, *, raise_error: bool = False):
+        super().load_from(data, raise_error=raise_error)
         for remote in self.remotes:
             if remote.name == self.primary_remote:
                 continue
@@ -201,7 +213,7 @@ class RepoCloner:
         self._other_repo_configs = [x for x in self._config.remotes if x != self._primary_repo_config]
         self._git = Git()
 
-    def clone(self, repo: str, *, require_fetch: bool = True, only_remotes: typing.Optional[typing.List[str]] = None):
+    def clone(self, repo: str, *, require_fetch: bool = True, only_remotes: list[str] | None = None):
         repo_directory = f'{self._basedir}/{repo}'
         existing = os.path.exists(repo_directory)
         if not existing:
@@ -216,7 +228,7 @@ class RepoCloner:
             self._git.run(['fetch', '--all'], cwd=repo_directory)
 
     def _add_remote(self, repo: str, repo_directory: str, remote: RepoClonerRemoteConfig,
-                    remotes: typing.Optional[typing.List[str]] = None):
+                    remotes: list[str] | None = None):
         if repo not in remote.excluded and (
                 not remotes or remote.name in remotes) and not self._git.is_existing_remote(remote.name,
                                                                                             cwd=repo_directory):
