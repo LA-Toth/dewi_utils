@@ -53,3 +53,16 @@ def center(s: str, width: int, fillchars: str | None = None):
     else:
         left = remaining // 2
         return ljust(rjust(s, left + size, fillchars), width, fillchars)
+
+
+def convert_to_snake_case(text: str) -> str:
+    result = ''
+    last = ''
+    for current in text:
+        if current.upper() == current:
+            if last.upper() != last:
+                result += '_'
+        result += current.lower()
+
+        last = current
+    return result
