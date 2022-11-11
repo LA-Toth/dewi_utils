@@ -6,16 +6,15 @@
 
 import os
 
-from dewi_core.config.iniconfig import IniConfig
-
 import dewi_core.testcase
+from dewi_core.config.iniconfig import IniConfig
 from dewi_utils.config import ConfigLoader, InvalidMetaConfig, ConfigWriter
 
 
 class TestConfigModule(dewi_core.testcase.TestCase):
 
     def set_up(self):
-        self.cfg_file ='/tmp/test-cfg-mod.config'
+        self.cfg_file = '/tmp/test-cfg-mod.config'
         self.settings = [
             ['remote.origin', 'branch', 'master'],
             ['remote.origin', 'b', 'other'],
@@ -23,7 +22,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
         ]
 
     def test_cfg_init(self):
-        cfg =IniConfig()
+        cfg = IniConfig()
         self.assert_is_none(cfg.config_file)
         self.assert_is_not_none(cfg.parser)
 
@@ -49,7 +48,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
     def test_set_get_save_load(self):
         # Test assumes it
         self.assert_false(os.path.exists(self.cfg_file))
-        cfg =IniConfig()
+        cfg = IniConfig()
         cfg.open(self.cfg_file)
         for (section, option, value) in self.settings:
             cfg.set(section, option, value)
@@ -67,7 +66,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
         self.assert_true(len(content) > 1)
 
         # let's open it
-        new_config =IniConfig()
+        new_config = IniConfig()
         new_config.open(self.cfg_file)
         self._verify_config(new_config)
         os.unlink(self.cfg_file)
@@ -77,7 +76,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
         saved_settings = list(self.settings)
         # Test assumes it
         self.assert_false(os.path.exists(self.cfg_file))
-        cfg =IniConfig()
+        cfg = IniConfig()
         cfg.open(self.cfg_file)
         for (section, option, value) in self.settings:
             cfg.set(section, option, value)
@@ -97,7 +96,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
     def test_other_functions(self):
         # Test assumes it
         self.assert_false(os.path.exists(self.cfg_file))
-        cfg =IniConfig()
+        cfg = IniConfig()
         cfg.open(self.cfg_file)
 
         # testing has
@@ -124,7 +123,7 @@ class TestConfigModule(dewi_core.testcase.TestCase):
         self.assert_equal(cfg.get_or_default_value('an apple', 'is not red', 'green'), 'green')
 
     def test_write_without_open_fails(self):
-        cfg =IniConfig()
+        cfg = IniConfig()
         self.assert_raises(Exception, cfg.write)
 
 
@@ -187,7 +186,7 @@ class TestConfigLoader(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self.assert_equal(dict(sample_text='something'), self._tested.load(config))
 
@@ -204,7 +203,7 @@ class TestConfigLoader(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self.assert_equal(dict(an_int=42), self._tested.load(config))
 
@@ -221,7 +220,7 @@ class TestConfigLoader(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self.assert_equal(dict(a_bool=True), self._tested.load(config))
 
@@ -241,7 +240,7 @@ class TestConfigLoader(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self.assert_equal(dict(a_bool=False), self._tested.load(config))
 
@@ -276,7 +275,7 @@ class TestConfigLoader(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
             }
         }
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
         config.set('an', 'example', 'no')
         config.set('an', 'int_entry', '42')
 
@@ -301,7 +300,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
         self._tested.write(dict(), config)
         self.assert_equal('the-default-value', config.get_or_default_value('an', 'example', 'the-default-value'))
 
@@ -315,7 +314,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
         self._tested.write(dict(sample_text='some text'), config)
         self.assert_equal('some text', config.get_or_default_value('an', 'example', 'unexpected-default-value'))
 
@@ -329,7 +328,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
         self._tested.write(dict(), config)
         self.assert_equal('the-default-value', config.get_or_default_value('an', 'example', 'the-default-value'))
 
@@ -346,7 +345,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self._tested.write(dict(), config)
         self.assert_equal('the-default-value', config.get_or_default_value('an', 'example', 'the-default-value'))
@@ -367,7 +366,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self._tested.write(dict(), config)
         self.assert_equal('the-default-value', config.get_or_default_value('an', 'example', 'the-default-value'))
@@ -404,7 +403,7 @@ class TestConfigWriter(dewi_core.testcase.TestCase, _LoaderWriterSetConfigMixin)
         }
 
         self._tested.set_meta_config(meta_config)
-        config =IniConfig()
+        config = IniConfig()
 
         self._tested.write(dict(), config)
         self.assert_equal('the-default-value', config.get_or_default_value('an', 'example', 'the-default-value'))

@@ -50,6 +50,6 @@ def python_repo_hash_md5(root_dir: str, *, verbose: bool = False):
             log_info('Processing e', e)
         m.update(
             f"path={e['path']}\tisdir={e['isdir']}\tsize={e['size']}\tmode={e['mode']:03o}\tmtime={e['mtime']}\n"
-                .encode('UTF-8'))
+            .encode('UTF-8'))
 
     return m.hexdigest()
