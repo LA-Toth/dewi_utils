@@ -28,20 +28,6 @@ class Commit(Node):
         self.subject: str = ''
         self.distance: int = -1
 
-    @classmethod
-    def create(cls, commit_id: str, /, author: str, date: datetime.datetime,
-               commit_date: datetime.datetime, committer: str,
-               subject: str, distance: int):
-        commit = cls()
-        commit.commit_id = commit_id
-        commit.author = author
-        commit.date = date
-        commit.commit_date = commit_date
-        commit.committer = committer
-        commit.subject = subject
-        commit.distance = distance
-        return commit
-
 
 class Git:
     def run(self, args: list[str], /, *,
@@ -140,7 +126,7 @@ class Git:
         date = datetime.datetime.fromtimestamp(timestamp)
         timestamp = int(self.run_output(['show', '-s', '--format=%ct', commit_id], cwd=cwd, env=env))
         commit_date = datetime.datetime.fromtimestamp(timestamp)
-        return Commit.create(commit_id,
+        return Commit.create(commit_id=commit_id,
                              author=self.run_output(['show', '-s', '--format=%an <%ae>', commit_id], cwd=cwd, env=env),
                              date=date,
                              commit_date=commit_date,
