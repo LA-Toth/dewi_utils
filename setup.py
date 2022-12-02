@@ -16,7 +16,7 @@ setup(
     description="A toolchain and framework for everyday tasks",
     license="Apache License, Version 2.0",
     license_files=('COPYING',),
-    version="3.0.1",
+    version="3.1.0",
     author="Laszlo Attila Toth",
     author_email="python-dewi@laszloattilatoth.me",
     maintainer="Laszlo Attila Toth",
@@ -47,7 +47,7 @@ setup(
     python_requires='>=3.10',
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
-        'dewi_core >=5.0.2, <6',
+        'dewi_core >=5.4.0, <6',
         'Jinja2',
     ]
 )

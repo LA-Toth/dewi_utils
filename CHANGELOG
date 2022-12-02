@@ -1,3 +1,9 @@
+3.1.0
+ - use type annotations w/o typing module, requires python 3.10+
+ - add mailer module (create mail from HTML/txt template and send mails)
+ - add convert_to_snake_case(str) to strings
+ - use Node.create() in git module
+
 3.0.1
   - fix for Python 3.10
   - threading: ensure that job_completed() is called even if exception is thrown
