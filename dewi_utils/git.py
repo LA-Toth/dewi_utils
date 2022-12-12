@@ -9,7 +9,7 @@ import subprocess
 from contextlib import contextmanager
 
 from dewi_core.config.appconfig import get_config
-from dewi_core.config.node import Node, NodeList
+from dewi_dataclass.node import Node, NodeList
 from dewi_core.logger import log_debug, log_error
 from dewi_core.projects import Project
 

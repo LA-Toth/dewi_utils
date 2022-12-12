@@ -6,7 +6,7 @@ import os.path
 import shlex
 import subprocess
 
-from dewi_core.config.node import Node, NodeList
+from dewi_dataclass.node import Node, NodeList
 from dewi_core.logger import log_info
 from dewi_utils.rrdtool import config
 from dewi_utils.rrdtool.interval import GraphInterval, GraphIntervalType

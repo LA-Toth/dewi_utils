@@ -48,6 +48,7 @@ setup(
     packages=find_packages(exclude=['pylintcheckers', '*test*']),
     install_requires=[
         'dewi_core >=5.4.0, <6',
+        'dewi-dataclass >=1.0.0,<2',
         'Jinja2',
     ]
 )

@@ -7,7 +7,7 @@ from collections import defaultdict
 import yaml
 from yaml.dumper import Dumper
 
-from dewi_core.config.node import Node
+from dewi_dataclass.node import Node
 
 
 class NodeWithName(Node):
